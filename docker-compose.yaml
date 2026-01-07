@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  renewable-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: renewable-energy-api
+    ports:
+      - "3044:3044"
+    environment:
+      - ENTSOE_API_KEY=${ENTSOE_API_KEY}
+      - RUST_LOG=info
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3044/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
