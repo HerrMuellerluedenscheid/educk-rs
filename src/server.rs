@@ -1,19 +1,18 @@
-
 use axum::{
+    Router,
     extract::{Path, Query, State},
     http::StatusCode,
     response::{IntoResponse, Json},
     routing::get,
-    Router,
 };
 use chrono::{DateTime, Duration, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 
-use crate::entsoe::areas::{get_primary_zone, CountryCode};
-use crate::entsoe::{areas, EntsoeClient};
 use crate::entsoe::analysis::RenewableSurplus;
+use crate::entsoe::areas::{CountryCode, get_primary_zone};
+use crate::entsoe::{EntsoeClient, areas};
 
 #[derive(Clone)]
 struct AppState {
@@ -63,13 +62,16 @@ impl From<RenewableSurplus> for MaxSurplusResponse {
         Self {
             country_code: String::new(), // Will be set later
             timestamp: surplus.timestamp.to_rfc3339(),
-            timestamp_utc: surplus.timestamp.format("%Y-%m-%d %H:%M:%S UTC").to_string(),
+            timestamp_utc: surplus
+                .timestamp
+                .format("%Y-%m-%d %H:%M:%S UTC")
+                .to_string(),
             generation_mw: surplus.generation,
             load_mw: surplus.load,
             surplus_mw: surplus.surplus,
             surplus_percentage: surplus.surplus_percentage(),
             // renewable_penetration: surplus.renewable_penetration(),
-            renewable_penetration: 0.0, // todo fix
+            renewable_penetration: 0.0,    // todo fix
             filter_applied: String::new(), // Will be set later
         }
     }
@@ -105,13 +107,11 @@ fn filter_next_hours(series: Vec<RenewableSurplus>, hours: u32) -> Vec<Renewable
 
 /// Find maximum surplus in a series
 fn find_max(series: Vec<RenewableSurplus>) -> Option<RenewableSurplus> {
-    series
-        .into_iter()
-        .max_by(|a, b| {
-            a.surplus
-                .partial_cmp(&b.surplus)
-                .unwrap_or(std::cmp::Ordering::Equal)
-        })
+    series.into_iter().max_by(|a, b| {
+        a.surplus
+            .partial_cmp(&b.surplus)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    })
 }
 
 /// Format period times for ENTSO-E API (YYYYMMDDHHmm)
@@ -128,8 +128,7 @@ async fn get_night_surplus(
     State(state): State<AppState>,
     Path(country_code): Path<String>,
 ) -> Result<Json<ApiResponse<MaxSurplusResponse>>, StatusCode> {
-    let zone = get_primary_zone(&country_code)
-        .ok_or(StatusCode::BAD_REQUEST)?;
+    let zone = get_primary_zone(&country_code).ok_or(StatusCode::BAD_REQUEST)?;
 
     let now = Utc::now();
     let end = now + Duration::hours(48); // Look ahead 48 hours to ensure we have night hours
@@ -194,8 +193,7 @@ async fn get_next_hours_surplus(
     country_code: &str,
     hours: u32,
 ) -> Result<Json<ApiResponse<MaxSurplusResponse>>, StatusCode> {
-    let zone = get_primary_zone(&country_code)
-        .ok_or(StatusCode::BAD_REQUEST)?;
+    let zone = get_primary_zone(&country_code).ok_or(StatusCode::BAD_REQUEST)?;
 
     let now = Utc::now();
     let end = now + Duration::hours((hours + 1) as i64); // Add 1 hour buffer
@@ -219,9 +217,10 @@ async fn get_next_hours_surplus(
 
         Ok(Json(ApiResponse::success(response)))
     } else {
-        Ok(Json(ApiResponse::error(
-            format!("No data found for next {} hours", hours),
-        )))
+        Ok(Json(ApiResponse::error(format!(
+            "No data found for next {} hours",
+            hours
+        ))))
     }
 }
 
@@ -236,14 +235,12 @@ async fn list_countries() -> Json<ApiResponse<Vec<String>>> {
     Json(ApiResponse::success(countries))
 }
 
-
 #[derive(Serialize)]
 struct ZoneInfo {
     code: String,
     name: String,
     tso: Option<String>,
 }
-
 
 /// GET /api/v1/zones/:country
 /// Get all bidding zones for a country
@@ -275,8 +272,8 @@ pub async fn start_server() -> anyhow::Result<()> {
     // Initialize tracing
     tracing_subscriber::fmt::init();
 
-    let api_key = std::env::var("ENTSOE_API_KEY")
-        .expect("ENTSOE_API_KEY environment variable not set");
+    let api_key =
+        std::env::var("ENTSOE_API_KEY").expect("ENTSOE_API_KEY environment variable not set");
 
     let state = AppState {
         entsoe_client: Arc::new(EntsoeClient::new(api_key)),
@@ -286,10 +283,22 @@ pub async fn start_server() -> anyhow::Result<()> {
         .route("/health", get(health))
         .route("/api/v1/countries", get(list_countries))
         .route("/api/v1/zones/{country}", get(get_country_zones))
-        .route("/api/v1/renewable-surplus/{country}/night", get(get_night_surplus))
-        .route("/api/v1/renewable-surplus/{country}/next-6h", get(get_next_6h_surplus))
-        .route("/api/v1/renewable-surplus/{country}/next-24h", get(get_next_24h_surplus))
-        .route("/api/v1/renewable-surplus/{country}/next", get(get_custom_hours_surplus))
+        .route(
+            "/api/v1/renewable-surplus/{country}/night",
+            get(get_night_surplus),
+        )
+        .route(
+            "/api/v1/renewable-surplus/{country}/next-6h",
+            get(get_next_6h_surplus),
+        )
+        .route(
+            "/api/v1/renewable-surplus/{country}/next-24h",
+            get(get_next_24h_surplus),
+        )
+        .route(
+            "/api/v1/renewable-surplus/{country}/next",
+            get(get_custom_hours_surplus),
+        )
         .layer(CorsLayer::permissive())
         .with_state(state);
 

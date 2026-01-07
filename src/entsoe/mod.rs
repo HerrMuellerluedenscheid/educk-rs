@@ -1,11 +1,11 @@
 pub(crate) mod analysis;
 pub(crate) mod areas;
 
-use std::collections::HashMap;
 use anyhow::Result;
 use chrono::{DateTime, Duration, Utc};
 use reqwest::Client;
 use serde::Deserialize;
+use std::collections::HashMap;
 use thiserror::Error;
 
 const BASE_URL: &str = "https://web-api.tp.entsoe.eu/api";

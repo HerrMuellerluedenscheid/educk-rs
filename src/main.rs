@@ -1,15 +1,15 @@
 pub mod entsoe;
 pub mod server;
 
-use crate::entsoe::{EntsoeClient};
-use crate::entsoe::analysis::{RenewableSurplus};
+use crate::entsoe::EntsoeClient;
+use crate::entsoe::analysis::RenewableSurplus;
+use crate::server::start_server;
 use anyhow::Result;
 use plotly::{
+    Plot, Scatter,
     common::{Mode, Title},
     layout::{Axis, Layout},
-    Plot, Scatter,
 };
-use crate::server::start_server;
 
 fn plot_renewable_surplus(surplus_series: &[RenewableSurplus]) {
     // Extract data

@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use once_cell::sync::Lazy;
+use std::collections::HashMap;
 
 /// ISO 3166-1 alpha-2 country code
 pub type CountryCode = &'static str;
@@ -110,7 +110,9 @@ pub fn get_zone_by_code(area_code: AreaCode) -> Option<&'static BiddingZone> {
 
 /// Get the primary bidding zone for a country (first one if multiple exist)
 pub fn get_primary_zone(country_code: &str) -> Option<&'static BiddingZone> {
-    BIDDING_ZONES.get(country_code).and_then(|zones| zones.first())
+    BIDDING_ZONES
+        .get(country_code)
+        .and_then(|zones| zones.first())
 }
 
 /// List all available country codes
