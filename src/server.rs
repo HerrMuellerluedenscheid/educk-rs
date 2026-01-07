@@ -263,6 +263,215 @@ async fn get_country_zones(
     }
 }
 
+use askama::Template;
+use serde_json::json;
+
+#[derive(Template)]
+#[template(path = "plot.html")]
+struct PlotTemplate {
+    country_code: String,
+    country_name: String,
+    period_start: String,
+    period_end: String,
+    data_points: usize,
+    plot_data: String,
+    plot_layout: String,
+}
+
+/// Generate Plotly plot data from surplus series
+fn generate_plot_data(surplus_series: &[RenewableSurplus]) -> (String, String) {
+    // Extract data
+    let timestamps: Vec<String> = surplus_series
+        .iter()
+        .map(|s| s.timestamp.format("%Y-%m-%d %H:%M").to_string())
+        .collect();
+
+    let generation: Vec<f64> = surplus_series.iter().map(|s| s.generation).collect();
+    let load: Vec<f64> = surplus_series.iter().map(|s| s.load).collect();
+    let surplus: Vec<f64> = surplus_series.iter().map(|s| s.surplus).collect();
+
+    // Create traces
+    let traces = json!([
+        {
+            "x": timestamps,
+            "y": generation,
+            "name": "Wind + Solar Generation",
+            "type": "scatter",
+            "mode": "lines+markers",
+            "line": {
+                "color": "rgb(34, 139, 34)",
+                "width": 2
+            },
+            "marker": {
+                "size": 4
+            }
+        },
+        {
+            "x": timestamps,
+            "y": load,
+            "name": "Total Load",
+            "type": "scatter",
+            "mode": "lines+markers",
+            "line": {
+                "color": "rgb(30, 144, 255)",
+                "width": 2
+            },
+            "marker": {
+                "size": 4
+            }
+        },
+        {
+            "x": timestamps,
+            "y": surplus,
+            "name": "Surplus (Generation - Load)",
+            "type": "scatter",
+            "mode": "lines+markers",
+            "line": {
+                "color": "rgb(255, 140, 0)",
+                "width": 2
+            },
+            "marker": {
+                "size": 4
+            }
+        }
+    ]);
+
+    // Create layout
+    let layout = json!({
+        "title": {
+            "text": "Renewable Energy Forecast",
+            "font": {
+                "size": 20
+            }
+        },
+        "xaxis": {
+            "title": "Time",
+            "tickangle": -45
+        },
+        "yaxis": {
+            "title": "Power (MW)"
+        },
+        "hovermode": "x unified",
+        "plot_bgcolor": "rgb(250, 250, 250)",
+        "paper_bgcolor": "white",
+        "showlegend": true,
+        "legend": {
+            "x": 0.01,
+            "y": 0.99,
+            "bgcolor": "rgba(255, 255, 255, 0.8)",
+            "bordercolor": "rgba(0, 0, 0, 0.2)",
+            "borderwidth": 1
+        }
+    });
+
+    (
+        serde_json::to_string(&traces).unwrap(),
+        serde_json::to_string(&layout).unwrap(),
+    )
+}
+
+/// GET /api/v1/renewable-surplus/:country/plot
+/// Generate interactive Plotly visualization
+async fn get_plot(
+    State(state): State<AppState>,
+    Path(country_code): Path<String>,
+    Query(query): Query<TimeQuery>,
+) -> Result<impl IntoResponse, StatusCode> {
+    let zone = get_primary_zone(&country_code).ok_or(StatusCode::BAD_REQUEST)?;
+
+    let hours = query.hours.unwrap_or(24);
+    let now = Utc::now();
+    let end = now + Duration::hours((hours + 1) as i64);
+    let (period_start, period_end) = format_period(now, end);
+
+    let series = state
+        .entsoe_client
+        .get_renewable_surplus_series(zone.code, &period_start, &period_end)
+        .await
+        .map_err(|e| {
+            eprintln!("ENTSO-E API error: {}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
+    if series.is_empty() {
+        return Err(StatusCode::NOT_FOUND);
+    }
+
+    let (plot_data, plot_layout) = generate_plot_data(&series);
+
+    let template = PlotTemplate {
+        country_code: country_code.clone(),
+        country_name: zone.name.to_string(),
+        period_start: series
+            .first()
+            .unwrap()
+            .timestamp
+            .format("%Y-%m-%d %H:%M UTC")
+            .to_string(),
+        period_end: series
+            .last()
+            .unwrap()
+            .timestamp
+            .format("%Y-%m-%d %H:%M UTC")
+            .to_string(),
+        data_points: series.len(),
+        plot_data,
+        plot_layout,
+    };
+
+    let html = template.render().map_err(|e| {
+        eprintln!("Template rendering error: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
+    Ok(axum::response::Html(html))
+}
+
+/// GET /api/v1/renewable-surplus/:country/plot-json
+/// Get plot data as JSON (for frontend frameworks)
+async fn get_plot_json(
+    State(state): State<AppState>,
+    Path(country_code): Path<String>,
+    Query(query): Query<TimeQuery>,
+) -> Result<Json<ApiResponse<PlotData>>, StatusCode> {
+    let zone = get_primary_zone(&country_code).ok_or(StatusCode::BAD_REQUEST)?;
+
+    let hours = query.hours.unwrap_or(24);
+    let now = Utc::now();
+    let end = now + Duration::hours((hours + 1) as i64);
+    let (period_start, period_end) = format_period(now, end);
+
+    let series = state
+        .entsoe_client
+        .get_renewable_surplus_series(zone.code, &period_start, &period_end)
+        .await
+        .map_err(|e| {
+            eprintln!("ENTSO-E API error: {}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
+    if series.is_empty() {
+        return Ok(Json(ApiResponse::error("No data available".to_string())));
+    }
+
+    let plot_data = PlotData {
+        timestamps: series.iter().map(|s| s.timestamp.to_rfc3339()).collect(),
+        generation: series.iter().map(|s| s.generation).collect(),
+        load: series.iter().map(|s| s.load).collect(),
+        surplus: series.iter().map(|s| s.surplus).collect(),
+    };
+
+    Ok(Json(ApiResponse::success(plot_data)))
+}
+
+#[derive(Serialize)]
+struct PlotData {
+    timestamps: Vec<String>,
+    generation: Vec<f64>,
+    load: Vec<f64>,
+    surplus: Vec<f64>,
+}
+
 /// GET /health
 async fn health() -> &'static str {
     "OK"
@@ -299,6 +508,11 @@ pub async fn start_server() -> anyhow::Result<()> {
             "/api/v1/renewable-surplus/{country}/next",
             get(get_custom_hours_surplus),
         )
+        .route("/api/v1/renewable-surplus/{country}/plot", get(get_plot))
+        .route(
+            "/api/v1/renewable-surplus/{country}/plot-json",
+            get(get_plot_json),
+        )
         .layer(CorsLayer::permissive())
         .with_state(state);
 
@@ -312,7 +526,9 @@ pub async fn start_server() -> anyhow::Result<()> {
     println!("  GET /api/v1/renewable-surplus/:country/next-6h");
     println!("  GET /api/v1/renewable-surplus/:country/next-24h");
     println!("  GET /api/v1/renewable-surplus/:country/next?hours=N");
-    println!("\nExample:");
+    println!("  GET /api/v1/renewable-surplus/:country/plot?hours=N");
+    println!("  GET /api/v1/renewable-surplus/:country/plot-json?hours=N");
+    println!("\nExamples:");
     println!("  curl http://localhost:3044/api/v1/renewable-surplus/DE/night");
 
     axum::serve(listener, app).await?;
