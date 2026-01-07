@@ -1,4 +1,5 @@
 pub(crate) mod analysis;
+pub(crate) mod areas;
 
 use std::collections::HashMap;
 use anyhow::Result;

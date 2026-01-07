@@ -1,4 +1,6 @@
-mod entsoe;
+pub mod entsoe;
+pub mod server;
+
 use crate::entsoe::{EntsoeClient};
 use crate::entsoe::analysis::{RenewableSurplus};
 use anyhow::Result;
@@ -7,6 +9,7 @@ use plotly::{
     layout::{Axis, Layout},
     Plot, Scatter,
 };
+use crate::server::start_server;
 
 fn plot_renewable_surplus(surplus_series: &[RenewableSurplus]) {
     // Extract data
@@ -135,5 +138,6 @@ async fn main() -> Result<()> {
     println!("Opening plot in browser...");
     plot_renewable_surplus(&surplus_series);
 
+    start_server().await?;
     Ok(())
 }
