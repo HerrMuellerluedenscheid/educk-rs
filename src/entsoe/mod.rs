@@ -1,5 +1,6 @@
 pub(crate) mod analysis;
 
+use std::collections::HashMap;
 use anyhow::Result;
 use chrono::{DateTime, Duration, Utc};
 use reqwest::Client;
@@ -238,11 +239,31 @@ impl Period {
 impl GlMarketDocument {
     /// Get all timestamped points across all time series
     pub fn all_timestamped_points(&self) -> Result<Vec<TimestampedPoint>, EntsoeError> {
-        let mut result = Vec::new();
+        let mut timestamp_map: HashMap<DateTime<Utc>, f64> = HashMap::new();
 
+        // Aggregate all points by timestamp
         for series in &self.time_series {
             let points = series.period.timestamped_points()?;
-            result.extend(points);
+            for point in points {
+                *timestamp_map.entry(point.timestamp).or_insert(0.0) += point.quantity;
+            }
+        }
+
+        // Convert back to Vec and sort by timestamp
+        let mut result: Vec<TimestampedPoint> = timestamp_map
+            .into_iter()
+            .map(|(timestamp, quantity)| TimestampedPoint {
+                timestamp,
+                position: 0, // Position doesn't make sense for aggregated data
+                quantity,
+            })
+            .collect();
+
+        result.sort_by_key(|p| p.timestamp);
+
+        // Reassign positions based on sorted order
+        for (i, point) in result.iter_mut().enumerate() {
+            point.position = (i + 1) as u32;
         }
 
         Ok(result)
