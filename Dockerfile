@@ -11,7 +11,7 @@ COPY . .
 RUN cargo build --release
 
 # Runtime stage
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 # Install CA certificates for HTTPS requests
 RUN apt-get update && \
@@ -25,7 +25,7 @@ COPY --from=builder /app/target/release/educk-rs /app/educk-rs
 COPY --from=builder /app/templates /app/templates
 
 # Expose port
-EXPOSE 3000
+EXPOSE 3044
 
 # Set environment variable
 ENV RUST_LOG=info
