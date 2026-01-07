@@ -1,3 +1,5 @@
+mod analysis;
+
 use anyhow::Result;
 use chrono::{DateTime, Duration, Utc};
 use reqwest::Client;
@@ -333,11 +335,10 @@ impl GlMarketDocument {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use chrono::{Datelike, Timelike};
     use super::*;
+    use chrono::{Datelike, Timelike};
 
     #[test]
     fn test_parse_resolution() {
@@ -349,7 +350,6 @@ mod tests {
 
     #[test]
     fn test_parse_timestamp() {
-
         let ts = parse_timestamp("2023-08-14T22:00Z").unwrap();
         assert_eq!(ts.year(), 2023);
         assert_eq!(ts.month(), 8);
@@ -410,14 +410,23 @@ mod tests {
 
         // First point at 2023-08-14T00:00Z
         assert_eq!(points[0].position, 1);
-        assert_eq!(points[0].timestamp.to_rfc3339(), "2023-08-14T00:00:00+00:00");
+        assert_eq!(
+            points[0].timestamp.to_rfc3339(),
+            "2023-08-14T00:00:00+00:00"
+        );
 
         // Second point at 2023-08-14T01:00Z (60 minutes later)
         assert_eq!(points[1].position, 2);
-        assert_eq!(points[1].timestamp.to_rfc3339(), "2023-08-14T01:00:00+00:00");
+        assert_eq!(
+            points[1].timestamp.to_rfc3339(),
+            "2023-08-14T01:00:00+00:00"
+        );
 
         // Third point at 2023-08-14T02:00Z (120 minutes after start)
         assert_eq!(points[2].position, 3);
-        assert_eq!(points[2].timestamp.to_rfc3339(), "2023-08-14T02:00:00+00:00");
+        assert_eq!(
+            points[2].timestamp.to_rfc3339(),
+            "2023-08-14T02:00:00+00:00"
+        );
     }
 }

@@ -1,154 +1,81 @@
+mod entsoe;
 use crate::entsoe::EntsoeClient;
 use anyhow::Result;
 
-mod entsoe;
-
 #[tokio::main]
 async fn main() -> Result<()> {
-    let api_key = std::env::var("ENTSOE_API_KEY")
-        .expect("ENTSOE_API_KEY environment variable not set");
+    let api_key =
+        std::env::var("ENTSOE_API_KEY").expect("ENTSOE_API_KEY environment variable not set");
 
     let client = EntsoeClient::new(api_key);
 
-    // Example 1: Day-ahead total load forecast for Czech Republic
-    println!("=== Day-Ahead Total Load Forecast (A65) ===");
-    println!("Fetching data for Czech Republic...\n");
+    println!("=== Finding Maximum Renewable Energy Surplus ===\n");
 
-    let load_forecast = client
-        .fetch_day_ahead_total_load_forecast(
-            "10YCZ-CEPS-----N",
-            "202308140000",
-            "202308170000",
-        )
+    // Find the peak renewable surplus for Belgium
+    let max_surplus = client
+        .find_max_renewable_surplus("10YBE----------2", "202308152200", "202308162200")
         .await?;
 
-    println!("Document Information:");
-    println!("  ID: {}", load_forecast.mrid);
-    println!("  Type: {}", load_forecast.doc_type);
-    println!("  Created: {}", load_forecast.created_date_time);
+    println!("Peak Renewable Energy Availability:");
     println!(
-        "  Period: {} to {}",
-        load_forecast.time_period_interval.start, load_forecast.time_period_interval.end
+        "  Time: {}",
+        max_surplus.timestamp.format("%Y-%m-%d %H:%M:%S UTC")
     );
+    println!("  Generation: {:.2} MW", max_surplus.generation);
+    println!("  Load: {:.2} MW", max_surplus.load);
+    println!("  Surplus: {:.2} MW", max_surplus.surplus);
+    println!("  Surplus %: {:.2}%", max_surplus.surplus_percentage());
 
-    println!("\nTime Series:");
-    for (i, series) in load_forecast.time_series.iter().enumerate() {
-        println!("  Series {}:", i + 1);
-        println!("    Business Type: {}", series.business_type);
-        println!("    Unit: {}", series.quantity_measure_unit);
-        println!("    Resolution: {}", series.period.resolution);
-
-        if let Some(zone) = &series.out_bidding_zone {
-            println!("    Out Bidding Zone: {}", zone.value);
-        }
-
-        println!("    Total Points: {}", series.period.points.len());
-        println!("    First 5 points with timestamps:");
-
-        let timestamped = series.period.timestamped_points()?;
-        for point in timestamped.iter().take(5) {
-            println!(
-                "      {} (pos {}): {:.2} MW",
-                point.timestamp.format("%Y-%m-%d %H:%M:%S UTC"),
-                point.position,
-                point.quantity
-            );
-        }
-    }
-
-    println!("\nStatistics:");
-    println!("  Total Forecast: {:.2} MW", load_forecast.total_forecast());
-    println!(
-        "  Average: {:.2} MW",
-        load_forecast.average_forecast()
-    );
-
-    if let Some((min_point, max_point)) = load_forecast.min_max_with_time()? {
-        println!(
-            "  Min: {:.2} MW at {}",
-            min_point.quantity,
-            min_point.timestamp.format("%Y-%m-%d %H:%M:%S UTC")
-        );
-        println!(
-            "  Max: {:.2} MW at {}",
-            max_point.quantity,
-            max_point.timestamp.format("%Y-%m-%d %H:%M:%S UTC")
-        );
-    }
-
-    // Example 2: Day-ahead generation forecast for Belgium
-    println!("\n\n=== Day-Ahead Generation Forecast (A71) ===");
-    println!("Fetching data for Belgium...\n");
-
-    let gen_forecast = client
-        .fetch_day_ahead_generation_forecast(
-            "10YBE----------2",
-            "202308152200",
-            "202308162200",
-        )
+    // Get the full time series for analysis
+    println!("\n=== Full Renewable Surplus Time Series ===\n");
+    let surplus_series = client
+        .get_renewable_surplus_series("10YBE----------2", "202308152200", "202308162200")
         .await?;
 
-    println!("Document Information:");
-    println!("  ID: {}", gen_forecast.mrid);
-    println!("  Type: {}", gen_forecast.doc_type);
-    println!("  Created: {}", gen_forecast.created_date_time);
+    println!("Total data points: {}", surplus_series.len());
+    println!("\nFirst 10 hours:");
+    for surplus in surplus_series.iter().take(10) {
+        let indicator = if surplus.has_excess() { "✓" } else { "✗" };
+        println!(
+            "  {} {} | Gen: {:7.2} MW | Load: {:7.2} MW | Surplus: {:+7.2} MW",
+            surplus.timestamp.format("%Y-%m-%d %H:%M"),
+            indicator,
+            surplus.generation,
+            surplus.load,
+            surplus.surplus
+        );
+    }
+
+    // Find periods of high renewable availability
+    let high_surplus_periods: Vec<_> = surplus_series
+        .iter()
+        .filter(|s| s.surplus > 0.0 && s.surplus_percentage() > 10.0)
+        .collect();
+
     println!(
-        "  Period: {} to {}",
-        gen_forecast.time_period_interval.start, gen_forecast.time_period_interval.end
+        "\n=== Periods with >10% Renewable Surplus ===\n({} hours)",
+        high_surplus_periods.len()
     );
-
-    println!("\nTime Series:");
-    for (i, series) in gen_forecast.time_series.iter().enumerate() {
-        println!("  Series {}:", i + 1);
-        println!("    Business Type: {}", series.business_type);
-        println!("    Unit: {}", series.quantity_measure_unit);
-        println!("    Resolution: {}", series.period.resolution);
-
-        if let Some(zone) = &series.in_bidding_zone {
-            println!("    In Bidding Zone: {}", zone.value);
-        }
-
-        println!("    Total Points: {}", series.period.points.len());
-        println!("    First 5 points with timestamps:");
-
-        let timestamped = series.period.timestamped_points()?;
-        for point in timestamped.iter().take(5) {
-            println!(
-                "      {} (pos {}): {:.2} MW",
-                point.timestamp.format("%Y-%m-%d %H:%M:%S UTC"),
-                point.position,
-                point.quantity
-            );
-        }
-    }
-
-    println!("\nStatistics:");
-    println!("  Total Forecast: {:.2} MW", gen_forecast.total_forecast());
-    println!("  Average: {:.2} MW", gen_forecast.average_forecast());
-
-    if let Some((min_point, max_point)) = gen_forecast.min_max_with_time()? {
+    for surplus in high_surplus_periods.iter().take(5) {
         println!(
-            "  Min: {:.2} MW at {}",
-            min_point.quantity,
-            min_point.timestamp.format("%Y-%m-%d %H:%M:%S UTC")
-        );
-        println!(
-            "  Max: {:.2} MW at {}",
-            max_point.quantity,
-            max_point.timestamp.format("%Y-%m-%d %H:%M:%S UTC")
+            "  {} | Surplus: {:.2} MW ({:.1}%)",
+            surplus.timestamp.format("%Y-%m-%d %H:%M"),
+            surplus.surplus,
+            surplus.surplus_percentage()
         );
     }
 
-    // Example: Export to CSV with proper timestamps
-    println!("\n\n=== Exporting to CSV format ===");
-    println!("Timestamp,Position,Load (MW)");
-    let timestamped_points = load_forecast.all_timestamped_points()?;
-    for point in timestamped_points.iter().take(10) {
+    // Export to CSV
+    println!("\n=== CSV Export ===");
+    println!("Timestamp,Generation (MW),Load (MW),Surplus (MW),Surplus %");
+    for surplus in surplus_series.iter().take(24) {
         println!(
-            "{},{},{:.2}",
-            point.timestamp.to_rfc3339(),
-            point.position,
-            point.quantity
+            "{},{:.2},{:.2},{:.2},{:.2}",
+            surplus.timestamp.to_rfc3339(),
+            surplus.generation,
+            surplus.load,
+            surplus.surplus,
+            surplus.surplus_percentage()
         );
     }
 
