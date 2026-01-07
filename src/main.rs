@@ -1,6 +1,57 @@
 mod entsoe;
-use crate::entsoe::EntsoeClient;
+use crate::entsoe::{EntsoeClient};
+use crate::entsoe::analysis::{RenewableSurplus};
 use anyhow::Result;
+use plotly::{
+    common::{Mode, Title},
+    layout::{Axis, Layout},
+    Plot, Scatter,
+};
+
+fn plot_renewable_surplus(surplus_series: &[RenewableSurplus]) {
+    // Extract data
+    let timestamps: Vec<String> = surplus_series
+        .iter()
+        .map(|s| s.timestamp.format("%Y-%m-%d %H:%M").to_string())
+        .collect();
+
+    let generation: Vec<f64> = surplus_series.iter().map(|s| s.generation).collect();
+    let load: Vec<f64> = surplus_series.iter().map(|s| s.load).collect();
+    let surplus: Vec<f64> = surplus_series.iter().map(|s| s.surplus).collect();
+
+    // Create traces
+    let generation_trace = Scatter::new(timestamps.clone(), generation)
+        .name("Wind + Solar Generation")
+        .mode(Mode::LinesMarkers)
+        .line(plotly::common::Line::new().color("green").width(2.0));
+
+    let load_trace = Scatter::new(timestamps.clone(), load)
+        .name("Total Load")
+        .mode(Mode::LinesMarkers)
+        .line(plotly::common::Line::new().color("blue").width(2.0));
+
+    let surplus_trace = Scatter::new(timestamps, surplus)
+        .name("Surplus (Generation - Load)")
+        .mode(Mode::LinesMarkers)
+        .line(plotly::common::Line::new().color("orange").width(2.0));
+
+    // Create layout
+    // let layout = Layout::new()
+    //     .title(Title::new("Renewable Energy Forecast"))
+    //     .x_axis(Axis::new().title(Title::new("Time")))
+    //     .y_axis(Axis::new().title(Title::new("Power (MW)")))
+    //     .height(600);
+
+    // Create plot
+    let mut plot = Plot::new();
+    plot.add_trace(generation_trace);
+    plot.add_trace(load_trace);
+    plot.add_trace(surplus_trace);
+    // plot.set_layout(layout);
+
+    // Show in browser
+    plot.show();
+}
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -78,6 +129,11 @@ async fn main() -> Result<()> {
             surplus.surplus_percentage()
         );
     }
+
+    // Generate plot
+    println!("\n=== Generating Plot ===");
+    println!("Opening plot in browser...");
+    plot_renewable_surplus(&surplus_series);
 
     Ok(())
 }

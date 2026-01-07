@@ -1,4 +1,4 @@
-mod analysis;
+pub(crate) mod analysis;
 
 use anyhow::Result;
 use chrono::{DateTime, Duration, Utc};
