@@ -5,23 +5,21 @@ mod entsoe;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let api_key =
-        std::env::var("ENTSOE_API_KEY").expect("ENTSOE_API_KEY environment variable not set");
+    let api_key = std::env::var("ENTSOE_API_KEY")
+        .expect("ENTSOE_API_KEY environment variable not set");
 
     let client = EntsoeClient::new(api_key);
-    let in_domain = "10YCZ-CEPS-----N".to_string();
-    let now = chrono::Utc::now();
 
-    let period_start = now.format("%Y%m%d%H%M").to_string();
-    let period_end = (now + chrono::Duration::hours(24))
-        .format("%Y%m%d%H%M")
-        .to_string();
     // Example 1: Day-ahead total load forecast for Czech Republic
     println!("=== Day-Ahead Total Load Forecast (A65) ===");
     println!("Fetching data for Czech Republic...\n");
 
     let load_forecast = client
-        .fetch_day_ahead_total_load_forecast(&in_domain, &period_start, &period_end)
+        .fetch_day_ahead_total_load_forecast(
+            "10YCZ-CEPS-----N",
+            "202308140000",
+            "202308170000",
+        )
         .await?;
 
     println!("Document Information:");
@@ -45,18 +43,37 @@ async fn main() -> Result<()> {
         }
 
         println!("    Total Points: {}", series.period.points.len());
-        println!("    First 5 points:");
-        for point in series.period.points.iter().take(5) {
-            println!("      Position {}: {} MW", point.position, point.quantity);
+        println!("    First 5 points with timestamps:");
+
+        let timestamped = series.period.timestamped_points()?;
+        for point in timestamped.iter().take(5) {
+            println!(
+                "      {} (pos {}): {:.2} MW",
+                point.timestamp.format("%Y-%m-%d %H:%M:%S UTC"),
+                point.position,
+                point.quantity
+            );
         }
     }
 
     println!("\nStatistics:");
     println!("  Total Forecast: {:.2} MW", load_forecast.total_forecast());
-    println!("  Average: {:.2} MW", load_forecast.average_forecast());
-    if let Some((min, max)) = load_forecast.min_max() {
-        println!("  Min: {:.2} MW", min);
-        println!("  Max: {:.2} MW", max);
+    println!(
+        "  Average: {:.2} MW",
+        load_forecast.average_forecast()
+    );
+
+    if let Some((min_point, max_point)) = load_forecast.min_max_with_time()? {
+        println!(
+            "  Min: {:.2} MW at {}",
+            min_point.quantity,
+            min_point.timestamp.format("%Y-%m-%d %H:%M:%S UTC")
+        );
+        println!(
+            "  Max: {:.2} MW at {}",
+            max_point.quantity,
+            max_point.timestamp.format("%Y-%m-%d %H:%M:%S UTC")
+        );
     }
 
     // Example 2: Day-ahead generation forecast for Belgium
@@ -64,7 +81,11 @@ async fn main() -> Result<()> {
     println!("Fetching data for Belgium...\n");
 
     let gen_forecast = client
-        .fetch_day_ahead_generation_forecast(&in_domain, &period_start, &period_end)
+        .fetch_day_ahead_generation_forecast(
+            "10YBE----------2",
+            "202308152200",
+            "202308162200",
+        )
         .await?;
 
     println!("Document Information:");
@@ -88,25 +109,47 @@ async fn main() -> Result<()> {
         }
 
         println!("    Total Points: {}", series.period.points.len());
-        println!("    First 5 points:");
-        for point in series.period.points.iter().take(5) {
-            println!("      Position {}: {} MW", point.position, point.quantity);
+        println!("    First 5 points with timestamps:");
+
+        let timestamped = series.period.timestamped_points()?;
+        for point in timestamped.iter().take(5) {
+            println!(
+                "      {} (pos {}): {:.2} MW",
+                point.timestamp.format("%Y-%m-%d %H:%M:%S UTC"),
+                point.position,
+                point.quantity
+            );
         }
     }
 
     println!("\nStatistics:");
     println!("  Total Forecast: {:.2} MW", gen_forecast.total_forecast());
     println!("  Average: {:.2} MW", gen_forecast.average_forecast());
-    if let Some((min, max)) = gen_forecast.min_max() {
-        println!("  Min: {:.2} MW", min);
-        println!("  Max: {:.2} MW", max);
+
+    if let Some((min_point, max_point)) = gen_forecast.min_max_with_time()? {
+        println!(
+            "  Min: {:.2} MW at {}",
+            min_point.quantity,
+            min_point.timestamp.format("%Y-%m-%d %H:%M:%S UTC")
+        );
+        println!(
+            "  Max: {:.2} MW at {}",
+            max_point.quantity,
+            max_point.timestamp.format("%Y-%m-%d %H:%M:%S UTC")
+        );
     }
 
-    // Example: Export to CSV
+    // Example: Export to CSV with proper timestamps
     println!("\n\n=== Exporting to CSV format ===");
     println!("Timestamp,Position,Load (MW)");
-    for (time, pos, qty) in load_forecast.all_points_with_time().iter().take(10) {
-        println!("{},{},{}", time, pos, qty);
+    let timestamped_points = load_forecast.all_timestamped_points()?;
+    for point in timestamped_points.iter().take(10) {
+        println!(
+            "{},{},{:.2}",
+            point.timestamp.to_rfc3339(),
+            point.position,
+            point.quantity
+        );
     }
 
     Ok(())

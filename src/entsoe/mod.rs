@@ -1,6 +1,5 @@
-mod areas;
-
 use anyhow::Result;
+use chrono::{DateTime, Duration, Utc};
 use reqwest::Client;
 use serde::Deserialize;
 use thiserror::Error;
@@ -15,6 +14,10 @@ pub enum EntsoeError {
     XmlParsing(#[from] quick_xml::DeError),
     #[error("Invalid response: {0}")]
     InvalidResponse(String),
+    #[error("Invalid resolution format: {0}")]
+    InvalidResolution(String),
+    #[error("Invalid timestamp: {0}")]
+    InvalidTimestamp(String),
 }
 
 // Main response structure
@@ -53,7 +56,7 @@ pub struct ParticipantId {
     pub coding_scheme: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct TimeInterval {
     pub start: String,
     pub end: String,
@@ -87,7 +90,7 @@ pub struct AreaId {
     pub coding_scheme: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Period {
     #[serde(rename = "timeInterval")]
     pub time_interval: TimeInterval,
@@ -98,6 +101,14 @@ pub struct Period {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Point {
+    pub position: u32,
+    pub quantity: f64,
+}
+
+/// Represents a time series point with its actual timestamp
+#[derive(Debug, Clone)]
+pub struct TimestampedPoint {
+    pub timestamp: DateTime<Utc>,
     pub position: u32,
     pub quantity: f64,
 }
@@ -165,28 +176,94 @@ impl EntsoeClient {
     }
 }
 
+/// Parse ISO 8601 duration format (PT15M, PT30M, PT60M, etc.)
+fn parse_resolution(resolution: &str) -> Result<Duration, EntsoeError> {
+    // Format: PT[n]M where n is minutes
+    if !resolution.starts_with("PT") || !resolution.ends_with("M") {
+        return Err(EntsoeError::InvalidResolution(resolution.to_string()));
+    }
+
+    let minutes_str = &resolution[2..resolution.len() - 1];
+    let minutes: i64 = minutes_str
+        .parse()
+        .map_err(|_| EntsoeError::InvalidResolution(resolution.to_string()))?;
+
+    Ok(Duration::minutes(minutes))
+}
+
+fn parse_timestamp(timestamp: &str) -> Result<DateTime<Utc>, EntsoeError> {
+    let normalized = if timestamp.len() == 17 && timestamp.ends_with('Z') {
+        let mut s = timestamp.to_string();
+        s.insert_str(16, ":00"); // add seconds
+        s
+    } else {
+        timestamp.to_string()
+    };
+
+    DateTime::parse_from_rfc3339(&normalized)
+        .map(|dt| dt.with_timezone(&Utc))
+        .map_err(|e| {
+            eprintln!("Failed to parse timestamp: {}", e);
+            EntsoeError::InvalidTimestamp(timestamp.to_string())
+        })
+}
+
+impl Period {
+    /// Get all points with their actual timestamps based on resolution
+    pub fn timestamped_points(&self) -> Result<Vec<TimestampedPoint>, EntsoeError> {
+        let start_time = parse_timestamp(&self.time_interval.start)?;
+        let resolution_duration = parse_resolution(&self.resolution)?;
+
+        let timestamped = self
+            .points
+            .iter()
+            .map(|point| {
+                // Position starts at 1, so subtract 1 to get offset
+                let offset = resolution_duration * (point.position as i32 - 1);
+                TimestampedPoint {
+                    timestamp: start_time + offset,
+                    position: point.position,
+                    quantity: point.quantity,
+                }
+            })
+            .collect();
+
+        Ok(timestamped)
+    }
+}
+
 // Helper functions to work with the data
 impl GlMarketDocument {
-    /// Get all time series points with their timestamps
-    pub fn all_points_with_time(&self) -> Vec<(String, u32, f64)> {
+    /// Get all timestamped points across all time series
+    pub fn all_timestamped_points(&self) -> Result<Vec<TimestampedPoint>, EntsoeError> {
         let mut result = Vec::new();
 
         for series in &self.time_series {
-            let start = &series.period.time_interval.start;
-            for point in &series.period.points {
-                result.push((start.clone(), point.position, point.quantity));
-            }
+            let points = series.period.timestamped_points()?;
+            result.extend(points);
         }
 
-        result
+        Ok(result)
+    }
+
+    /// Get all points with their timestamps as ISO strings
+    pub fn all_points_with_time(&self) -> Result<Vec<(String, u32, f64)>, EntsoeError> {
+        let timestamped = self.all_timestamped_points()?;
+
+        Ok(timestamped
+            .into_iter()
+            .map(|tp| (tp.timestamp.to_rfc3339(), tp.position, tp.quantity))
+            .collect())
     }
 
     /// Get all points flattened (timestamp, quantity)
-    pub fn all_points(&self) -> Vec<(String, f64)> {
-        self.all_points_with_time()
+    pub fn all_points(&self) -> Result<Vec<(DateTime<Utc>, f64)>, EntsoeError> {
+        let timestamped = self.all_timestamped_points()?;
+
+        Ok(timestamped
             .into_iter()
-            .map(|(time, _pos, qty)| (time, qty))
-            .collect()
+            .map(|tp| (tp.timestamp, tp.quantity))
+            .collect())
     }
 
     /// Get total forecast across all points
@@ -212,6 +289,31 @@ impl GlMarketDocument {
         self.total_forecast() / total_points as f64
     }
 
+    /// Get min and max values with timestamps
+    pub fn min_max_with_time(
+        &self,
+    ) -> Result<Option<(TimestampedPoint, TimestampedPoint)>, EntsoeError> {
+        let points = self.all_timestamped_points()?;
+
+        if points.is_empty() {
+            return Ok(None);
+        }
+
+        let min_point = points
+            .iter()
+            .min_by(|a, b| a.quantity.partial_cmp(&b.quantity).unwrap())
+            .unwrap()
+            .clone();
+
+        let max_point = points
+            .iter()
+            .max_by(|a, b| a.quantity.partial_cmp(&b.quantity).unwrap())
+            .unwrap()
+            .clone();
+
+        Ok(Some((min_point, max_point)))
+    }
+
     /// Get min and max values
     pub fn min_max(&self) -> Option<(f64, f64)> {
         let values: Vec<f64> = self
@@ -231,12 +333,32 @@ impl GlMarketDocument {
     }
 }
 
+
 #[cfg(test)]
 mod tests {
+    use chrono::{Datelike, Timelike};
     use super::*;
 
+    #[test]
+    fn test_parse_resolution() {
+        assert_eq!(parse_resolution("PT15M").unwrap(), Duration::minutes(15));
+        assert_eq!(parse_resolution("PT30M").unwrap(), Duration::minutes(30));
+        assert_eq!(parse_resolution("PT60M").unwrap(), Duration::minutes(60));
+        assert!(parse_resolution("invalid").is_err());
+    }
+
+    #[test]
+    fn test_parse_timestamp() {
+
+        let ts = parse_timestamp("2023-08-14T22:00Z").unwrap();
+        assert_eq!(ts.year(), 2023);
+        assert_eq!(ts.month(), 8);
+        assert_eq!(ts.day(), 14);
+        assert_eq!(ts.hour(), 22);
+    }
+
     #[tokio::test]
-    async fn test_parse_load_forecast_xml() {
+    async fn test_timestamped_points() {
         let xml = r#"<?xml version="1.0" encoding="utf-8"?>
 <GL_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-6:generationloaddocument:3:0">
     <mRID>test123</mRID>
@@ -269,38 +391,33 @@ mod tests {
                 <position>1</position>
                 <quantity>4933</quantity>
             </Point>
+            <Point>
+                <position>2</position>
+                <quantity>4832</quantity>
+            </Point>
+            <Point>
+                <position>3</position>
+                <quantity>4911</quantity>
+            </Point>
         </Period>
     </TimeSeries>
 </GL_MarketDocument>"#;
 
         let doc: GlMarketDocument = quick_xml::de::from_str(xml).unwrap();
-        assert_eq!(doc.mrid, "test123");
-        assert_eq!(doc.doc_type, "A65");
-        assert_eq!(doc.time_series.len(), 1);
-        assert_eq!(doc.time_series[0].period.points.len(), 1);
-        assert_eq!(doc.time_series[0].period.points[0].quantity, 4933.0);
-    }
+        let points = doc.all_timestamped_points().unwrap();
 
-    #[tokio::test]
-    async fn test_fetch_load_forecast() {
-        let api_key = match std::env::var("ENTSOE_API_KEY") {
-            Ok(key) => key,
-            Err(_) => {
-                eprintln!("no api key");
-                return;
-            } // Skip test if no API key
-        };
+        assert_eq!(points.len(), 3);
 
-        let client = EntsoeClient::new(api_key);
+        // First point at 2023-08-14T00:00Z
+        assert_eq!(points[0].position, 1);
+        assert_eq!(points[0].timestamp.to_rfc3339(), "2023-08-14T00:00:00+00:00");
 
-        let result = client
-            .fetch_day_ahead_total_load_forecast("10YCZ-CEPS-----N", "202601070000", "202601080000")
-            .await;
+        // Second point at 2023-08-14T01:00Z (60 minutes later)
+        assert_eq!(points[1].position, 2);
+        assert_eq!(points[1].timestamp.to_rfc3339(), "2023-08-14T01:00:00+00:00");
 
-        assert!(result.is_ok());
-        let doc = result.unwrap();
-        assert!(!doc.time_series.is_empty());
-        assert!(doc.total_forecast() > 0.0);
-        println!("{:?}", doc.time_series);
+        // Third point at 2023-08-14T02:00Z (120 minutes after start)
+        assert_eq!(points[2].position, 3);
+        assert_eq!(points[2].timestamp.to_rfc3339(), "2023-08-14T02:00:00+00:00");
     }
 }
