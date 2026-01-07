@@ -144,7 +144,7 @@ impl EntsoeClient {
         self.fetch_and_parse(&url).await
     }
 
-    /// Fetch day-ahead generation forecast (A71)
+    /// Fetch day-ahead generation solar/wind forecast (A69)
     /// Example: Belgium domain "10YBE----------2"
     pub async fn fetch_day_ahead_generation_forecast(
         &self,
@@ -153,7 +153,7 @@ impl EntsoeClient {
         period_end: &str,
     ) -> Result<GlMarketDocument, EntsoeError> {
         let url = format!(
-            "{}?securityToken={}&documentType=A71&processType=A01&in_Domain={}&periodStart={}&periodEnd={}",
+            "{}?securityToken={}&documentType=A69&processType=A01&in_Domain={}&periodStart={}&periodEnd={}",
             BASE_URL, self.api_key, in_domain, period_start, period_end
         );
 
