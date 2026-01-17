@@ -15,7 +15,7 @@ FROM debian:trixie-slim
 
 # Install CA certificates for HTTPS requests
 RUN apt-get update && \
-    apt-get install -y ca-certificates && \
+    apt-get install -y ca-certificates curl && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
