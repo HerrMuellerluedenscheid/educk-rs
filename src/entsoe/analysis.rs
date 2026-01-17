@@ -37,7 +37,7 @@ impl EntsoeClient {
             .collect();
 
         // Calculate surplus for each generation point that has matching load data
-        let mut surpluses: Vec<RenewableSurplus> = gen_points
+        let surpluses: Vec<RenewableSurplus> = gen_points
             .into_iter()
             .filter_map(|gen_point| {
                 load_map

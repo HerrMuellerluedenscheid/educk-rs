@@ -11,7 +11,7 @@ use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 
 use crate::entsoe::analysis::RenewableSurplus;
-use crate::entsoe::areas::{CountryCode, get_primary_zone};
+use crate::entsoe::areas::get_primary_zone;
 use crate::entsoe::{EntsoeClient, areas};
 
 #[derive(Clone)]

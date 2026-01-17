@@ -7,8 +7,7 @@ use crate::server::start_server;
 use anyhow::Result;
 use plotly::{
     Plot, Scatter,
-    common::{Mode, Title},
-    layout::{Axis, Layout},
+    common::{Mode},
 };
 
 fn plot_renewable_surplus(surplus_series: &[RenewableSurplus]) {
