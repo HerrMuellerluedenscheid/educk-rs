@@ -1,0 +1,11 @@
+build/
+android/
+ios/
+linux/
+macos/
+windows/
+.git/
+.dart_tool/
+.idea/
+*.md
+SETUP.md

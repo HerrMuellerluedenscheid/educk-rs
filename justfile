@@ -1,0 +1,48 @@
+# educk-rs — task runner
+# Requires: just (https://github.com/casey/just)
+
+# ── Rust backend ─────────────────────────────────────────────────────────────
+
+# Run the API server (requires ENTSOE_API_KEY in environment)
+api:
+    cargo run
+
+# Build a release binary
+build-api:
+    cargo build --release
+
+# Run backend tests
+test-api:
+    cargo test
+
+# ── Flutter frontend ──────────────────────────────────────────────────────────
+
+# Install Flutter dependencies
+deps:
+    cd flutter && flutter pub get
+
+# Run the Flutter app (development)
+run-flutter:
+    cd flutter && flutter run -d chrome
+
+# Build Flutter web for deployment (output: flutter/build/web)
+build-web:
+    cd flutter && flutter build web --release
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+
+# Build and start all services (requires .env with ENTSOE_API_KEY)
+up:
+    docker compose up --build -d
+
+# Stop all services
+down:
+    docker compose down
+
+# Stream logs from all services
+logs:
+    docker compose logs -f
+
+# Rebuild and restart a single service: just restart api | dashboard
+restart service:
+    docker compose up --build -d {{service}}

@@ -1,0 +1,198 @@
+name: Build dashboard Docker image (multi-arch)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'flutter/**'
+      - '.github/workflows/build-dashboard.yml'
+
+env:
+  GHCR_IMAGE: ghcr.io/herrmuellerluedenscheid/educk-rs-dashboard
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+
+    permissions:
+      attestations: write
+      actions: read
+      checks: write
+      contents: write
+      deployments: none
+      id-token: write
+      issues: read
+      discussions: read
+      packages: write
+      pages: none
+      pull-requests: read
+      repository-projects: read
+      security-events: read
+      statuses: read
+
+    runs-on: ${{ matrix.platform == 'linux/amd64' && 'ubuntu-latest' || matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' }}
+
+    name: Build Docker image for ${{ matrix.platform }}
+
+    steps:
+      - name: Prepare environment for current platform
+        id: prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: ${{ env.GHCR_IMAGE }}
+
+      - name: Set up Docker Context for Buildx
+        id: buildx-context
+        run: |
+          docker context create builders
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+        with:
+          endpoint: builders
+          platforms: ${{ matrix.platform }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        env:
+          DOCKER_BUILDKIT: 1
+        with:
+          context: flutter
+          platforms: ${{ matrix.platform }}
+          build-args: |
+            API_URL=${{ vars.API_URL || 'http://37.27.47.184:3044' }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          outputs: type=image,name=${{ env.GHCR_IMAGE }},push-by-digest=true,name-canonical=true,push=true,oci-mediatypes=true
+          cache-from: type=gha,scope=${{ github.repository }}-dashboard-${{ github.ref_name }}-${{ matrix.platform }}
+          cache-to: type=gha,scope=${{ github.repository }}-dashboard-${{ github.ref_name }}-${{ matrix.platform }}
+
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+
+  merge:
+    name: Merge Docker manifests
+    runs-on: ubuntu-latest
+    permissions:
+      attestations: write
+      actions: read
+      checks: read
+      contents: read
+      deployments: none
+      id-token: write
+      issues: read
+      discussions: read
+      packages: write
+      pages: none
+      pull-requests: read
+      repository-projects: read
+      security-events: read
+      statuses: read
+
+    needs:
+      - build
+
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: ${{ env.GHCR_IMAGE }}
+          annotations: |
+            type=org.opencontainers.image.description,value=${{ github.event.repository.description || 'No description provided' }}
+          tags: |
+            type=raw,value=main,enable=${{ github.ref_name == 'main' }}
+            type=raw,value=latest,enable=${{ github.ref_name == 'main' }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+        with:
+          driver-opts: |
+            network=host
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get execution timestamp with RFC3339 format
+        id: timestamp
+        run: |
+          echo "timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
+
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        id: manifest-annotate
+        continue-on-error: true
+        run: |
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            --annotation='index:org.opencontainers.image.description=${{ github.event.repository.description }}' \
+            --annotation='index:org.opencontainers.image.created=${{ steps.timestamp.outputs.timestamp }}' \
+            --annotation='index:org.opencontainers.image.url=${{ github.event.repository.url }}' \
+            --annotation='index:org.opencontainers.image.source=${{ github.event.repository.url }}' \
+            $(printf '${{ env.GHCR_IMAGE }}@sha256:%s ' *)
+
+      - name: Create manifest list and push without annotations
+        if: steps.manifest-annotate.outcome == 'failure'
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.GHCR_IMAGE }}@sha256:%s ' *)
+
+      - name: Inspect image
+        id: inspect
+        run: |
+          docker buildx imagetools inspect '${{ env.GHCR_IMAGE }}:${{ steps.meta.outputs.version }}'
