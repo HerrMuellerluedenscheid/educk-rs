@@ -11,6 +11,7 @@ use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
+use crate::cloud;
 use crate::entsoe::analysis::RenewableSurplus;
 use crate::entsoe::areas::get_primary_zone;
 use crate::entsoe::{EntsoeClient, areas};
@@ -473,6 +474,92 @@ struct PlotData {
     surplus: Vec<f64>,
 }
 
+// ── Cloud provider endpoints ─────────────────────────────────────────────────
+
+#[derive(Serialize)]
+struct CloudRegionInfo {
+    provider: String,
+    region: String,
+    location: String,
+    country_code: String,
+}
+
+#[derive(Serialize)]
+struct CloudBestWindowResponse {
+    cloud_region: CloudRegionInfo,
+    timestamp: String,
+    timestamp_utc: String,
+    generation_mw: f64,
+    load_mw: f64,
+    surplus_mw: f64,
+    surplus_percentage: f64,
+    hours_searched: u32,
+}
+
+/// GET /api/v1/cloud/{provider}/{region}/next?hours=N
+/// Best renewable surplus window for a cloud provider region.
+async fn get_cloud_best_window(
+    State(state): State<AppState>,
+    Path((provider, region)): Path<(String, String)>,
+    Query(query): Query<TimeQuery>,
+) -> Result<Json<ApiResponse<CloudBestWindowResponse>>, StatusCode> {
+    let cr = cloud::lookup(&provider, &region).ok_or_else(|| {
+        tracing::warn!("unknown cloud region: {provider}/{region}");
+        StatusCode::NOT_FOUND
+    })?;
+
+    let zone = get_primary_zone(cr.country_code).ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+    let hours = query.hours.unwrap_or(24);
+    let now = Utc::now();
+    let end = now + Duration::hours((hours + 1) as i64);
+    let (period_start, period_end) = format_period(now, end);
+
+    let series = state
+        .entsoe_client
+        .get_renewable_surplus_series(zone.code, &period_start, &period_end)
+        .await
+        .map_err(|e| {
+            tracing::error!("ENTSO-E API error for {}/{}: {}", provider, region, e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
+    let best = find_max(series).ok_or_else(|| {
+        tracing::warn!("no surplus data for {provider}/{region}");
+        StatusCode::NOT_FOUND
+    })?;
+
+    Ok(Json(ApiResponse::success(CloudBestWindowResponse {
+        cloud_region: CloudRegionInfo {
+            provider: cr.provider.to_string(),
+            region: cr.region.to_string(),
+            location: cr.location.to_string(),
+            country_code: cr.country_code.to_string(),
+        },
+        timestamp: best.timestamp.to_rfc3339(),
+        timestamp_utc: best.timestamp.format("%Y-%m-%d %H:%M:%S UTC").to_string(),
+        generation_mw: best.generation,
+        load_mw: best.load,
+        surplus_mw: best.surplus,
+        surplus_percentage: best.surplus_percentage(),
+        hours_searched: hours,
+    })))
+}
+
+/// GET /api/v1/cloud/regions
+/// List all supported cloud provider regions.
+async fn list_cloud_regions() -> Json<ApiResponse<Vec<CloudRegionInfo>>> {
+    let regions = cloud::all_regions()
+        .into_iter()
+        .map(|cr| CloudRegionInfo {
+            provider: cr.provider.to_string(),
+            region: cr.region.to_string(),
+            location: cr.location.to_string(),
+            country_code: cr.country_code.to_string(),
+        })
+        .collect();
+    Json(ApiResponse::success(regions))
+}
+
 /// GET /health
 async fn health() -> &'static str {
     "OK"
@@ -517,6 +604,11 @@ pub async fn start_server() -> anyhow::Result<()> {
         .route(
             "/api/v1/renewable-surplus/{country}/plot-json",
             get(get_plot_json),
+        )
+        .route("/api/v1/cloud/regions", get(list_cloud_regions))
+        .route(
+            "/api/v1/cloud/{provider}/{region}/next",
+            get(get_cloud_best_window),
         )
         .layer(TraceLayer::new_for_http())
         .layer(CorsLayer::permissive())

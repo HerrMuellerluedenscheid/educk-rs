@@ -1,3 +1,4 @@
+pub mod cloud;
 pub mod entsoe;
 pub mod server;
 
