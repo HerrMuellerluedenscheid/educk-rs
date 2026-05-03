@@ -97,7 +97,7 @@ pub static BIDDING_ZONES: Lazy<HashMap<CountryCode, Vec<BiddingZone>>> = Lazy::n
 
 /// Get all bidding zones for a country
 pub fn get_zones_by_country(country_code: &str) -> Option<&'static Vec<BiddingZone>> {
-    BIDDING_ZONES.get(country_code)
+    BIDDING_ZONES.get(country_code.to_uppercase().as_str())
 }
 
 /// Get a specific bidding zone by its ENTSO-E code
@@ -111,7 +111,7 @@ pub fn get_zone_by_code(area_code: AreaCode) -> Option<&'static BiddingZone> {
 /// Get the primary bidding zone for a country (first one if multiple exist)
 pub fn get_primary_zone(country_code: &str) -> Option<&'static BiddingZone> {
     BIDDING_ZONES
-        .get(country_code)
+        .get(country_code.to_uppercase().as_str())
         .and_then(|zones| zones.first())
 }
 
