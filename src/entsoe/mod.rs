@@ -171,8 +171,8 @@ impl EntsoeClient {
         }
 
         let document: GlMarketDocument = quick_xml::de::from_str(&xml).map_err(|e| {
-            eprintln!("Failed to parse XML: {}", e);
-            eprintln!("XML content: {}", xml);
+            tracing::error!("Failed to parse XML: {}", e);
+            tracing::debug!("XML content: {}", xml);
             e
         })?;
 
@@ -207,7 +207,7 @@ fn parse_timestamp(timestamp: &str) -> Result<DateTime<Utc>, EntsoeError> {
     DateTime::parse_from_rfc3339(&normalized)
         .map(|dt| dt.with_timezone(&Utc))
         .map_err(|e| {
-            eprintln!("Failed to parse timestamp: {}", e);
+            tracing::error!("Failed to parse timestamp {timestamp:?}: {}", e);
             EntsoeError::InvalidTimestamp(timestamp.to_string())
         })
 }

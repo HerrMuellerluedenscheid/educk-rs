@@ -9,6 +9,7 @@ use chrono::{DateTime, Duration, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
+use tower_http::trace::TraceLayer;
 
 use crate::entsoe::analysis::RenewableSurplus;
 use crate::entsoe::areas::get_primary_zone;
@@ -139,7 +140,7 @@ async fn get_night_surplus(
         .get_renewable_surplus_series(zone.code, &period_start, &period_end)
         .await
         .map_err(|e| {
-            eprintln!("ENTSO-E API error: {}", e);
+            tracing::error!("ENTSO-E API error: {}", e);
             StatusCode::INTERNAL_SERVER_ERROR
         })?;
 
@@ -204,7 +205,7 @@ async fn get_next_hours_surplus(
         .get_renewable_surplus_series(zone.code, &period_start, &period_end)
         .await
         .map_err(|e| {
-            eprintln!("ENTSO-E API error: {}", e);
+            tracing::error!("ENTSO-E API error: {}", e);
             StatusCode::INTERNAL_SERVER_ERROR
         })?;
 
@@ -389,7 +390,7 @@ async fn get_plot(
         .get_renewable_surplus_series(zone.code, &period_start, &period_end)
         .await
         .map_err(|e| {
-            eprintln!("ENTSO-E API error: {}", e);
+            tracing::error!("ENTSO-E API error: {}", e);
             StatusCode::INTERNAL_SERVER_ERROR
         })?;
 
@@ -420,7 +421,7 @@ async fn get_plot(
     };
 
     let html = template.render().map_err(|e| {
-        eprintln!("Template rendering error: {}", e);
+        tracing::error!("Template rendering error: {}", e);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
 
@@ -446,7 +447,7 @@ async fn get_plot_json(
         .get_renewable_surplus_series(zone.code, &period_start, &period_end)
         .await
         .map_err(|e| {
-            eprintln!("ENTSO-E API error: {}", e);
+            tracing::error!("ENTSO-E API error: {}", e);
             StatusCode::INTERNAL_SERVER_ERROR
         })?;
 
@@ -478,11 +479,15 @@ async fn health() -> &'static str {
 }
 
 pub async fn start_server() -> anyhow::Result<()> {
-    // Initialize tracing
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "educk_rs=debug,tower_http=debug".parse().unwrap()),
+        )
+        .init();
 
     let api_key =
-        std::env::var("ENTSOE_API_KEY").expect("ENTSOE_API_KEY environment variable not set");
+        std::env::var("ENTSOE_API_TOKEN").expect("ENTSOE_API_TOKEN environment variable not set");
 
     let state = AppState {
         entsoe_client: Arc::new(EntsoeClient::new(api_key)),
@@ -513,23 +518,12 @@ pub async fn start_server() -> anyhow::Result<()> {
             "/api/v1/renewable-surplus/{country}/plot-json",
             get(get_plot_json),
         )
+        .layer(TraceLayer::new_for_http())
         .layer(CorsLayer::permissive())
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3044").await?;
-    println!("🚀 Server running on http://0.0.0.0:3044");
-    println!("\nAvailable endpoints:");
-    println!("  GET /health");
-    println!("  GET /api/v1/countries");
-    println!("  GET /api/v1/zones/:country");
-    println!("  GET /api/v1/renewable-surplus/:country/night");
-    println!("  GET /api/v1/renewable-surplus/:country/next-6h");
-    println!("  GET /api/v1/renewable-surplus/:country/next-24h");
-    println!("  GET /api/v1/renewable-surplus/:country/next?hours=N");
-    println!("  GET /api/v1/renewable-surplus/:country/plot?hours=N");
-    println!("  GET /api/v1/renewable-surplus/:country/plot-json?hours=N");
-    println!("\nExamples:");
-    println!("  curl http://localhost:3044/api/v1/renewable-surplus/DE/night");
+    tracing::info!("server listening on http://0.0.0.0:3044");
 
     axum::serve(listener, app).await?;
 
