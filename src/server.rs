@@ -574,7 +574,7 @@ pub async fn start_server() -> anyhow::Result<()> {
         .init();
 
     let api_key =
-        std::env::var("ENTSOE_API_TOKEN").expect("ENTSOE_API_TOKEN environment variable not set");
+        std::env::var("ENTSOE_API_KEY").expect("ENTSOE_API_KEY environment variable not set");
 
     let state = AppState {
         entsoe_client: Arc::new(EntsoeClient::new(api_key)),

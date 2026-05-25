@@ -59,7 +59,7 @@ fn plot_renewable_surplus(surplus_series: &[RenewableSurplus]) {
 #[tokio::main]
 async fn main() -> Result<()> {
     let api_key =
-        std::env::var("ENTSOE_API_TOKEN").expect("ENTSOE_API_TOKEN environment variable not set");
+        std::env::var("ENTSOE_API_KEY").expect("ENTSOE_API_KEY environment variable not set");
 
     let client = EntsoeClient::new(api_key);
 
