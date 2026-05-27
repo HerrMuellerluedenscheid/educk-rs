@@ -11,13 +11,14 @@ class SummaryCards extends StatelessWidget {
   Widget build(BuildContext context) {
     final current = data.currentPoint;
     final peak = data.peakSurplusPoint;
+    final trend = data.renewableTrend;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Row(
         children: [
           if (current != null) ...[
-            Expanded(child: _CurrentStatusCard(point: current)),
+            Expanded(child: _CurrentStatusCard(point: current, trend: trend)),
             const SizedBox(width: 10),
           ],
           Expanded(child: _PeakSurplusCard(point: peak)),
@@ -30,11 +31,69 @@ class SummaryCards extends StatelessWidget {
   }
 }
 
+// ── Renewable trend symbol ─────────────────────────────────────────────────────
+
+class RenewableTrendBadge extends StatelessWidget {
+  final RenewableTrend trend;
+  final double iconSize;
+  final bool showLabel;
+
+  const RenewableTrendBadge({
+    super.key,
+    required this.trend,
+    this.iconSize = 14,
+    this.showLabel = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, color, label) = switch (trend) {
+      RenewableTrend.rising => (
+          Icons.trending_up,
+          Colors.green.shade700,
+          'Rising'
+        ),
+      RenewableTrend.falling => (
+          Icons.trending_down,
+          Colors.red.shade700,
+          'Falling'
+        ),
+      RenewableTrend.flat => (
+          Icons.trending_flat,
+          Colors.grey.shade600,
+          'Steady'
+        ),
+    };
+
+    return Tooltip(
+      message: 'Renewable generation trend: $label',
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: iconSize, color: color),
+          if (showLabel) ...[
+            const SizedBox(width: 3),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 // ── Current status ─────────────────────────────────────────────────────────────
 
 class _CurrentStatusCard extends StatelessWidget {
   final EnergyPoint point;
-  const _CurrentStatusCard({required this.point});
+  final RenewableTrend trend;
+  const _CurrentStatusCard({required this.point, required this.trend});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +101,7 @@ class _CurrentStatusCard extends StatelessWidget {
     final label = isSurplus ? 'Surplus now' : 'Deficit now';
     final color = isSurplus ? Colors.green.shade700 : Colors.red.shade700;
     final bgColor = isSurplus ? Colors.green.shade50 : Colors.red.shade50;
-    final icon = isSurplus ? Icons.trending_up : Icons.trending_down;
+    final icon = isSurplus ? Icons.bolt_outlined : Icons.warning_amber_outlined;
 
     return _Card(
       bgColor: bgColor,
@@ -52,6 +111,7 @@ class _CurrentStatusCard extends StatelessWidget {
       value: _fmtMW(point.surplus.abs()),
       valueColor: color,
       subtitle: '${point.surplusPercent.toStringAsFixed(0)}% of generation',
+      trailing: RenewableTrendBadge(trend: trend),
     );
   }
 }
@@ -116,6 +176,7 @@ class _Card extends StatelessWidget {
   final String value;
   final Color valueColor;
   final String subtitle;
+  final Widget? trailing;
 
   const _Card({
     required this.bgColor,
@@ -125,6 +186,7 @@ class _Card extends StatelessWidget {
     required this.value,
     required this.valueColor,
     required this.subtitle,
+    this.trailing,
   });
 
   @override
@@ -160,10 +222,20 @@ class _Card extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: valueColor)),
           const SizedBox(height: 2),
-          Text(subtitle,
-              style:
-                  TextStyle(fontSize: 10, color: Colors.grey.shade500),
-              overflow: TextOverflow.ellipsis),
+          Row(
+            children: [
+              Expanded(
+                child: Text(subtitle,
+                    style:
+                        TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                    overflow: TextOverflow.ellipsis),
+              ),
+              if (trailing != null) ...[
+                const SizedBox(width: 6),
+                trailing!,
+              ],
+            ],
+          ),
         ],
       ),
     );

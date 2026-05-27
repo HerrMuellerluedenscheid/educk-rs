@@ -1,5 +1,7 @@
 import 'dart:math';
 
+enum RenewableTrend { rising, falling, flat }
+
 class EnergyPoint {
   final DateTime timestamp;
   final double generation;
@@ -79,6 +81,51 @@ class EnergyData {
     final hi = points.fold(double.negativeInfinity, (m, p) => max(m, p.surplus));
     if (hi == lo) return 0.5;
     return ((current.surplus - lo) / (hi - lo)).clamp(0.0, 1.0);
+  }
+
+  /// Compares average renewable generation in the ~3h window before "now"
+  /// against the ~3h window after "now". Falls back to first-half vs
+  /// second-half of the available series when one of the windows is empty.
+  RenewableTrend get renewableTrend {
+    if (points.length < 4) return RenewableTrend.flat;
+    final now = DateTime.now();
+    const window = Duration(hours: 3);
+
+    final past = points
+        .where((p) =>
+            p.timestamp.isBefore(now) &&
+            p.timestamp.isAfter(now.subtract(window)))
+        .map((p) => p.generation)
+        .toList();
+    final future = points
+        .where((p) =>
+            p.timestamp.isAfter(now) &&
+            p.timestamp.isBefore(now.add(window)))
+        .map((p) => p.generation)
+        .toList();
+
+    double pastAvg, futureAvg;
+    if (past.isEmpty || future.isEmpty) {
+      final mid = points.length ~/ 2;
+      pastAvg = points.take(mid).map((p) => p.generation).reduce((a, b) => a + b) /
+          mid;
+      futureAvg = points
+              .skip(mid)
+              .map((p) => p.generation)
+              .reduce((a, b) => a + b) /
+          (points.length - mid);
+    } else {
+      pastAvg = past.reduce((a, b) => a + b) / past.length;
+      futureAvg = future.reduce((a, b) => a + b) / future.length;
+    }
+
+    if (pastAvg <= 0) {
+      return futureAvg > 0 ? RenewableTrend.rising : RenewableTrend.flat;
+    }
+    final change = (futureAvg - pastAvg) / pastAvg;
+    if (change > 0.05) return RenewableTrend.rising;
+    if (change < -0.05) return RenewableTrend.falling;
+    return RenewableTrend.flat;
   }
 
   /// Best upcoming (future) surplus point; falls back to overall peak.
