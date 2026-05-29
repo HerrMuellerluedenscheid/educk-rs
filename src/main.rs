@@ -7,10 +7,7 @@ use crate::entsoe::EntsoeClient;
 use crate::entsoe::analysis::RenewableSurplus;
 use crate::server::start_server;
 use anyhow::Result;
-use plotly::{
-    Plot, Scatter,
-    common::{Mode},
-};
+use plotly::{Plot, Scatter, common::Mode};
 
 fn plot_renewable_surplus(surplus_series: &[RenewableSurplus]) {
     // Extract data

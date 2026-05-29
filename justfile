@@ -49,7 +49,7 @@ build-web:
 
 # Build and start all services (requires .env with ENTSOE_API_KEY)
 up:
-    docker compose up --build -d
+    GIT_COMMIT=$(git rev-parse --short HEAD) docker compose up --build -d
 
 # Stop all services
 down:
@@ -61,4 +61,4 @@ logs:
 
 # Rebuild and restart a single service: just restart api | dashboard
 restart service:
-    docker compose up --build -d {{service}}
+    GIT_COMMIT=$(git rev-parse --short HEAD) docker compose up --build -d {{service}}

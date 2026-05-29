@@ -92,6 +92,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           build-args: |
             API_URL=${{ vars.API_URL || 'http://37.27.47.184:3044' }}
+            GIT_COMMIT=${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
           outputs: type=image,name=${{ env.GHCR_IMAGE }},push-by-digest=true,name-canonical=true,push=true,oci-mediatypes=true

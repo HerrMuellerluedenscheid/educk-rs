@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../config.dart';
 import '../models/energy_data.dart';
@@ -236,6 +237,10 @@ class _HomeBody extends StatelessWidget {
             ),
           ),
         ),
+
+        // ── Build footer ──────────────────────────────────────────────────────
+        const SizedBox(height: 16),
+        const _BuildFooter(),
       ],
     );
   }
@@ -345,6 +350,41 @@ class _CountryChip extends StatelessWidget {
             ),
         borderRadius: BorderRadius.circular(12),
         icon: const Icon(Icons.keyboard_arrow_down, size: 18),
+      ),
+    );
+  }
+}
+
+// ── Build footer ───────────────────────────────────────────────────────────────
+
+class _BuildFooter extends StatelessWidget {
+  const _BuildFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    final commit = kGitCommit.isEmpty ? 'dev' : kGitCommit;
+    final short = commit.length > 7 ? commit.substring(0, 7) : commit;
+    final color = Theme.of(context).colorScheme.onSurface.withOpacity(0.3);
+
+    return Center(
+      child: Tooltip(
+        message: 'Build $commit',
+        child: InkWell(
+          onTap: () => Clipboard.setData(ClipboardData(text: commit)),
+          borderRadius: BorderRadius.circular(4),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            child: Text(
+              'build $short',
+              style: TextStyle(
+                fontSize: 10,
+                color: color,
+                fontFamily: 'monospace',
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

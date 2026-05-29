@@ -15,9 +15,13 @@ COPY . .
 RUN flutter create --project-name energy_dashboard --platforms web . \
     > /dev/null 2>&1 || true
 
-# Bake the API URL into the JS bundle at compile time
+# Bake the API URL and git commit into the JS bundle at compile time.
+# GIT_COMMIT is supplied by the build invoker (.git is not in this context).
 ARG API_URL=http://37.27.47.184:3044
-RUN flutter build web --release --dart-define=API_URL=${API_URL}
+ARG GIT_COMMIT=unknown
+RUN flutter build web --release \
+    --dart-define=API_URL=${API_URL} \
+    --dart-define=GIT_COMMIT=${GIT_COMMIT}
 
 
 # ── Stage 2: serve with nginx ───────────────────────────────────────────────────

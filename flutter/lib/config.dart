@@ -10,3 +10,7 @@ const String kBaseUrl = String.fromEnvironment(
 
 const String kDefaultCountry = 'DE';
 const int kDefaultHours = 24;
+
+// Git commit the container was built from. Injected at build time via
+// --dart-define=GIT_COMMIT=... (see flutter/Dockerfile). Empty in local dev.
+const String kGitCommit = String.fromEnvironment('GIT_COMMIT');
