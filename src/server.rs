@@ -12,6 +12,7 @@ use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
 use crate::cloud;
+use crate::config::Config;
 use crate::entsoe::analysis::RenewableSurplus;
 use crate::entsoe::areas::get_primary_zone;
 use crate::entsoe::{EntsoeClient, areas};
@@ -565,7 +566,7 @@ async fn health() -> &'static str {
     "OK"
 }
 
-pub async fn start_server() -> anyhow::Result<()> {
+pub async fn start_server(config: Config) -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -573,11 +574,8 @@ pub async fn start_server() -> anyhow::Result<()> {
         )
         .init();
 
-    let api_key =
-        std::env::var("ENTSOE_API_KEY").expect("ENTSOE_API_KEY environment variable not set");
-
     let state = AppState {
-        entsoe_client: Arc::new(EntsoeClient::new(api_key)),
+        entsoe_client: Arc::new(EntsoeClient::new(config.entsoe_api_key)),
     };
 
     let app = Router::new()

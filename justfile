@@ -1,6 +1,18 @@
 # educk-rs — task runner
 # Requires: just (https://github.com/casey/just)
 
+# ── Development ───────────────────────────────────────────────────────────────
+
+# Run the backend + Flutter frontend together (Ctrl-C stops both)
+dev:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    trap 'kill 0' EXIT
+    [ -f flutter/.env ] || cp flutter/.env.example flutter/.env
+    cargo run &
+    (cd flutter && flutter run -d chrome --dart-define-from-file=.env) &
+    wait
+
 # ── Rust backend ─────────────────────────────────────────────────────────────
 
 # Run the API server (requires ENTSOE_API_KEY in environment)
@@ -23,7 +35,11 @@ deps:
 
 # Run the Flutter app (development)
 run-flutter:
-    cd flutter && flutter run -d chrome
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd flutter
+    [ -f .env ] || cp .env.example .env
+    flutter run -d chrome --dart-define-from-file=.env
 
 # Build Flutter web for deployment (output: flutter/build/web)
 build-web:

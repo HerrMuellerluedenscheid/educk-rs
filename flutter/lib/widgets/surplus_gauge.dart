@@ -131,16 +131,22 @@ class _GaugePainter extends CustomPainter {
     // 2 ── Gradient progress arc
     final progressSweep = _sweepRad * value;
 
+    // Full-circle sweep rotated onto the arc. A partial sweep would clamp at its
+    // edges and bleed the wrong colour onto the arc tips; here first and last
+    // stops are both red, so the wrap is seamless and the red→green return runs
+    // through the hidden bottom gap. The arc covers 2/3 of the circle.
     final shader = SweepGradient(
       center: Alignment.center,
-      startAngle: _startRad,
-      endAngle: _startRad + _sweepRad, // gradient spans the full arc extent
+      startAngle: 0.0,
+      endAngle: 2 * pi,
       colors: const [
-        Color(0xFFE53935), // red   – low
-        Color(0xFFFB8C00), // amber – mid
-        Color(0xFF43A047), // green – high
+        Color(0xFFE53935), // red          – low (arc start)
+        Color(0xFFFB8C00), // amber        – mid
+        Color(0xFF2E7D32), // forest green – high (positive)
+        Color(0xFFE53935), // red          – wraps through the hidden gap
       ],
-      stops: const [0.0, 0.5, 1.0],
+      stops: const [0.0, 1 / 3, 2 / 3, 1.0],
+      transform: GradientRotation(_startRad),
     ).createShader(arcRect);
 
     canvas.drawArc(

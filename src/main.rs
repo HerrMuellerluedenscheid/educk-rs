@@ -1,4 +1,5 @@
 pub mod cloud;
+pub mod config;
 pub mod entsoe;
 pub mod server;
 
@@ -58,16 +59,15 @@ fn plot_renewable_surplus(surplus_series: &[RenewableSurplus]) {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let api_key =
-        std::env::var("ENTSOE_API_KEY").expect("ENTSOE_API_KEY environment variable not set");
+    let config = config::Config::load()?;
 
-    let client = EntsoeClient::new(api_key);
+    let client = EntsoeClient::new(config.entsoe_api_key.clone());
 
     // run once to test it works
     let _ = client
         .find_max_renewable_surplus("10YBE----------2", "202308152200", "202308162200")
         .await?;
 
-    start_server().await?;
+    start_server(config).await?;
     Ok(())
 }
