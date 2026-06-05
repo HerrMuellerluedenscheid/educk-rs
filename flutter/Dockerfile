@@ -17,7 +17,7 @@ RUN flutter create --project-name energy_dashboard --platforms web . \
 
 # Bake the API URL and git commit into the JS bundle at compile time.
 # GIT_COMMIT is supplied by the build invoker (.git is not in this context).
-ARG API_URL=http://37.27.47.184:3044
+ARG API_URL=https://api.educk.io
 ARG GIT_COMMIT=unknown
 RUN flutter build web --release \
     --dart-define=API_URL=${API_URL} \
@@ -32,5 +32,8 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
+# Use 127.0.0.1 rather than localhost: in this image `localhost` resolves to
+# IPv6 ::1 first, where nginx (IPv4 0.0.0.0:80 only) isn't listening, so the
+# check would fail and the container would never report healthy.
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-  CMD wget -qO- http://localhost/ || exit 1
+  CMD wget -qO- http://127.0.0.1/ || exit 1
