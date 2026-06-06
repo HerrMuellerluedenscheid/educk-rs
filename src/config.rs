@@ -6,6 +6,15 @@ use serde::Deserialize;
 #[derive(Debug, Clone, Deserialize)]
 pub struct Config {
     pub entsoe_api_key: String,
+
+    /// Public origin the SSR content pages live under, used for canonical URLs,
+    /// Open Graph tags and the sitemap. Override with `PUBLIC_BASE_URL`.
+    #[serde(default = "default_public_base_url")]
+    pub public_base_url: String,
+}
+
+fn default_public_base_url() -> String {
+    "https://educk.io".to_string()
 }
 
 impl Config {

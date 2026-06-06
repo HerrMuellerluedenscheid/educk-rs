@@ -119,8 +119,124 @@ impl RenewableSurplus {
         }
     }
 
+    /// Share of electricity demand (load) covered by wind + solar generation,
+    /// as a percentage. Can exceed 100% when there is a renewable surplus.
+    pub fn renewable_share(&self) -> f64 {
+        if self.load == 0.0 {
+            0.0
+        } else {
+            (self.generation / self.load) * 100.0
+        }
+    }
+
     /// Check if there's excess renewable energy (generation > load)
     pub fn has_excess(&self) -> bool {
         self.surplus > 0.0
     }
+}
+
+/// A human-readable, SEO-friendly summary derived from a renewable surplus
+/// forecast series. All times are UTC.
+#[derive(Debug, Clone)]
+pub struct ForecastSummary {
+    /// Ready-to-render descriptive sentences.
+    pub sentences: Vec<String>,
+}
+
+impl ForecastSummary {
+    /// A single sentence suitable for a `<meta name="description">`, truncated to
+    /// a search-engine-friendly length.
+    pub fn meta_description(&self, country_name: &str) -> String {
+        let body = self
+            .sentences
+            .first()
+            .cloned()
+            .unwrap_or_else(|| format!("Renewable electricity forecast for {country_name}."));
+        truncate_on_word_boundary(&body, 155)
+    }
+}
+
+/// Build a descriptive summary from a forecast series. `country_name` is used in
+/// the generated prose, e.g. "Belgium".
+pub fn summarize_forecast(series: &[RenewableSurplus], country_name: &str) -> ForecastSummary {
+    if series.is_empty() {
+        return ForecastSummary {
+            sentences: vec![format!(
+                "No renewable energy forecast is currently available for {country_name}."
+            )],
+        };
+    }
+
+    let now_ts = Utc::now();
+    let now = series
+        .iter()
+        .find(|s| s.timestamp >= now_ts)
+        .or_else(|| series.last())
+        .cloned();
+
+    let cmp_share = |a: &&RenewableSurplus, b: &&RenewableSurplus| {
+        a.renewable_share()
+            .partial_cmp(&b.renewable_share())
+            .unwrap_or(std::cmp::Ordering::Equal)
+    };
+    let peak = series.iter().max_by(cmp_share).cloned();
+    let trough = series.iter().min_by(cmp_share).cloned();
+    let best_window = series
+        .iter()
+        .max_by(|a, b| {
+            a.surplus
+                .partial_cmp(&b.surplus)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
+        .cloned();
+
+    let mut sentences = Vec::new();
+    let hm = |s: &RenewableSurplus| s.timestamp.format("%H:%M").to_string();
+
+    if let Some(n) = &now {
+        sentences.push(format!(
+            "Wind and solar are forecast to cover about {:.0}% of {}'s electricity demand around {} UTC.",
+            n.renewable_share(),
+            country_name,
+            hm(n),
+        ));
+    }
+    if let Some(p) = &peak {
+        sentences.push(format!(
+            "Renewable output peaks around {} UTC at roughly {:.0}% of demand — the greenest time to use electricity today.",
+            hm(p),
+            p.renewable_share(),
+        ));
+    }
+    if let Some(t) = &trough {
+        sentences.push(format!(
+            "The renewable share dips to about {:.0}% around {} UTC, when grid electricity is at its most carbon-intensive.",
+            t.renewable_share(),
+            hm(t),
+        ));
+    }
+    if let Some(b) = &best_window {
+        if b.has_excess() {
+            sentences.push(format!(
+                "There is forecast surplus renewable generation around {} UTC — an ideal low-carbon window for flexible loads such as EV charging, laundry or heating.",
+                hm(b),
+            ));
+        }
+    }
+
+    ForecastSummary { sentences }
+}
+
+/// Truncate `s` to at most `max` chars, breaking on a word boundary and adding an
+/// ellipsis when shortened.
+fn truncate_on_word_boundary(s: &str, max: usize) -> String {
+    if s.chars().count() <= max {
+        return s.to_string();
+    }
+    let truncated: String = s.chars().take(max - 1).collect();
+    let cut = match truncated.rfind(' ') {
+        Some(idx) => &truncated[..idx],
+        None => truncated.as_str(),
+    };
+    format!("{}…", cut.trim_end_matches([',', '.', ' ']))
 }

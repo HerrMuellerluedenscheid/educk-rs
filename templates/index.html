@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+    <meta name="description" content="{{ meta_description }}">
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ title }}">
+    <meta property="og:description" content="{{ meta_description }}">
+    <meta property="og:url" content="{{ canonical_url }}">
+    <meta property="og:site_name" content="educk">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ title }}">
+    <meta name="twitter:description" content="{{ meta_description }}">
+
+    <script type="application/ld+json">{{ json_ld|safe }}</script>
+
+    <style>
+        :root { color-scheme: light dark; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 24px 20px 64px;
+        }
+        nav a { font-weight: 700; color: #15803d; text-decoration: none; }
+        h1 { font-size: 2rem; margin: 1.2rem 0 .25rem; }
+        .lead { font-size: 1.15rem; }
+        h2 { margin-top: 2.2rem; }
+        ol.how { padding-left: 1.2rem; }
+        ol.how li { margin-bottom: .4rem; }
+        .cta {
+            display: inline-block;
+            margin: 1.5rem 0;
+            padding: .7rem 1.3rem;
+            background: #15803d;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        ul.countries {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: .35rem .75rem;
+        }
+        ul.countries a { color: #15803d; text-decoration: none; }
+        ul.countries a:hover { text-decoration: underline; }
+        footer { margin-top: 3rem; color: #666; font-size: .85rem; }
+        a { color: #15803d; }
+    </style>
+</head>
+<body>
+<main class="container">
+    <nav><a href="/">educk</a></nav>
+
+    <h1>When is electricity greenest across Europe?</h1>
+    <p class="lead">
+        educk is a renewable energy monitor. It tracks how much of each European
+        country's electricity demand is met by wind and solar generation — live and
+        as a day-ahead forecast — so you can shift flexible energy use to the
+        cleanest, lowest-carbon hours of the day.
+    </p>
+
+    <a class="cta" href="{{ app_url }}">Open the live dashboard</a>
+
+    <h2>How it works</h2>
+    <ol class="how">
+        <li>We pull day-ahead wind &amp; solar generation and total demand forecasts from the <a href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a> transparency platform.</li>
+        <li>For each country we work out the renewable share of demand hour by hour, and when it peaks.</li>
+        <li>You move flexible loads — EV charging, laundry, heating, batteries, compute — into the greenest windows.</li>
+    </ol>
+
+    <h2>Renewable electricity by country</h2>
+    <p>Pick a country to see its renewable energy forecast and the greenest time to use electricity today:</p>
+    <ul class="countries">
+        {% for country in countries %}
+        <li><a href="{{ country.url }}">{{ country.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <footer>
+        <p>
+            <strong>educk</strong> shows real-time and forecast renewable electricity
+            share across European bidding zones so you can shift consumption to
+            greener, lower-carbon hours. Data source:
+            <a href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>.
+        </p>
+    </footer>
+</main>
+</body>
+</html>

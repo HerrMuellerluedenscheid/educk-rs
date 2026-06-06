@@ -11,6 +11,8 @@ services:
     environment:
       - ENTSOE_API_KEY=${ENTSOE_API_KEY}
       - RUST_LOG=info
+      # Apex origin used for canonical URLs, Open Graph tags and the sitemap.
+      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-https://educk.io}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3044/health"]
@@ -32,4 +34,9 @@ services:
     container_name: energy-dashboard
     ports:
       - "80:80"
+    # nginx is the apex front door and proxies / , /electricity/*, /robots.txt,
+    # /sitemap.xml to the Rust service, so start it only once the API is healthy.
+    depends_on:
+      renewable-api:
+        condition: service_healthy
     restart: unless-stopped

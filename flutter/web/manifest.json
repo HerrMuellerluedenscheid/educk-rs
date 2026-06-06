@@ -1,11 +1,11 @@
 {
-    "name": "energy_dashboard",
-    "short_name": "energy_dashboard",
+    "name": "educk — renewable electricity dashboard",
+    "short_name": "educk",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0f172a",
+    "theme_color": "#15803d",
+    "description": "Live and day-ahead renewable electricity share across European grids, so you can use power when it's greenest.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
