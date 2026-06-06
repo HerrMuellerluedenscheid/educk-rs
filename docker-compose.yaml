@@ -26,7 +26,7 @@ services:
       dockerfile: Dockerfile
       args:
         # URL the *browser* uses to reach the API — must be publicly accessible
-        - API_URL=${API_URL:-http://37.27.47.184:3044}
+        - API_URL=${API_URL:-https://api.educk.io}
         # Git commit baked into the footer (set by `just up`; falls back to unknown)
         - GIT_COMMIT=${GIT_COMMIT:-unknown}
     container_name: energy-dashboard

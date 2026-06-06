@@ -61,5 +61,5 @@ API_URL=https://api.example.com docker compose up --build -d
 | Variable | Default | Description |
 |---|---|---|
 | `ENTSOE_API_KEY` | — | ENTSO-E transparency platform key |
-| `API_URL` | `http://37.27.47.184:3044` | URL the browser uses to reach the API |
+| `API_URL` | `https://api.educk.io` | URL the browser uses to reach the API |
 | `RUST_LOG` | `info` | Rust log level |

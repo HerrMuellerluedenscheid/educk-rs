@@ -91,7 +91,7 @@ jobs:
           context: flutter
           platforms: ${{ matrix.platform }}
           build-args: |
-            API_URL=${{ vars.API_URL || 'http://37.27.47.184:3044' }}
+            API_URL=${{ vars.API_URL || 'https://api.educk.io' }}
             GIT_COMMIT=${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
