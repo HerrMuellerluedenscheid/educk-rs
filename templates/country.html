@@ -20,9 +20,11 @@
     <meta name="twitter:description" content="{{ meta_description }}">
 
     <script type="application/ld+json">{{ json_ld|safe }}</script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
     <style>
         :root { color-scheme: light dark; }
+        #chart { width: 100%; height: 420px; margin: 1rem 0 .5rem; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
             margin: 0;
@@ -74,14 +76,16 @@
         running appliances or batteries — for when the grid is cleanest.
     </p>
 
+    <div id="chart"></div>
+    <script>
+      Plotly.newPlot('chart', {{ plot_data|safe }}, {{ plot_layout|safe }}, {responsive: true});
+    </script>
+
     <ul class="summary">
         {% for sentence in sentences %}
         <li>{{ sentence }}</li>
         {% endfor %}
     </ul>
-
-    <a class="cta" href="{{ app_url }}">Open the live dashboard</a>
-    <a class="cta secondary" href="{{ chart_url }}">View interactive chart</a>
 
     <h2>Hourly forecast for {{ country_name }}</h2>
     <table>

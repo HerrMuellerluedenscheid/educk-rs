@@ -20,6 +20,7 @@
     <meta name="twitter:description" content="{{ meta_description }}">
 
     <script type="application/ld+json">{{ json_ld|safe }}</script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
     <style>
         :root { color-scheme: light dark; }
@@ -42,16 +43,19 @@
         h2 { margin-top: 2.2rem; }
         ol.how { padding-left: 1.2rem; }
         ol.how li { margin-bottom: .4rem; }
-        .cta {
-            display: inline-block;
-            margin: 1.5rem 0;
-            padding: .7rem 1.3rem;
-            background: #15803d;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-        }
+        .picker { margin: 1.2rem 0 .5rem; font-size: 1rem; }
+        .picker select { font-size: 1rem; padding: .35rem .5rem; border-radius: 6px; }
+        .updated { color: #666; font-size: .85rem; }
+        #chart { width: 100%; height: 440px; margin: .5rem 0; }
+        ul.summary { padding-left: 1.2rem; }
+        ul.summary li { margin-bottom: .4rem; }
+        table { border-collapse: collapse; width: 100%; margin-top: 1rem; font-size: .9rem; }
+        th, td { padding: .45rem .6rem; text-align: right; border-bottom: 1px solid #ddd; }
+        th:first-child, td:first-child { text-align: left; }
+        thead th { border-bottom: 2px solid #bbb; }
+        caption { text-align: left; font-weight: 600; margin-bottom: .5rem; }
+        details { margin-top: 1rem; }
+        summary.toggle { cursor: pointer; font-weight: 600; color: #15803d; }
         ul.countries {
             list-style: none;
             padding: 0;
@@ -78,7 +82,55 @@
         cleanest, lowest-carbon hours of the day.
     </p>
 
-    <a class="cta" href="{{ app_url }}">Open the live dashboard</a>
+    <form class="picker" method="get" action="/">
+        <label>Show forecast for
+            <select name="country" onchange="this.form.submit()">
+                {% for country in countries %}
+                <option value="{{ country.code }}"{% if country.selected %} selected{% endif %}>{{ country.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <noscript><button type="submit">Show</button></noscript>
+    </form>
+    <p class="updated">Forecast for {{ selected_name }} · updated {{ updated_utc }}</p>
+
+    <div id="chart"></div>
+    <script>
+      Plotly.newPlot('chart', {{ plot_data|safe }}, {{ plot_layout|safe }}, {responsive: true});
+    </script>
+
+    <ul class="summary">
+        {% for sentence in sentences %}
+        <li>{{ sentence }}</li>
+        {% endfor %}
+    </ul>
+
+    <details>
+        <summary class="toggle">Show hourly data table</summary>
+        <table>
+            <caption>Wind + solar generation vs. total demand (MW) — {{ selected_name }}, next hours · times in UTC</caption>
+            <thead>
+                <tr>
+                    <th>Time (UTC)</th>
+                    <th>Renewable (MW)</th>
+                    <th>Demand (MW)</th>
+                    <th>Surplus (MW)</th>
+                    <th>Share</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    <td>{{ row.time }}</td>
+                    <td>{{ row.generation }}</td>
+                    <td>{{ row.load }}</td>
+                    <td>{{ row.surplus }}</td>
+                    <td>{{ row.share }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </details>
 
     <h2>How it works</h2>
     <ol class="how">

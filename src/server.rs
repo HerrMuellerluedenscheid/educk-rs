@@ -7,7 +7,9 @@ use axum::{
 };
 use chrono::{DateTime, Duration, Timelike, Utc};
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+use std::time::Instant;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
@@ -17,11 +19,54 @@ use crate::entsoe::analysis::{RenewableSurplus, summarize_forecast};
 use crate::entsoe::areas::get_primary_zone;
 use crate::entsoe::{EntsoeClient, areas};
 
+/// How far ahead the SSR pages forecast, and how long a fetched series is reused.
+const LOOKAHEAD_HOURS: i64 = 25;
+const CACHE_TTL: std::time::Duration = std::time::Duration::from_secs(600);
+
+type SeriesCache = Arc<Mutex<HashMap<String, (Instant, Vec<RenewableSurplus>)>>>;
+
 #[derive(Clone)]
 struct AppState {
     entsoe_client: Arc<EntsoeClient>,
     /// Public origin for canonical URLs / Open Graph tags on SSR pages.
     base_url: Arc<str>,
+    /// Per-zone forecast cache so the SSR pages (esp. the apex landing) don't
+    /// hit ENTSO-E on every request. Day-ahead data changes slowly.
+    series_cache: SeriesCache,
+}
+
+impl AppState {
+    /// Fetch the next ~25h renewable surplus series for a bidding zone, reusing a
+    /// cached result younger than `CACHE_TTL`.
+    async fn series_for_zone(&self, zone_code: &str) -> Result<Vec<RenewableSurplus>, StatusCode> {
+        {
+            let cache = self.series_cache.lock().unwrap();
+            if let Some((fetched_at, data)) = cache.get(zone_code) {
+                if fetched_at.elapsed() < CACHE_TTL {
+                    return Ok(data.clone());
+                }
+            }
+        } // drop the guard before awaiting
+
+        let now = Utc::now();
+        let end = now + Duration::hours(LOOKAHEAD_HOURS);
+        let (period_start, period_end) = format_period(now, end);
+
+        let series = self
+            .entsoe_client
+            .get_renewable_surplus_series(zone_code, &period_start, &period_end)
+            .await
+            .map_err(|e| {
+                tracing::error!("ENTSO-E API error: {}", e);
+                StatusCode::INTERNAL_SERVER_ERROR
+            })?;
+
+        self.series_cache
+            .lock()
+            .unwrap()
+            .insert(zone_code.to_string(), (Instant::now(), series.clone()));
+        Ok(series)
+    }
 }
 
 #[derive(Serialize)]
@@ -522,14 +567,13 @@ struct CountryPageTemplate {
     updated_utc: String,
     sentences: Vec<String>,
     rows: Vec<ForecastRow>,
-    app_url: String,
-    chart_url: String,
+    plot_data: String,
+    plot_layout: String,
 }
 
 /// GET /electricity/{country}
-/// Server-rendered, crawlable forecast page with auto-generated descriptive text,
-/// an hourly data table, canonical/Open Graph tags and JSON-LD. Links to the
-/// interactive Flutter dashboard at /app.
+/// Server-rendered, crawlable forecast page: an inline interactive chart,
+/// auto-generated descriptive text, an hourly data table, and meta/JSON-LD.
 async fn get_country_page(
     State(state): State<AppState>,
     Path(country_code): Path<String>,
@@ -539,20 +583,11 @@ async fn get_country_page(
     let country_name = zone.name.to_string();
 
     let now = Utc::now();
-    let end = now + Duration::hours(25);
-    let (period_start, period_end) = format_period(now, end);
-
-    let series = state
-        .entsoe_client
-        .get_renewable_surplus_series(zone.code, &period_start, &period_end)
-        .await
-        .map_err(|e| {
-            tracing::error!("ENTSO-E API error: {}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })?;
+    let series = state.series_for_zone(zone.code).await.unwrap_or_default();
 
     let summary = summarize_forecast(&series, &country_name);
     let rows = forecast_rows(&series);
+    let (plot_data, plot_layout) = generate_plot_data(&series);
 
     let title = format!(
         "When is electricity greenest in {country_name}? Renewable energy forecast | educk"
@@ -590,8 +625,8 @@ async fn get_country_page(
         updated_utc,
         sentences: summary.sentences,
         rows,
-        app_url: format!("{}/app?country={}", state.base_url, code_lower),
-        chart_url: format!("/api/v1/renewable-surplus/{}/plot", code_lower),
+        plot_data,
+        plot_layout,
     };
 
     let html = template.render().map_err(|e| {
@@ -603,8 +638,10 @@ async fn get_country_page(
 }
 
 struct CountryLink {
+    code: String,
     name: String,
     url: String,
+    selected: bool,
 }
 
 struct CloudLink {
@@ -625,27 +662,59 @@ struct LandingTemplate {
     meta_description: String,
     canonical_url: String,
     json_ld: String,
-    app_url: String,
+    selected_name: String,
+    updated_utc: String,
+    sentences: Vec<String>,
+    rows: Vec<ForecastRow>,
+    plot_data: String,
+    plot_layout: String,
     countries: Vec<CountryLink>,
     cloud_providers: Vec<CloudProviderGroup>,
 }
 
-/// GET /
-/// Server-rendered landing page: explains educk and links to every per-country
-/// content page (crawl discovery) and the interactive dashboard. Intentionally
-/// makes no upstream API calls — this is the most-hit/most-crawled route and has
-/// no caching layer yet.
-async fn get_landing(State(state): State<AppState>) -> Result<impl IntoResponse, StatusCode> {
+#[derive(Deserialize)]
+struct LandingQuery {
+    country: Option<String>,
+}
+
+/// GET /?country=XX
+/// The web frontend: an interactive chart + descriptive text + hourly table for
+/// the selected country (default DE), with a country picker and the full
+/// country/cloud index below. Forecast data is served from a short-lived cache.
+async fn get_landing(
+    State(state): State<AppState>,
+    Query(query): Query<LandingQuery>,
+) -> Result<impl IntoResponse, StatusCode> {
+    // Resolve the selected country, falling back to the default if unknown.
+    let selected = query
+        .country
+        .as_deref()
+        .and_then(get_primary_zone)
+        .or_else(|| get_primary_zone("DE"))
+        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+    let selected_code = selected.country_code;
+    let selected_name = selected.name.to_string();
+
     let mut countries: Vec<CountryLink> = areas::list_countries()
         .into_iter()
         .filter_map(|code| {
             get_primary_zone(code).map(|zone| CountryLink {
+                code: code.to_string(),
                 name: zone.name.to_string(),
                 url: format!("/electricity/{}", code.to_lowercase()),
+                selected: code == selected_code,
             })
         })
         .collect();
     countries.sort_by(|a, b| a.name.cmp(&b.name));
+
+    // Forecast for the selected country (cached; landing degrades gracefully).
+    let now = Utc::now();
+    let series = state.series_for_zone(selected.code).await.unwrap_or_default();
+    let summary = summarize_forecast(&series, &selected_name);
+    let rows = forecast_rows(&series);
+    let (plot_data, plot_layout) = generate_plot_data(&series);
+    let updated_utc = now.format("%Y-%m-%d %H:%M UTC").to_string();
 
     // Cloud regions grouped by provider. `all_regions()` is sorted by
     // (provider, region), so consecutive grouping preserves that order.
@@ -709,7 +778,12 @@ async fn get_landing(State(state): State<AppState>) -> Result<impl IntoResponse,
         meta_description,
         canonical_url,
         json_ld,
-        app_url: format!("{}/app", state.base_url),
+        selected_name,
+        updated_utc,
+        sentences: summary.sentences,
+        rows,
+        plot_data,
+        plot_layout,
         countries,
         cloud_providers,
     };
@@ -736,7 +810,8 @@ struct CloudPageTemplate {
     updated_utc: String,
     sentences: Vec<String>,
     rows: Vec<ForecastRow>,
-    app_url: String,
+    plot_data: String,
+    plot_layout: String,
     country_url: String,
 }
 
@@ -752,20 +827,11 @@ async fn get_cloud_page(
     let country_name = zone.name.to_string();
 
     let now = Utc::now();
-    let end = now + Duration::hours(25);
-    let (period_start, period_end) = format_period(now, end);
-
-    let series = state
-        .entsoe_client
-        .get_renewable_surplus_series(zone.code, &period_start, &period_end)
-        .await
-        .map_err(|e| {
-            tracing::error!("ENTSO-E API error: {}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })?;
+    let series = state.series_for_zone(zone.code).await.unwrap_or_default();
 
     let summary = summarize_forecast(&series, &country_name);
     let rows = forecast_rows(&series);
+    let (plot_data, plot_layout) = generate_plot_data(&series);
 
     let label = provider_label(cr.provider);
     let title = format!(
@@ -808,7 +874,8 @@ async fn get_cloud_page(
         updated_utc,
         sentences: summary.sentences,
         rows,
-        app_url: format!("{}/app", state.base_url),
+        plot_data,
+        plot_layout,
         country_url: format!("/electricity/{}", cr.country_code.to_lowercase()),
     };
 
@@ -963,6 +1030,7 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
     let state = AppState {
         entsoe_client: Arc::new(EntsoeClient::new(config.entsoe_api_key)),
         base_url: Arc::from(config.public_base_url.trim_end_matches('/')),
+        series_cache: Arc::new(Mutex::new(HashMap::new())),
     };
 
     let app = Router::new()
