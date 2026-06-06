@@ -487,6 +487,30 @@ struct ForecastRow {
     share: String,
 }
 
+/// Build the hourly forecast table rows shared by the country and cloud pages.
+fn forecast_rows(series: &[RenewableSurplus]) -> Vec<ForecastRow> {
+    series
+        .iter()
+        .map(|s| ForecastRow {
+            time: s.timestamp.format("%a %H:%M").to_string(),
+            generation: format!("{:.0}", s.generation),
+            load: format!("{:.0}", s.load),
+            surplus: format!("{:+.0}", s.surplus),
+            share: format!("{:.0}%", s.renewable_share()),
+        })
+        .collect()
+}
+
+/// Pretty provider name for headings and titles.
+fn provider_label(provider: &str) -> &'static str {
+    match provider {
+        "aws" => "AWS",
+        "azure" => "Azure",
+        "gcp" => "Google Cloud",
+        _ => "Cloud",
+    }
+}
+
 #[derive(Template)]
 #[template(path = "country.html")]
 struct CountryPageTemplate {
@@ -528,17 +552,7 @@ async fn get_country_page(
         })?;
 
     let summary = summarize_forecast(&series, &country_name);
-
-    let rows: Vec<ForecastRow> = series
-        .iter()
-        .map(|s| ForecastRow {
-            time: s.timestamp.format("%a %H:%M").to_string(),
-            generation: format!("{:.0}", s.generation),
-            load: format!("{:.0}", s.load),
-            surplus: format!("{:+.0}", s.surplus),
-            share: format!("{:.0}%", s.renewable_share()),
-        })
-        .collect();
+    let rows = forecast_rows(&series);
 
     let title = format!(
         "When is electricity greenest in {country_name}? Renewable energy forecast | educk"
@@ -576,7 +590,6 @@ async fn get_country_page(
         updated_utc,
         sentences: summary.sentences,
         rows,
-        // TODO: /app still needs deploy wiring (Flutter served behind apex).
         app_url: format!("{}/app?country={}", state.base_url, code_lower),
         chart_url: format!("/api/v1/renewable-surplus/{}/plot", code_lower),
     };
@@ -594,6 +607,17 @@ struct CountryLink {
     url: String,
 }
 
+struct CloudLink {
+    region: String,
+    location: String,
+    url: String,
+}
+
+struct CloudProviderGroup {
+    provider_label: String,
+    regions: Vec<CloudLink>,
+}
+
 #[derive(Template)]
 #[template(path = "index.html")]
 struct LandingTemplate {
@@ -603,6 +627,7 @@ struct LandingTemplate {
     json_ld: String,
     app_url: String,
     countries: Vec<CountryLink>,
+    cloud_providers: Vec<CloudProviderGroup>,
 }
 
 /// GET /
@@ -621,6 +646,25 @@ async fn get_landing(State(state): State<AppState>) -> Result<impl IntoResponse,
         })
         .collect();
     countries.sort_by(|a, b| a.name.cmp(&b.name));
+
+    // Cloud regions grouped by provider. `all_regions()` is sorted by
+    // (provider, region), so consecutive grouping preserves that order.
+    let mut cloud_providers: Vec<CloudProviderGroup> = Vec::new();
+    for cr in cloud::all_regions() {
+        let label = provider_label(cr.provider).to_string();
+        let link = CloudLink {
+            region: cr.region.to_string(),
+            location: cr.location.to_string(),
+            url: format!("/cloud/{}/{}", cr.provider, cr.region),
+        };
+        match cloud_providers.last_mut() {
+            Some(group) if group.provider_label == label => group.regions.push(link),
+            _ => cloud_providers.push(CloudProviderGroup {
+                provider_label: label,
+                regions: vec![link],
+            }),
+        }
+    }
 
     let title = "educk — when is electricity greenest across Europe?".to_string();
     let meta_description = "educk shows live and day-ahead renewable electricity share across \
@@ -667,6 +711,105 @@ async fn get_landing(State(state): State<AppState>) -> Result<impl IntoResponse,
         json_ld,
         app_url: format!("{}/app", state.base_url),
         countries,
+        cloud_providers,
+    };
+
+    let html = template.render().map_err(|e| {
+        tracing::error!("Template rendering error: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
+    Ok(axum::response::Html(html))
+}
+
+#[derive(Template)]
+#[template(path = "cloud.html")]
+struct CloudPageTemplate {
+    title: String,
+    meta_description: String,
+    canonical_url: String,
+    json_ld: String,
+    provider_label: String,
+    region: String,
+    location: String,
+    country_name: String,
+    updated_utc: String,
+    sentences: Vec<String>,
+    rows: Vec<ForecastRow>,
+    app_url: String,
+    country_url: String,
+}
+
+/// GET /cloud/{provider}/{region}
+/// Server-rendered, crawlable forecast page for a cloud region, framed for
+/// carbon-aware workload scheduling. Uses the region's underlying national grid.
+async fn get_cloud_page(
+    State(state): State<AppState>,
+    Path((provider, region)): Path<(String, String)>,
+) -> Result<impl IntoResponse, StatusCode> {
+    let cr = cloud::lookup(&provider, &region).ok_or(StatusCode::NOT_FOUND)?;
+    let zone = get_primary_zone(cr.country_code).ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+    let country_name = zone.name.to_string();
+
+    let now = Utc::now();
+    let end = now + Duration::hours(25);
+    let (period_start, period_end) = format_period(now, end);
+
+    let series = state
+        .entsoe_client
+        .get_renewable_surplus_series(zone.code, &period_start, &period_end)
+        .await
+        .map_err(|e| {
+            tracing::error!("ENTSO-E API error: {}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
+    let summary = summarize_forecast(&series, &country_name);
+    let rows = forecast_rows(&series);
+
+    let label = provider_label(cr.provider);
+    let title = format!(
+        "Greenest time to run workloads in {}/{} ({}) | educk",
+        cr.provider, cr.region, cr.location
+    );
+    let meta_description = summary.meta_description(&country_name);
+    let canonical_url = format!("{}/cloud/{}/{}", state.base_url, cr.provider, cr.region);
+    let updated_utc = now.format("%Y-%m-%d %H:%M UTC").to_string();
+
+    let json_ld = json!({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": title,
+        "description": meta_description,
+        "url": canonical_url,
+        "inLanguage": "en",
+        "dateModified": now.to_rfc3339(),
+        "isPartOf": {
+            "@type": "WebSite",
+            "name": "educk",
+            "url": state.base_url.to_string(),
+        },
+        "about": {
+            "@type": "Thing",
+            "name": format!("Carbon-aware scheduling for {} {}", label, cr.region),
+        },
+    })
+    .to_string();
+
+    let template = CloudPageTemplate {
+        title,
+        meta_description,
+        canonical_url,
+        json_ld,
+        provider_label: label.to_string(),
+        region: cr.region.to_string(),
+        location: cr.location.to_string(),
+        country_name,
+        updated_utc,
+        sentences: summary.sentences,
+        rows,
+        app_url: format!("{}/app", state.base_url),
+        country_url: format!("/electricity/{}", cr.country_code.to_lowercase()),
     };
 
     let html = template.render().map_err(|e| {
@@ -782,7 +925,7 @@ async fn robots_txt(State(state): State<AppState>) -> impl IntoResponse {
 }
 
 /// GET /sitemap.xml
-/// Lists the landing page and every per-country content page.
+/// Lists the landing page and every per-country and per-cloud-region content page.
 async fn sitemap_xml(State(state): State<AppState>) -> impl IntoResponse {
     let mut urls = format!("  <url><loc>{}/</loc></url>\n", state.base_url);
     for code in areas::list_countries() {
@@ -790,6 +933,12 @@ async fn sitemap_xml(State(state): State<AppState>) -> impl IntoResponse {
             "  <url><loc>{}/electricity/{}</loc></url>\n",
             state.base_url,
             code.to_lowercase()
+        ));
+    }
+    for cr in cloud::all_regions() {
+        urls.push_str(&format!(
+            "  <url><loc>{}/cloud/{}/{}</loc></url>\n",
+            state.base_url, cr.provider, cr.region
         ));
     }
     let body = format!(
@@ -822,6 +971,7 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
         .route("/robots.txt", get(robots_txt))
         .route("/sitemap.xml", get(sitemap_xml))
         .route("/electricity/{country}", get(get_country_page))
+        .route("/cloud/{provider}/{region}", get(get_cloud_page))
         .route("/api/v1/countries", get(list_countries))
         .route("/api/v1/zones/{country}", get(get_country_zones))
         .route(

@@ -95,6 +95,17 @@
         {% endfor %}
     </ul>
 
+    <h2>Renewable electricity by cloud region</h2>
+    <p>Scheduling compute? See when each European cloud region's grid is greenest and run carbon-aware workloads then:</p>
+    {% for group in cloud_providers %}
+    <h3>{{ group.provider_label }}</h3>
+    <ul class="countries">
+        {% for region in group.regions %}
+        <li><a href="{{ region.url }}">{{ region.region }} — {{ region.location }}</a></li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+
     <footer>
         <p>
             <strong>educk</strong> shows real-time and forecast renewable electricity
