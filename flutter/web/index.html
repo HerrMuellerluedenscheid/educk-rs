@@ -18,17 +18,6 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-82NPT4CT5G"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-82NPT4CT5G');
-  </script>
-
   <meta name="description" content="educk shows live and day-ahead renewable electricity share across European grids, so you can use power when it's greenest.">
 
   <!-- Open Graph / social previews -->
@@ -65,5 +54,96 @@
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
   <script src="flutter_bootstrap.js" async></script>
+
+  <!--
+    Cookie consent banner + consent-gated Google Analytics loader.
+    Mirrors the server-rendered pages' templates/_cookie_consent.html: gtag.js is
+    loaded only after the visitor agrees (GDPR + German TDDDG). The choice is kept
+    in the first-party `educk_consent` cookie. Links point at the apex routes
+    (/privacy, /impressum), which are served by the Rust app on the same origin.
+  -->
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-live="polite"
+       aria-label="Cookie consent" hidden>
+    <div class="cookie-banner__text">
+      educk uses Google Analytics to understand how the dashboard is used. Analytics
+      cookies are only set if you agree. See our
+      <a href="/privacy">privacy&nbsp;policy</a>.
+    </div>
+    <div class="cookie-banner__actions">
+      <button type="button" id="cookie-decline" class="cookie-btn cookie-btn--ghost">Decline</button>
+      <button type="button" id="cookie-accept" class="cookie-btn cookie-btn--primary">Accept</button>
+    </div>
+  </div>
+  <style>
+    .cookie-banner {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 2147483647;
+      display: flex; flex-wrap: wrap; gap: 14px 20px;
+      align-items: center; justify-content: center;
+      padding: 16px 20px; background: #1a1a1a; color: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-size: .92rem; line-height: 1.5;
+      box-shadow: 0 -2px 14px rgba(0, 0, 0, .3);
+    }
+    .cookie-banner[hidden] { display: none; }
+    .cookie-banner__text { max-width: 620px; }
+    .cookie-banner a { color: #4ade80; }
+    .cookie-banner__actions { display: flex; gap: 10px; flex-shrink: 0; }
+    .cookie-btn {
+      font: inherit; font-weight: 600; padding: .55rem 1.3rem;
+      border-radius: 6px; border: 1px solid transparent; cursor: pointer;
+    }
+    .cookie-btn--primary { background: #15803d; color: #fff; }
+    .cookie-btn--primary:hover { background: #166534; }
+    .cookie-btn--ghost { background: transparent; color: #f5f5f5; border-color: #555; }
+    .cookie-btn--ghost:hover { border-color: #888; }
+  </style>
+  <script>
+    (function () {
+      var GA_ID = 'G-82NPT4CT5G';
+      var COOKIE = 'educk_consent';
+
+      function readConsent() {
+        var m = document.cookie.match(/(?:^|;\s*)educk_consent=([^;]+)/);
+        return m ? m[1] : null;
+      }
+      function writeConsent(value) {
+        var oneYear = 60 * 60 * 24 * 365;
+        document.cookie = COOKIE + '=' + value + ';path=/;max-age=' + oneYear + ';SameSite=Lax';
+      }
+      function loadAnalytics() {
+        if (window.__educkGaLoaded) return;
+        window.__educkGaLoaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', GA_ID);
+      }
+
+      var banner = document.getElementById('cookie-banner');
+      var consent = readConsent();
+      if (consent === 'granted') {
+        loadAnalytics();
+      } else if (consent !== 'denied' && banner) {
+        banner.hidden = false;
+      }
+
+      var accept = document.getElementById('cookie-accept');
+      var decline = document.getElementById('cookie-decline');
+      if (accept) accept.addEventListener('click', function () {
+        writeConsent('granted');
+        if (banner) banner.hidden = true;
+        loadAnalytics();
+      });
+      if (decline) decline.addEventListener('click', function () {
+        writeConsent('denied');
+        if (banner) banner.hidden = true;
+      });
+    })();
+  </script>
 </body>
 </html>

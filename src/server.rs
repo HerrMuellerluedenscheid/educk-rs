@@ -887,6 +887,46 @@ async fn get_cloud_page(
     Ok(axum::response::Html(html))
 }
 
+// ── Legal pages (Impressum / privacy policy) ─────────────────────────────────
+
+#[derive(Template)]
+#[template(path = "impressum.html")]
+struct ImpressumTemplate {
+    canonical_url: String,
+}
+
+/// GET /impressum
+/// Static legal notice (Impressum) required of a German operator under § 5 DDG.
+async fn get_impressum(State(state): State<AppState>) -> Result<impl IntoResponse, StatusCode> {
+    let template = ImpressumTemplate {
+        canonical_url: format!("{}/impressum", state.base_url),
+    };
+    let html = template.render().map_err(|e| {
+        tracing::error!("Template rendering error: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+    Ok(axum::response::Html(html))
+}
+
+#[derive(Template)]
+#[template(path = "privacy.html")]
+struct PrivacyTemplate {
+    canonical_url: String,
+}
+
+/// GET /privacy
+/// Static GDPR privacy policy (Datenschutzerklärung); discloses Google Analytics.
+async fn get_privacy(State(state): State<AppState>) -> Result<impl IntoResponse, StatusCode> {
+    let template = PrivacyTemplate {
+        canonical_url: format!("{}/privacy", state.base_url),
+    };
+    let html = template.render().map_err(|e| {
+        tracing::error!("Template rendering error: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+    Ok(axum::response::Html(html))
+}
+
 // ── Cloud provider endpoints ─────────────────────────────────────────────────
 
 #[derive(Serialize)]
@@ -1040,6 +1080,8 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
         .route("/sitemap.xml", get(sitemap_xml))
         .route("/electricity/{country}", get(get_country_page))
         .route("/cloud/{provider}/{region}", get(get_cloud_page))
+        .route("/impressum", get(get_impressum))
+        .route("/privacy", get(get_privacy))
         .route("/api/v1/countries", get(list_countries))
         .route("/api/v1/zones/{country}", get(get_country_zones))
         .route(
