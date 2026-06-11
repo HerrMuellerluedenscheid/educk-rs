@@ -1073,6 +1073,21 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
         series_cache: Arc::new(Mutex::new(HashMap::new())),
     };
 
+    // Proactively warm the DE cache so the landing page is always fast.
+    let warmer = state.clone();
+    tokio::spawn(async move {
+        if let Some(zone) = get_primary_zone("DE") {
+            loop {
+                if let Err(e) = warmer.series_for_zone(zone.code).await {
+                    tracing::warn!("DE cache warm-up failed: {:?}", e);
+                } else {
+                    tracing::debug!("DE cache refreshed");
+                }
+                tokio::time::sleep(CACHE_TTL).await;
+            }
+        }
+    });
+
     let app = Router::new()
         .route("/", get(get_landing))
         .route("/health", get(health))
