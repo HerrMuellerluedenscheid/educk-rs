@@ -21,7 +21,7 @@ use crate::entsoe::{EntsoeClient, areas};
 
 /// How far ahead the SSR pages forecast, and how long a fetched series is reused.
 const LOOKAHEAD_HOURS: i64 = 25;
-const CACHE_TTL: std::time::Duration = std::time::Duration::from_secs(600);
+const CACHE_TTL: std::time::Duration = std::time::Duration::from_secs(3600);
 
 type SeriesCache = Arc<Mutex<HashMap<String, (Instant, Vec<RenewableSurplus>)>>>;
 
