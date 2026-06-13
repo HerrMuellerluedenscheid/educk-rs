@@ -115,133 +115,141 @@ class _HomeBody extends StatelessWidget {
     final peak = data.upcomingPeakPoint;
     final peakTime = DateFormat('HH:mm').format(peak.timestamp);
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-      children: [
-        // ── Top bar ──────────────────────────────────────────────────────────
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    // Cap the content column to a phone-like width so wide browsers get the
+    // same proportions as mobile (the gauge scales with column width, so an
+    // unconstrained ListView would blow it up while body text stayed tiny).
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // ── Top bar ──────────────────────────────────────────────────────────
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  _greeting(),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _greeting(),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                    Text(
+                      DateFormat('EEEE, d MMMM').format(DateTime.now()),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey.withOpacity(0.6),
+                          ),
+                    ),
+                  ],
                 ),
-                Text(
-                  DateFormat('EEEE, d MMMM').format(DateTime.now()),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey.withOpacity(0.6),
-                      ),
+                _CountryChip(
+                  country: country,
+                  countries: countries,
+                  onChanged: onCountryChanged,
                 ),
               ],
             ),
-            _CountryChip(
-              country: country,
-              countries: countries,
-              onChanged: onCountryChanged,
-            ),
-          ],
-        ),
 
-        const SizedBox(height: 28),
+            const SizedBox(height: 28),
 
-        // ── Gauge ─────────────────────────────────────────────────────────────
-        Center(
-          child: FractionallySizedBox(
-            widthFactor: 0.5,
-            child: SurplusGauge(value: norm, coveragePct: coverage),
-          ),
-        ),
-
-        const SizedBox(height: 16),
-
-        // ── Status badge ──────────────────────────────────────────────────────
-        Center(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            decoration: BoxDecoration(
-              color: status.color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: status.color.withOpacity(0.35)),
-            ),
-            child: Text(
-              status.label.toUpperCase(),
-              style: TextStyle(
-                color: status.color,
-                fontWeight: FontWeight.w700,
-                fontSize: 12,
-                letterSpacing: 1.2,
+            // ── Gauge ─────────────────────────────────────────────────────────────
+            Center(
+              child: FractionallySizedBox(
+                widthFactor: 0.5,
+                child: SurplusGauge(value: norm, coveragePct: coverage),
               ),
             ),
-          ),
-        ),
 
-        const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-        // ── Message ───────────────────────────────────────────────────────────
-        Text(
-          _message(coverage.round(), country, norm),
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                height: 1.5,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withOpacity(0.75),
-              ),
-        ),
-
-        const SizedBox(height: 8),
-
-        // ── Best upcoming time ─────────────────────────────────────────────────
-        if (peak.timestamp.isAfter(DateTime.now()))
-          Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.bolt,
-                    size: 14, color: Colors.amber.shade600),
-                const SizedBox(width: 4),
-                Text(
-                  'Best upcoming window: $peakTime',
+            // ── Status badge ──────────────────────────────────────────────────────
+            Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                decoration: BoxDecoration(
+                  color: status.color.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: status.color.withOpacity(0.35)),
+                ),
+                child: Text(
+                  status.label.toUpperCase(),
                   style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.amber.shade700,
+                    color: status.color,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    letterSpacing: 1.2,
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
 
-        const SizedBox(height: 28),
+            const SizedBox(height: 16),
 
-        // ── 24 h forecast card ────────────────────────────────────────────────
-        _ForecastCard(data: data),
-
-        const SizedBox(height: 28),
-
-        // ── Details link ──────────────────────────────────────────────────────
-        Center(
-          child: TextButton.icon(
-            onPressed: onViewDetails,
-            icon: const Icon(Icons.bar_chart_rounded, size: 16),
-            label: const Text('View full analysis'),
-            style: TextButton.styleFrom(
-              foregroundColor:
-                  Theme.of(context).colorScheme.onSurface.withOpacity(0.55),
+            // ── Message ───────────────────────────────────────────────────────────
+            Text(
+              _message(coverage.round(), country, norm),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    height: 1.5,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.75),
+                  ),
             ),
-          ),
+
+            const SizedBox(height: 8),
+
+            // ── Best upcoming time ─────────────────────────────────────────────────
+            if (peak.timestamp.isAfter(DateTime.now()))
+              Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.bolt, size: 14, color: Colors.amber.shade600),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Best upcoming window: $peakTime',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.amber.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            const SizedBox(height: 28),
+
+            // ── 24 h forecast card ────────────────────────────────────────────────
+            _ForecastCard(data: data),
+
+            const SizedBox(height: 28),
+
+            // ── Details link ──────────────────────────────────────────────────────
+            Center(
+              child: TextButton.icon(
+                onPressed: onViewDetails,
+                icon: const Icon(Icons.bar_chart_rounded, size: 16),
+                label: const Text('View full analysis'),
+                style: TextButton.styleFrom(
+                  foregroundColor:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.55),
+                ),
+              ),
+            ),
+
+            // ── Build footer ──────────────────────────────────────────────────────
+            const SizedBox(height: 16),
+            const _BuildFooter(),
+          ],
         ),
-
-        // ── Build footer ──────────────────────────────────────────────────────
-        const SizedBox(height: 16),
-        const _BuildFooter(),
-      ],
+      ),
     );
   }
 
@@ -299,7 +307,8 @@ class _ForecastCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.timeline, size: 14, color: Colors.grey.withOpacity(0.6)),
+              Icon(Icons.timeline,
+                  size: 14, color: Colors.grey.withOpacity(0.6)),
               const SizedBox(width: 6),
               Text(
                 'Next 24 hours',
@@ -344,7 +353,9 @@ class _CountryChip extends StatelessWidget {
         items: countries
             .map((c) => DropdownMenuItem(value: c, child: Text(c)))
             .toList(),
-        onChanged: (v) { if (v != null) onChanged(v); },
+        onChanged: (v) {
+          if (v != null) onChanged(v);
+        },
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -413,8 +424,7 @@ class _ErrorView extends StatelessWidget {
             const SizedBox(height: 8),
             Text(error,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 13, color: Colors.grey.shade600)),
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: onRetry,
