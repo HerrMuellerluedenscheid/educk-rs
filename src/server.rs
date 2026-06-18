@@ -1018,6 +1018,42 @@ async fn health() -> &'static str {
     "OK"
 }
 
+// Brand assets embedded in the binary so the SSR site is self-contained (no
+// runtime file dependency or volume mount). The duck logo and its derived
+// favicons are the source-of-truth files in `static/`.
+const LOGO_SVG: &[u8] = include_bytes!("../static/logo_bw.svg");
+const LOGO_PNG: &[u8] = include_bytes!("../static/logo_bw.png");
+const FAVICON_ICO: &[u8] = include_bytes!("../static/favicon.ico");
+const FAVICON_PNG: &[u8] = include_bytes!("../static/favicon-32.png");
+const APPLE_TOUCH_ICON: &[u8] = include_bytes!("../static/apple-touch-icon.png");
+
+/// Serve an embedded asset with a long cache lifetime; these change rarely.
+fn asset(content_type: &'static str, bytes: &'static [u8]) -> impl IntoResponse {
+    (
+        [
+            (header::CONTENT_TYPE, content_type),
+            (header::CACHE_CONTROL, "public, max-age=604800, immutable"),
+        ],
+        bytes,
+    )
+}
+
+async fn favicon_ico() -> impl IntoResponse {
+    asset("image/x-icon", FAVICON_ICO)
+}
+async fn favicon_png() -> impl IntoResponse {
+    asset("image/png", FAVICON_PNG)
+}
+async fn apple_touch_icon() -> impl IntoResponse {
+    asset("image/png", APPLE_TOUCH_ICON)
+}
+async fn logo_svg() -> impl IntoResponse {
+    asset("image/svg+xml", LOGO_SVG)
+}
+async fn logo_png() -> impl IntoResponse {
+    asset("image/png", LOGO_PNG)
+}
+
 /// GET /robots.txt
 /// Allow all crawlers and advertise the sitemap.
 async fn robots_txt(State(state): State<AppState>) -> impl IntoResponse {
@@ -1093,6 +1129,11 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
         .route("/health", get(health))
         .route("/robots.txt", get(robots_txt))
         .route("/sitemap.xml", get(sitemap_xml))
+        .route("/favicon.ico", get(favicon_ico))
+        .route("/static/favicon-32.png", get(favicon_png))
+        .route("/static/apple-touch-icon.png", get(apple_touch_icon))
+        .route("/static/logo_bw.svg", get(logo_svg))
+        .route("/static/logo_bw.png", get(logo_png))
         .route("/electricity/{country}", get(get_country_page))
         .route("/cloud/{provider}/{region}", get(get_cloud_page))
         .route("/impressum", get(get_impressum))
