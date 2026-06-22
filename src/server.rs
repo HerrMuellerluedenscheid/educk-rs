@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
+use tower_http::compression::CompressionLayer;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
@@ -1182,6 +1183,36 @@ async fn logo_png() -> impl IntoResponse {
     asset("image/png", LOGO_PNG)
 }
 
+// ── Lightweight dashboard (vanilla HTML/JS/SVG, served at /app) ────────────────
+// Replaces the heavy Flutter web bundle. Files are embedded so the binary stays
+// self-contained; the JS calls the same-origin /api/v1 endpoints. app.css is the
+// committed Tailwind build (see `just build-css`).
+const APP_HTML: &[u8] = include_bytes!("../static/app/index.html");
+const APP_JS: &[u8] = include_bytes!("../static/app/app.js");
+const APP_CSS: &[u8] = include_bytes!("../static/app/app.css");
+
+/// Serve an embedded dashboard asset. Unlike the brand assets these change every
+/// deploy and are not content-hashed, so they revalidate rather than cache hard.
+fn app_asset(content_type: &'static str, bytes: &'static [u8]) -> impl IntoResponse {
+    (
+        [
+            (header::CONTENT_TYPE, content_type),
+            (header::CACHE_CONTROL, "no-cache"),
+        ],
+        bytes,
+    )
+}
+
+async fn app_index() -> impl IntoResponse {
+    app_asset("text/html; charset=utf-8", APP_HTML)
+}
+async fn app_js() -> impl IntoResponse {
+    app_asset("application/javascript; charset=utf-8", APP_JS)
+}
+async fn app_css() -> impl IntoResponse {
+    app_asset("text/css; charset=utf-8", APP_CSS)
+}
+
 /// GET /robots.txt
 /// Allow all crawlers and advertise the sitemap.
 async fn robots_txt(State(state): State<AppState>) -> impl IntoResponse {
@@ -1264,6 +1295,10 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
         .route("/static/apple-touch-icon.png", get(apple_touch_icon))
         .route("/static/logo_bw.svg", get(logo_svg))
         .route("/static/logo_bw.png", get(logo_png))
+        .route("/app", get(app_index))
+        .route("/app/", get(app_index))
+        .route("/app/app.js", get(app_js))
+        .route("/app/app.css", get(app_css))
         .route("/electricity/{country}", get(get_country_page))
         .route("/cloud/{provider}/{region}", get(get_cloud_page))
         .route("/impressum", get(get_impressum))
@@ -1299,6 +1334,9 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
         )
         .layer(TraceLayer::new_for_http())
         .layer(CorsLayer::permissive())
+        // Compress SSR HTML, JSON and the dashboard JS/CSS (gzip/brotli). This is
+        // the front door now that nginx no longer sits in front of the service.
+        .layer(CompressionLayer::new())
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3044").await?;

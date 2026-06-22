@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Scan the dashboard markup + logic for the utility classes actually used,
+   so the generated app.css contains only those. */
+@source "./index.html";
+@source "./app.js";
