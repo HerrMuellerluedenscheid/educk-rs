@@ -47,6 +47,55 @@
 </head>
 <body>
   <!--
+    Loading splash. Shown immediately (the Flutter engine + CanvasKit take a
+    couple of seconds to download, compile and paint the first frame, during
+    which the page would otherwise be blank). Removed on the `flutter-first-frame`
+    event the engine fires once it has rendered. The markup is plain HTML/CSS so
+    it paints before any JS runs — this is what gives the page early visible
+    content (improves Speed Index and perceived load).
+  -->
+  <div id="splash" class="splash">
+    <img class="splash__logo" src="logo_bw.svg" width="96" height="96" alt="educk">
+    <div class="splash__spinner" role="progressbar" aria-label="Loading"></div>
+  </div>
+  <style>
+    .splash {
+      position: fixed; inset: 0; z-index: 2147483646;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 28px; background: #fafafa;
+      opacity: 1; transition: opacity .3s ease;
+    }
+    .splash--hidden { opacity: 0; pointer-events: none; }
+    .splash__logo { display: block; }
+    .splash__spinner {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 3px solid rgba(46, 125, 50, .2);
+      border-top-color: #2e7d32;
+      animation: splash-spin .8s linear infinite;
+    }
+    @keyframes splash-spin { to { transform: rotate(360deg); } }
+    @media (prefers-color-scheme: dark) {
+      .splash { background: #121212; }
+      .splash__spinner { border-color: rgba(76, 222, 128, .25); border-top-color: #4ade80; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .splash__spinner { animation: none; }
+      .splash { transition: none; }
+    }
+  </style>
+  <script>
+    // Remove the splash once Flutter has painted its first frame.
+    window.addEventListener('flutter-first-frame', function () {
+      var splash = document.getElementById('splash');
+      if (!splash) return;
+      splash.classList.add('splash--hidden');
+      splash.addEventListener('transitionend', function () { splash.remove(); }, { once: true });
+      // Fallback in case the transition doesn't fire (e.g. reduced motion).
+      setTimeout(function () { if (splash.isConnected) splash.remove(); }, 500);
+    });
+  </script>
+
+  <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader
     or to give the user feedback during the initialization process.

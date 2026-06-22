@@ -27,11 +27,62 @@ RUN flutter build web --release \
     --dart-define=GIT_COMMIT=${GIT_COMMIT}
 
 
-# ── Stage 2: serve with nginx ───────────────────────────────────────────────────
+# ── Stage 2: precompress static assets ───────────────────────────────────────────
+# Build-time brotli (-q 11) and gzip (-9) so nginx can serve the precompressed
+# variants via brotli_static/gzip_static instead of compressing on every request.
+# Worth the max compression level here: the bundle is immutable (content-hashed),
+# so each file is compressed once at build and served many times.
+FROM alpine AS compress
+RUN apk add --no-cache brotli gzip
+COPY --from=builder /app/build/web /web
+RUN find /web -type f \( \
+        -name '*.js'   -o -name '*.css'  -o -name '*.wasm' -o -name '*.json' \
+        -o -name '*.svg' -o -name '*.html' -o -name '*.ttf'  -o -name '*.otf' \
+    \) -print0 \
+    | while IFS= read -r -d '' f; do \
+        brotli -q 11 -f "$f"; \
+        gzip  -9 -k -f "$f"; \
+      done
+
+
+# ── Stage 3: build the brotli dynamic modules for nginx ──────────────────────────
+# The official nginx image has no brotli (it's a third-party module). We compile
+# ngx_brotli against the *exact* nginx version from the runtime image, using
+# --with-compat so the resulting .so is ABI-compatible with the precompiled
+# nginx binary (the official image is itself built with --with-compat).
+FROM nginx:alpine-slim AS brotli-build
+RUN apk add --no-cache \
+    git gcc make libc-dev linux-headers \
+    pcre2-dev zlib-dev openssl-dev brotli-dev
+WORKDIR /build
+RUN set -eux; \
+    NGINX_VERSION="$(nginx -V 2>&1 | sed -n 's@.*nginx/\([0-9.]*\).*@\1@p')"; \
+    wget -O nginx.tar.gz "https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz"; \
+    tar -xzf nginx.tar.gz; \
+    git clone --depth=1 --recurse-submodules https://github.com/google/ngx_brotli.git; \
+    cd "nginx-${NGINX_VERSION}"; \
+    ./configure --with-compat --add-dynamic-module=../ngx_brotli; \
+    make -j"$(nproc)" modules; \
+    mkdir -p /modules; \
+    cp objs/ngx_http_brotli_filter_module.so \
+       objs/ngx_http_brotli_static_module.so /modules/
+
+
+# ── Stage 4: serve with nginx ───────────────────────────────────────────────────
 FROM nginx:alpine-slim
 
-# Bundle lives under app/ so nginx can serve it at /app/ and proxy the rest.
-COPY --from=builder /app/build/web /usr/share/nginx/html/app
+# brotli-libs provides libbrotlienc/libbrotlidec that the dynamic modules link against.
+RUN apk add --no-cache brotli-libs
+
+# Brotli dynamic modules + the load_module directives (which must live in the main
+# context, not in conf.d/*.conf which is included inside http{}).
+COPY --from=brotli-build /modules/ /etc/nginx/modules/
+RUN sed -i '1i load_module modules/ngx_http_brotli_filter_module.so;\nload_module modules/ngx_http_brotli_static_module.so;' \
+    /etc/nginx/nginx.conf
+
+# Bundle (with precompressed .br/.gz siblings) lives under app/ so nginx can serve
+# it at /app/ and proxy the rest.
+COPY --from=compress /web /usr/share/nginx/html/app
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
