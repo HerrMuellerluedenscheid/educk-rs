@@ -9,7 +9,7 @@ dev:
     set -euo pipefail
     trap 'kill 0' EXIT
     [ -f flutter/.env ] || cp flutter/.env.example flutter/.env
-    cargo run &
+    cargo run --bin educk-rs &
     (cd flutter && flutter run -d chrome --dart-define-from-file=.env) &
     wait
 

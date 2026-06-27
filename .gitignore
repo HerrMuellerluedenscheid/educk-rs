@@ -1,3 +1,7 @@
 /target
 .env
 .idea
+
+# MaStR Gesamtdatenexport (multi-GB) — input to `mastr_ingest`, never committed.
+# The committed artifact is the small static/de_capacity_grid.json it produces.
+/Gesamtdatenexport_*

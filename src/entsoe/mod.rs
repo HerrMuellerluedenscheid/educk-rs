@@ -14,6 +14,8 @@ const BASE_URL: &str = "https://web-api.tp.entsoe.eu/api";
 pub enum EntsoeError {
     #[error("HTTP request failed: {0}")]
     Request(#[from] reqwest::Error),
+    #[error("ENTSO-E upstream returned HTTP {0}")]
+    Upstream(reqwest::StatusCode),
     #[error("XML parsing failed: {0}")]
     XmlParsing(#[from] quick_xml::DeError),
     #[error("Invalid response: {0}")]
@@ -124,8 +126,15 @@ pub struct EntsoeClient {
 
 impl EntsoeClient {
     pub fn new(api_key: impl Into<String>) -> Self {
+        // Bound every request: ENTSO-E can hang or be slow (especially during
+        // maintenance), and an unbounded client would let a single request block
+        // the handler until the caller's own timeout fires.
+        let client = Client::builder()
+            .timeout(std::time::Duration::from_secs(10))
+            .build()
+            .expect("failed to build HTTP client");
         Self {
-            client: Client::new(),
+            client,
             api_key: api_key.into(),
         }
     }
@@ -163,9 +172,18 @@ impl EntsoeClient {
     }
 
     async fn fetch_and_parse(&self, url: &str) -> Result<GlMarketDocument, EntsoeError> {
-        let xml = self.client.get(url).send().await?.text().await?;
+        let response = self.client.get(url).send().await?;
+        let status = response.status();
+        let xml = response.text().await?;
 
-        // Check for error response
+        // ENTSO-E serves an HTML page (not XML) for outages/maintenance and other
+        // non-2xx responses. Bail out before the XML parser chokes on it.
+        if !status.is_success() {
+            tracing::warn!("ENTSO-E returned HTTP {status}");
+            return Err(EntsoeError::Upstream(status));
+        }
+
+        // A 200 can still carry a structured error acknowledgement.
         if xml.contains("<Reason>") || xml.contains("<code>") {
             return Err(EntsoeError::InvalidResponse(xml));
         }

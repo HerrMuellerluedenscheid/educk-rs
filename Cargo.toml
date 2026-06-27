@@ -22,3 +22,10 @@ serde_json = "1.0"
 askama = "0.15.1"
 dotenvy = "0.15"
 config = { version = "0.15", default-features = false }
+
+# Used only by the `mastr_ingest` offline tool to read the MaStR
+# Gesamtdatenexport ZIP archive; the server binary does not touch it.
+zip = "2"
+# The export's XML is UTF-16 (BOM-marked); transcode it to UTF-8 on the fly,
+# streaming, before handing it to quick-xml (which only parses UTF-8).
+encoding_rs_io = "0.1"

@@ -1,0 +1,9612 @@
+{
+  "cell_deg": 0.2,
+  "cells": [
+    {
+      "lat": 47.1,
+      "lon": 5.1,
+      "solar_kw": 153.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.1,
+      "lon": 6.1,
+      "solar_kw": 59.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.1,
+      "lon": 8.1,
+      "solar_kw": 572.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.1,
+      "lon": 9.1,
+      "solar_kw": 262.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.1,
+      "lon": 9.5,
+      "solar_kw": 69.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.1,
+      "lon": 10.1,
+      "solar_kw": 99.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.1,
+      "lon": 11.1,
+      "solar_kw": 378.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.1,
+      "lon": 12.1,
+      "solar_kw": 99.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.1,
+      "lon": 13.1,
+      "solar_kw": 36.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.3,
+      "lon": 8.7,
+      "solar_kw": 381.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.3,
+      "lon": 9.3,
+      "solar_kw": 62.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.3,
+      "lon": 9.5,
+      "solar_kw": 48.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.3,
+      "lon": 10.1,
+      "solar_kw": 71.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.3,
+      "lon": 10.3,
+      "solar_kw": 1016.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.3,
+      "lon": 10.5,
+      "solar_kw": 50.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 7.5,
+      "solar_kw": 1466.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 7.7,
+      "solar_kw": 14780.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 7.9,
+      "solar_kw": 10493.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 8.1,
+      "solar_kw": 14326.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 8.3,
+      "solar_kw": 4165.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 8.5,
+      "solar_kw": 7574.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 9.1,
+      "solar_kw": 182.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 9.3,
+      "solar_kw": 609.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 9.5,
+      "solar_kw": 3239.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 9.7,
+      "solar_kw": 12020.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 9.9,
+      "solar_kw": 4372.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 10.1,
+      "solar_kw": 5780.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 10.3,
+      "solar_kw": 18947.6,
+      "wind_hub_m": 85.0,
+      "wind_kw": 1500.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 10.5,
+      "solar_kw": 7599.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 10.7,
+      "solar_kw": 7997.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 11.1,
+      "solar_kw": 8727.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 11.3,
+      "solar_kw": 1628.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 11.5,
+      "solar_kw": 116.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 12.1,
+      "solar_kw": 250.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 12.3,
+      "solar_kw": 999.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 12.9,
+      "solar_kw": 1063.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.5,
+      "lon": 13.7,
+      "solar_kw": 35.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 7.5,
+      "solar_kw": 13025.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 7.7,
+      "solar_kw": 22506.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 7.9,
+      "solar_kw": 20965.4,
+      "wind_hub_m": 144.2,
+      "wind_kw": 26900.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 8.1,
+      "solar_kw": 12791.6,
+      "wind_hub_m": 149.0,
+      "wind_kw": 6900.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 8.3,
+      "solar_kw": 35672.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 8.5,
+      "solar_kw": 15261.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 8.7,
+      "solar_kw": 22875.9,
+      "wind_hub_m": 134.0,
+      "wind_kw": 9900.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 8.9,
+      "solar_kw": 75396.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 9.1,
+      "solar_kw": 28333.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 9.3,
+      "solar_kw": 26664.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 9.5,
+      "solar_kw": 67867.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 9.7,
+      "solar_kw": 63410.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 9.9,
+      "solar_kw": 39829.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 10.1,
+      "solar_kw": 22219.8,
+      "wind_hub_m": 100.2,
+      "wind_kw": 5300.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 10.3,
+      "solar_kw": 135140.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 10.5,
+      "solar_kw": 61569.8,
+      "wind_hub_m": 117.8,
+      "wind_kw": 21100.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 10.7,
+      "solar_kw": 42735.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 10.9,
+      "solar_kw": 32950.1,
+      "wind_hub_m": 70.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 11.1,
+      "solar_kw": 21989.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 11.3,
+      "solar_kw": 35787.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 11.5,
+      "solar_kw": 14052.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 11.7,
+      "solar_kw": 6146.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 11.9,
+      "solar_kw": 6459.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 12.1,
+      "solar_kw": 10894.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 12.3,
+      "solar_kw": 2134.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 12.5,
+      "solar_kw": 4370.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 12.7,
+      "solar_kw": 3013.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 12.9,
+      "solar_kw": 8221.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.7,
+      "lon": 13.1,
+      "solar_kw": 1520.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 5.5,
+      "solar_kw": 2086.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 7.5,
+      "solar_kw": 5913.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 7.7,
+      "solar_kw": 53867.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 7.9,
+      "solar_kw": 18482.3,
+      "wind_hub_m": 162.6,
+      "wind_kw": 14020.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 8.1,
+      "solar_kw": 6816.4,
+      "wind_hub_m": 50.0,
+      "wind_kw": 530.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 8.3,
+      "solar_kw": 22875.4,
+      "wind_hub_m": 78.6,
+      "wind_kw": 2800.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 8.5,
+      "solar_kw": 64535.4,
+      "wind_hub_m": 30.7,
+      "wind_kw": 95.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 8.7,
+      "solar_kw": 42843.4,
+      "wind_hub_m": 149.1,
+      "wind_kw": 39300.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 8.9,
+      "solar_kw": 114448.2,
+      "wind_hub_m": 99.0,
+      "wind_kw": 1500.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 9.1,
+      "solar_kw": 92554.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 9.3,
+      "solar_kw": 63054.6,
+      "wind_hub_m": 120.4,
+      "wind_kw": 12000.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 9.5,
+      "solar_kw": 53851.0,
+      "wind_hub_m": 175.0,
+      "wind_kw": 43200.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 9.7,
+      "solar_kw": 93431.5,
+      "wind_hub_m": 166.6,
+      "wind_kw": 22240.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 9.9,
+      "solar_kw": 51743.8,
+      "wind_hub_m": 68.0,
+      "wind_kw": 2600.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 10.1,
+      "solar_kw": 95601.3,
+      "wind_hub_m": 78.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 10.3,
+      "solar_kw": 129054.9,
+      "wind_hub_m": 81.4,
+      "wind_kw": 15574.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 10.5,
+      "solar_kw": 51983.8,
+      "wind_hub_m": 104.5,
+      "wind_kw": 17180.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 10.7,
+      "solar_kw": 107939.2,
+      "wind_hub_m": 133.0,
+      "wind_kw": 35500.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 10.9,
+      "solar_kw": 107118.7,
+      "wind_hub_m": 160.0,
+      "wind_kw": 20680.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 11.1,
+      "solar_kw": 58481.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 11.3,
+      "solar_kw": 21581.6,
+      "wind_hub_m": 36.0,
+      "wind_kw": 40.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 11.5,
+      "solar_kw": 30923.7,
+      "wind_hub_m": 149.0,
+      "wind_kw": 12000.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 11.7,
+      "solar_kw": 16227.8,
+      "wind_hub_m": 166.6,
+      "wind_kw": 16680.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 11.9,
+      "solar_kw": 39948.6,
+      "wind_hub_m": 166.6,
+      "wind_kw": 5560.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 12.1,
+      "solar_kw": 55697.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 12.3,
+      "solar_kw": 28607.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 12.5,
+      "solar_kw": 37388.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 12.7,
+      "solar_kw": 56042.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 47.9,
+      "lon": 12.9,
+      "solar_kw": 31121.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 5.1,
+      "solar_kw": 99.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 6.9,
+      "solar_kw": 70.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 7.1,
+      "solar_kw": 327.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 7.5,
+      "solar_kw": 11897.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 7.7,
+      "solar_kw": 68992.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 7.9,
+      "solar_kw": 61315.7,
+      "wind_hub_m": 147.3,
+      "wind_kw": 26590.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 8.1,
+      "solar_kw": 11283.2,
+      "wind_hub_m": 95.4,
+      "wind_kw": 29600.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 8.3,
+      "solar_kw": 28501.8,
+      "wind_hub_m": 122.7,
+      "wind_kw": 21900.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 8.5,
+      "solar_kw": 131023.4,
+      "wind_hub_m": 85.0,
+      "wind_kw": 1650.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 8.7,
+      "solar_kw": 101413.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 8.9,
+      "solar_kw": 34539.9,
+      "wind_hub_m": 65.0,
+      "wind_kw": 1500.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 9.1,
+      "solar_kw": 62145.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 9.3,
+      "solar_kw": 153048.6,
+      "wind_hub_m": 157.9,
+      "wind_kw": 34450.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 9.5,
+      "solar_kw": 65870.7,
+      "wind_hub_m": 149.0,
+      "wind_kw": 10800.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 9.7,
+      "solar_kw": 104541.3,
+      "wind_hub_m": 30.0,
+      "wind_kw": 150.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 9.9,
+      "solar_kw": 67400.8,
+      "wind_hub_m": 69.0,
+      "wind_kw": 980.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 10.1,
+      "solar_kw": 176638.1,
+      "wind_hub_m": 40.0,
+      "wind_kw": 80.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 10.3,
+      "solar_kw": 112254.8,
+      "wind_hub_m": 52.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 10.5,
+      "solar_kw": 103732.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 10.7,
+      "solar_kw": 177011.7,
+      "wind_hub_m": 141.0,
+      "wind_kw": 4800.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 10.9,
+      "solar_kw": 110864.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 11.1,
+      "solar_kw": 69087.9,
+      "wind_hub_m": 135.0,
+      "wind_kw": 6100.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 11.3,
+      "solar_kw": 74562.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 11.5,
+      "solar_kw": 70144.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 11.7,
+      "solar_kw": 127752.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 11.9,
+      "solar_kw": 48472.4,
+      "wind_hub_m": 138.0,
+      "wind_kw": 6560.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 12.1,
+      "solar_kw": 30594.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 12.3,
+      "solar_kw": 48751.4,
+      "wind_hub_m": 59.3,
+      "wind_kw": 2250.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 12.5,
+      "solar_kw": 84498.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 12.7,
+      "solar_kw": 74646.1,
+      "wind_hub_m": 100.0,
+      "wind_kw": 3000.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 12.9,
+      "solar_kw": 13001.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 13.1,
+      "solar_kw": 1645.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.1,
+      "lon": 15.3,
+      "solar_kw": 99.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 7.5,
+      "solar_kw": 541.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 7.7,
+      "solar_kw": 41533.9,
+      "wind_hub_m": 76.0,
+      "wind_kw": 500.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 7.9,
+      "solar_kw": 54748.7,
+      "wind_hub_m": 148.8,
+      "wind_kw": 83490.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 8.1,
+      "solar_kw": 26092.5,
+      "wind_hub_m": 149.8,
+      "wind_kw": 55150.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 8.3,
+      "solar_kw": 10447.1,
+      "wind_hub_m": 135.9,
+      "wind_kw": 30200.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 8.5,
+      "solar_kw": 71873.3,
+      "wind_hub_m": 85.6,
+      "wind_kw": 16900.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 8.7,
+      "solar_kw": 65269.0,
+      "wind_hub_m": 65.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 8.9,
+      "solar_kw": 62603.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 9.1,
+      "solar_kw": 27738.6,
+      "wind_hub_m": 46.0,
+      "wind_kw": 1800.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 9.3,
+      "solar_kw": 57716.6,
+      "wind_hub_m": 150.4,
+      "wind_kw": 52000.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 9.5,
+      "solar_kw": 100816.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 9.7,
+      "solar_kw": 140206.3,
+      "wind_hub_m": 126.6,
+      "wind_kw": 9750.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 9.9,
+      "solar_kw": 137510.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 10.1,
+      "solar_kw": 113431.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 10.3,
+      "solar_kw": 109202.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 10.5,
+      "solar_kw": 96580.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 10.7,
+      "solar_kw": 42268.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 10.9,
+      "solar_kw": 147625.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 11.1,
+      "solar_kw": 133507.6,
+      "wind_hub_m": 141.0,
+      "wind_kw": 26400.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 11.3,
+      "solar_kw": 111266.6,
+      "wind_hub_m": 141.0,
+      "wind_kw": 2400.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 11.5,
+      "solar_kw": 83477.5,
+      "wind_hub_m": 141.0,
+      "wind_kw": 9718.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 11.7,
+      "solar_kw": 158487.9,
+      "wind_hub_m": 76.3,
+      "wind_kw": 5000.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 11.9,
+      "solar_kw": 68503.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 12.1,
+      "solar_kw": 39076.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 12.3,
+      "solar_kw": 86834.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 12.5,
+      "solar_kw": 119994.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 12.7,
+      "solar_kw": 157999.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 12.9,
+      "solar_kw": 120371.7,
+      "wind_hub_m": 65.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 13.1,
+      "solar_kw": 68914.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 13.3,
+      "solar_kw": 57280.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.3,
+      "lon": 13.5,
+      "solar_kw": 145.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 7.7,
+      "solar_kw": 3253.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 7.9,
+      "solar_kw": 116292.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 8.1,
+      "solar_kw": 38420.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 8.3,
+      "solar_kw": 5342.1,
+      "wind_hub_m": 125.7,
+      "wind_kw": 9700.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 8.5,
+      "solar_kw": 67729.5,
+      "wind_hub_m": 151.5,
+      "wind_kw": 11300.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 8.7,
+      "solar_kw": 70447.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 8.9,
+      "solar_kw": 41223.0,
+      "wind_hub_m": 60.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 9.1,
+      "solar_kw": 72068.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 9.3,
+      "solar_kw": 52781.7,
+      "wind_hub_m": 160.0,
+      "wind_kw": 4200.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 9.5,
+      "solar_kw": 23171.7,
+      "wind_hub_m": 63.4,
+      "wind_kw": 4550.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 9.7,
+      "solar_kw": 40567.7,
+      "wind_hub_m": 141.5,
+      "wind_kw": 98350.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 9.9,
+      "solar_kw": 128507.5,
+      "wind_hub_m": 119.3,
+      "wind_kw": 29940.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 10.1,
+      "solar_kw": 67859.8,
+      "wind_hub_m": 94.6,
+      "wind_kw": 8100.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 10.3,
+      "solar_kw": 125056.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 10.5,
+      "solar_kw": 123511.4,
+      "wind_hub_m": 138.3,
+      "wind_kw": 20000.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 10.7,
+      "solar_kw": 53239.9,
+      "wind_hub_m": 139.5,
+      "wind_kw": 4700.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 10.9,
+      "solar_kw": 177519.6,
+      "wind_hub_m": 159.5,
+      "wind_kw": 13200.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 11.1,
+      "solar_kw": 257111.7,
+      "wind_hub_m": 140.6,
+      "wind_kw": 7200.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 11.3,
+      "solar_kw": 131470.4,
+      "wind_hub_m": 137.3,
+      "wind_kw": 21750.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 11.5,
+      "solar_kw": 100312.3,
+      "wind_hub_m": 150.1,
+      "wind_kw": 19700.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 11.7,
+      "solar_kw": 48448.0,
+      "wind_hub_m": 98.0,
+      "wind_kw": 1800.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 11.9,
+      "solar_kw": 167100.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 12.1,
+      "solar_kw": 203802.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 12.3,
+      "solar_kw": 86361.9,
+      "wind_hub_m": 137.0,
+      "wind_kw": 3300.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 12.5,
+      "solar_kw": 182087.4,
+      "wind_hub_m": 65.0,
+      "wind_kw": 1500.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 12.7,
+      "solar_kw": 98888.1,
+      "wind_hub_m": 74.3,
+      "wind_kw": 1500.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 12.9,
+      "solar_kw": 125153.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 13.1,
+      "solar_kw": 95446.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 13.3,
+      "solar_kw": 132244.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 13.5,
+      "solar_kw": 32322.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.5,
+      "lon": 13.7,
+      "solar_kw": 14782.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 7.9,
+      "solar_kw": 18380.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 8.1,
+      "solar_kw": 60676.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 8.3,
+      "solar_kw": 13000.6,
+      "wind_hub_m": 84.4,
+      "wind_kw": 2300.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 8.5,
+      "solar_kw": 6444.1,
+      "wind_hub_m": 117.9,
+      "wind_kw": 28000.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 8.7,
+      "solar_kw": 29569.2,
+      "wind_hub_m": 166.0,
+      "wind_kw": 11200.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 8.9,
+      "solar_kw": 70134.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 9.1,
+      "solar_kw": 60209.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 9.3,
+      "solar_kw": 80805.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 9.5,
+      "solar_kw": 55376.5,
+      "wind_hub_m": 164.0,
+      "wind_kw": 18900.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 9.7,
+      "solar_kw": 55209.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 9.9,
+      "solar_kw": 68529.3,
+      "wind_hub_m": 134.4,
+      "wind_kw": 143760.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 10.1,
+      "solar_kw": 75243.0,
+      "wind_hub_m": 134.4,
+      "wind_kw": 73100.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 10.3,
+      "solar_kw": 88533.5,
+      "wind_hub_m": 140.8,
+      "wind_kw": 93580.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 10.5,
+      "solar_kw": 104506.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 10.7,
+      "solar_kw": 90046.6,
+      "wind_hub_m": 141.0,
+      "wind_kw": 7200.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 10.9,
+      "solar_kw": 152830.2,
+      "wind_hub_m": 159.5,
+      "wind_kw": 24820.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 11.1,
+      "solar_kw": 72207.8,
+      "wind_hub_m": 68.0,
+      "wind_kw": 3800.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 11.3,
+      "solar_kw": 383376.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 11.5,
+      "solar_kw": 133401.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 11.7,
+      "solar_kw": 190780.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 11.9,
+      "solar_kw": 140700.5,
+      "wind_hub_m": 98.0,
+      "wind_kw": 4700.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 12.1,
+      "solar_kw": 106999.0,
+      "wind_hub_m": 124.4,
+      "wind_kw": 3410.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 12.3,
+      "solar_kw": 118420.0,
+      "wind_hub_m": 135.0,
+      "wind_kw": 3050.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 12.5,
+      "solar_kw": 121546.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 12.7,
+      "solar_kw": 132454.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 12.9,
+      "solar_kw": 376162.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 13.1,
+      "solar_kw": 124663.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 13.3,
+      "solar_kw": 79585.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 13.5,
+      "solar_kw": 147776.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 13.7,
+      "solar_kw": 56082.2,
+      "wind_hub_m": 56.3,
+      "wind_kw": 800.0
+    },
+    {
+      "lat": 48.7,
+      "lon": 13.9,
+      "solar_kw": 655.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 8.1,
+      "solar_kw": 27741.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 8.3,
+      "solar_kw": 114198.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 8.5,
+      "solar_kw": 43976.9,
+      "wind_hub_m": 145.1,
+      "wind_kw": 37500.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 8.7,
+      "solar_kw": 48278.7,
+      "wind_hub_m": 164.0,
+      "wind_kw": 13500.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 8.9,
+      "solar_kw": 86011.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 9.1,
+      "solar_kw": 110516.0,
+      "wind_hub_m": 120.4,
+      "wind_kw": 2500.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 9.3,
+      "solar_kw": 76479.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 9.5,
+      "solar_kw": 54176.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 9.7,
+      "solar_kw": 26999.5,
+      "wind_hub_m": 70.0,
+      "wind_kw": 1000.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 9.9,
+      "solar_kw": 57936.9,
+      "wind_hub_m": 152.6,
+      "wind_kw": 70430.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 10.1,
+      "solar_kw": 85032.7,
+      "wind_hub_m": 151.3,
+      "wind_kw": 20300.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 10.3,
+      "solar_kw": 49840.7,
+      "wind_hub_m": 127.1,
+      "wind_kw": 83370.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 10.5,
+      "solar_kw": 78190.1,
+      "wind_hub_m": 149.0,
+      "wind_kw": 3067.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 10.7,
+      "solar_kw": 95521.1,
+      "wind_hub_m": 113.3,
+      "wind_kw": 6600.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 10.9,
+      "solar_kw": 83628.5,
+      "wind_hub_m": 130.6,
+      "wind_kw": 13056.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 11.1,
+      "solar_kw": 72081.8,
+      "wind_hub_m": 132.0,
+      "wind_kw": 57408.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 11.3,
+      "solar_kw": 64673.1,
+      "wind_hub_m": 146.1,
+      "wind_kw": 19400.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 11.5,
+      "solar_kw": 132855.4,
+      "wind_hub_m": 135.2,
+      "wind_kw": 22400.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 11.7,
+      "solar_kw": 143588.4,
+      "wind_hub_m": 149.0,
+      "wind_kw": 3050.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 11.9,
+      "solar_kw": 117928.9,
+      "wind_hub_m": 110.2,
+      "wind_kw": 4260.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 12.1,
+      "solar_kw": 189533.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 12.3,
+      "solar_kw": 144012.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 12.5,
+      "solar_kw": 213775.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 12.7,
+      "solar_kw": 294760.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 12.9,
+      "solar_kw": 89236.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 13.1,
+      "solar_kw": 51815.7,
+      "wind_hub_m": 18.5,
+      "wind_kw": 36.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 13.3,
+      "solar_kw": 38430.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 13.5,
+      "solar_kw": 22940.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 48.9,
+      "lon": 13.7,
+      "solar_kw": 968.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 5.1,
+      "solar_kw": 99.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 6.1,
+      "solar_kw": 115.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 6.7,
+      "solar_kw": 59.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 6.9,
+      "solar_kw": 10758.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 7.1,
+      "solar_kw": 33170.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 7.3,
+      "solar_kw": 4184.6,
+      "wind_hub_m": 50.0,
+      "wind_kw": 250.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 7.5,
+      "solar_kw": 14308.1,
+      "wind_hub_m": 128.4,
+      "wind_kw": 38350.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 7.7,
+      "solar_kw": 6794.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 7.9,
+      "solar_kw": 5372.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 8.1,
+      "solar_kw": 31792.0,
+      "wind_hub_m": 143.7,
+      "wind_kw": 41390.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 8.3,
+      "solar_kw": 74135.2,
+      "wind_hub_m": 129.4,
+      "wind_kw": 71100.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 8.5,
+      "solar_kw": 88165.3,
+      "wind_hub_m": 101.0,
+      "wind_kw": 2000.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 8.7,
+      "solar_kw": 33049.6,
+      "wind_hub_m": 25.0,
+      "wind_kw": 95.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 8.9,
+      "solar_kw": 99014.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 9.1,
+      "solar_kw": 92107.7,
+      "wind_hub_m": 90.6,
+      "wind_kw": 2350.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 9.3,
+      "solar_kw": 73668.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 9.5,
+      "solar_kw": 43175.2,
+      "wind_hub_m": 157.4,
+      "wind_kw": 18200.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 9.7,
+      "solar_kw": 90197.7,
+      "wind_hub_m": 144.1,
+      "wind_kw": 45030.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 9.9,
+      "solar_kw": 95007.3,
+      "wind_hub_m": 143.7,
+      "wind_kw": 123100.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 10.1,
+      "solar_kw": 54559.4,
+      "wind_hub_m": 145.6,
+      "wind_kw": 75660.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 10.3,
+      "solar_kw": 122786.5,
+      "wind_hub_m": 129.1,
+      "wind_kw": 46300.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 10.5,
+      "solar_kw": 74496.1,
+      "wind_hub_m": 145.0,
+      "wind_kw": 15500.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 10.7,
+      "solar_kw": 69901.1,
+      "wind_hub_m": 102.3,
+      "wind_kw": 30800.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 10.9,
+      "solar_kw": 157798.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 11.1,
+      "solar_kw": 91652.0,
+      "wind_hub_m": 119.3,
+      "wind_kw": 36518.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 11.3,
+      "solar_kw": 200390.9,
+      "wind_hub_m": 137.0,
+      "wind_kw": 79701.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 11.5,
+      "solar_kw": 210213.0,
+      "wind_hub_m": 135.8,
+      "wind_kw": 32865.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 11.7,
+      "solar_kw": 217057.0,
+      "wind_hub_m": 141.9,
+      "wind_kw": 13300.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 11.9,
+      "solar_kw": 133662.5,
+      "wind_hub_m": 137.7,
+      "wind_kw": 20500.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 12.1,
+      "solar_kw": 146097.5,
+      "wind_hub_m": 60.5,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 12.3,
+      "solar_kw": 28564.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 12.5,
+      "solar_kw": 41263.7,
+      "wind_hub_m": 136.1,
+      "wind_kw": 12150.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 12.7,
+      "solar_kw": 42931.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 12.9,
+      "solar_kw": 77021.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 13.1,
+      "solar_kw": 14429.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 13.3,
+      "solar_kw": 7324.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 15.3,
+      "solar_kw": 34.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.1,
+      "lon": 15.9,
+      "solar_kw": 40.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 6.5,
+      "solar_kw": 330.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 6.7,
+      "solar_kw": 96111.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 6.9,
+      "solar_kw": 86754.9,
+      "wind_hub_m": 152.9,
+      "wind_kw": 42760.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 7.1,
+      "solar_kw": 92462.2,
+      "wind_hub_m": 137.5,
+      "wind_kw": 20000.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 7.3,
+      "solar_kw": 69915.4,
+      "wind_hub_m": 127.1,
+      "wind_kw": 19050.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 7.5,
+      "solar_kw": 61263.9,
+      "wind_hub_m": 117.8,
+      "wind_kw": 83610.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 7.7,
+      "solar_kw": 16391.2,
+      "wind_hub_m": 126.8,
+      "wind_kw": 52150.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 7.9,
+      "solar_kw": 2563.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 8.1,
+      "solar_kw": 45394.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 8.3,
+      "solar_kw": 49810.1,
+      "wind_hub_m": 126.6,
+      "wind_kw": 29800.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 8.5,
+      "solar_kw": 112564.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 8.7,
+      "solar_kw": 111362.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 8.9,
+      "solar_kw": 56179.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 9.1,
+      "solar_kw": 105409.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 9.3,
+      "solar_kw": 79750.9,
+      "wind_hub_m": 145.6,
+      "wind_kw": 12600.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 9.5,
+      "solar_kw": 63500.1,
+      "wind_hub_m": 140.3,
+      "wind_kw": 68800.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 9.7,
+      "solar_kw": 73432.3,
+      "wind_hub_m": 132.3,
+      "wind_kw": 23200.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 9.9,
+      "solar_kw": 80236.8,
+      "wind_hub_m": 133.6,
+      "wind_kw": 75000.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 10.1,
+      "solar_kw": 55069.5,
+      "wind_hub_m": 132.3,
+      "wind_kw": 57468.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 10.3,
+      "solar_kw": 89543.8,
+      "wind_hub_m": 131.0,
+      "wind_kw": 11325.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 10.5,
+      "solar_kw": 124786.3,
+      "wind_hub_m": 128.9,
+      "wind_kw": 18430.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 10.7,
+      "solar_kw": 196081.3,
+      "wind_hub_m": 134.5,
+      "wind_kw": 18900.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 10.9,
+      "solar_kw": 143547.1,
+      "wind_hub_m": 136.1,
+      "wind_kw": 15600.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 11.1,
+      "solar_kw": 47133.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 11.3,
+      "solar_kw": 80179.8,
+      "wind_hub_m": 135.0,
+      "wind_kw": 3050.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 11.5,
+      "solar_kw": 112267.2,
+      "wind_hub_m": 135.4,
+      "wind_kw": 108969.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 11.7,
+      "solar_kw": 152950.1,
+      "wind_hub_m": 141.6,
+      "wind_kw": 17385.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 11.9,
+      "solar_kw": 48906.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 12.1,
+      "solar_kw": 98880.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 12.3,
+      "solar_kw": 72454.2,
+      "wind_hub_m": 140.6,
+      "wind_kw": 2400.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 12.5,
+      "solar_kw": 76754.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 12.7,
+      "solar_kw": 55048.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 12.9,
+      "solar_kw": 15057.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.3,
+      "lon": 13.1,
+      "solar_kw": 567.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 6.3,
+      "solar_kw": 3591.4,
+      "wind_hub_m": 105.0,
+      "wind_kw": 2000.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 6.5,
+      "solar_kw": 31022.3,
+      "wind_hub_m": 124.7,
+      "wind_kw": 120825.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 6.7,
+      "solar_kw": 35171.9,
+      "wind_hub_m": 143.9,
+      "wind_kw": 94425.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 6.9,
+      "solar_kw": 119754.6,
+      "wind_hub_m": 134.7,
+      "wind_kw": 76610.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 7.1,
+      "solar_kw": 126941.7,
+      "wind_hub_m": 139.3,
+      "wind_kw": 60580.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 7.3,
+      "solar_kw": 56176.8,
+      "wind_hub_m": 120.9,
+      "wind_kw": 213130.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 7.5,
+      "solar_kw": 29730.1,
+      "wind_hub_m": 136.5,
+      "wind_kw": 69850.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 7.7,
+      "solar_kw": 97879.6,
+      "wind_hub_m": 141.2,
+      "wind_kw": 98520.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 7.9,
+      "solar_kw": 44943.2,
+      "wind_hub_m": 138.0,
+      "wind_kw": 35125.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 8.1,
+      "solar_kw": 35675.4,
+      "wind_hub_m": 120.8,
+      "wind_kw": 14775.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 8.3,
+      "solar_kw": 75554.1,
+      "wind_hub_m": 118.3,
+      "wind_kw": 37950.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 8.5,
+      "solar_kw": 132227.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 8.7,
+      "solar_kw": 89057.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 8.9,
+      "solar_kw": 18183.4,
+      "wind_hub_m": 142.5,
+      "wind_kw": 32250.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 9.1,
+      "solar_kw": 29057.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 9.3,
+      "solar_kw": 98570.5,
+      "wind_hub_m": 128.5,
+      "wind_kw": 36460.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 9.5,
+      "solar_kw": 128890.1,
+      "wind_hub_m": 136.7,
+      "wind_kw": 201580.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 9.7,
+      "solar_kw": 93714.6,
+      "wind_hub_m": 140.6,
+      "wind_kw": 57550.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 9.9,
+      "solar_kw": 89446.7,
+      "wind_hub_m": 117.6,
+      "wind_kw": 59650.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 10.1,
+      "solar_kw": 63014.9,
+      "wind_hub_m": 131.0,
+      "wind_kw": 105039.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 10.3,
+      "solar_kw": 76923.0,
+      "wind_hub_m": 101.4,
+      "wind_kw": 11000.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 10.5,
+      "solar_kw": 83355.5,
+      "wind_hub_m": 122.5,
+      "wind_kw": 6300.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 10.7,
+      "solar_kw": 98506.2,
+      "wind_hub_m": 140.2,
+      "wind_kw": 106915.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 10.9,
+      "solar_kw": 124172.9,
+      "wind_hub_m": 138.8,
+      "wind_kw": 16800.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 11.1,
+      "solar_kw": 123894.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 11.3,
+      "solar_kw": 36781.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 11.5,
+      "solar_kw": 69609.0,
+      "wind_hub_m": 145.4,
+      "wind_kw": 60590.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 11.7,
+      "solar_kw": 60037.1,
+      "wind_hub_m": 137.6,
+      "wind_kw": 21400.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 11.9,
+      "solar_kw": 161625.0,
+      "wind_hub_m": 140.0,
+      "wind_kw": 3075.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 12.1,
+      "solar_kw": 125806.9,
+      "wind_hub_m": 136.9,
+      "wind_kw": 25150.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 12.3,
+      "solar_kw": 91951.1,
+      "wind_hub_m": 140.7,
+      "wind_kw": 16800.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 12.5,
+      "solar_kw": 74158.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 560.0
+    },
+    {
+      "lat": 49.5,
+      "lon": 12.7,
+      "solar_kw": 2223.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 6.5,
+      "solar_kw": 35992.0,
+      "wind_hub_m": 127.0,
+      "wind_kw": 15550.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 6.7,
+      "solar_kw": 57849.0,
+      "wind_hub_m": 130.2,
+      "wind_kw": 74930.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 6.9,
+      "solar_kw": 64711.5,
+      "wind_hub_m": 142.9,
+      "wind_kw": 193600.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 7.1,
+      "solar_kw": 34120.6,
+      "wind_hub_m": 134.4,
+      "wind_kw": 48850.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 7.3,
+      "solar_kw": 29407.3,
+      "wind_hub_m": 133.6,
+      "wind_kw": 62200.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 7.5,
+      "solar_kw": 45413.7,
+      "wind_hub_m": 131.8,
+      "wind_kw": 44560.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 7.7,
+      "solar_kw": 36357.3,
+      "wind_hub_m": 133.0,
+      "wind_kw": 145460.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 7.9,
+      "solar_kw": 44848.7,
+      "wind_hub_m": 137.5,
+      "wind_kw": 143035.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 8.1,
+      "solar_kw": 89512.1,
+      "wind_hub_m": 132.4,
+      "wind_kw": 369760.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 8.3,
+      "solar_kw": 62823.5,
+      "wind_hub_m": 125.3,
+      "wind_kw": 129810.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 8.5,
+      "solar_kw": 83496.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 8.7,
+      "solar_kw": 33688.9,
+      "wind_hub_m": 84.7,
+      "wind_kw": 5900.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 8.9,
+      "solar_kw": 28279.5,
+      "wind_hub_m": 128.1,
+      "wind_kw": 28500.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 9.1,
+      "solar_kw": 32412.3,
+      "wind_hub_m": 140.9,
+      "wind_kw": 44825.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 9.3,
+      "solar_kw": 83243.2,
+      "wind_hub_m": 131.5,
+      "wind_kw": 44100.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 9.5,
+      "solar_kw": 237873.4,
+      "wind_hub_m": 131.7,
+      "wind_kw": 20500.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 9.7,
+      "solar_kw": 40375.6,
+      "wind_hub_m": 122.0,
+      "wind_kw": 89014.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 9.9,
+      "solar_kw": 222239.3,
+      "wind_hub_m": 92.4,
+      "wind_kw": 17740.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 10.1,
+      "solar_kw": 219685.8,
+      "wind_hub_m": 124.4,
+      "wind_kw": 58730.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 10.3,
+      "solar_kw": 96202.2,
+      "wind_hub_m": 139.4,
+      "wind_kw": 9400.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 10.5,
+      "solar_kw": 115004.2,
+      "wind_hub_m": 153.5,
+      "wind_kw": 23400.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 10.7,
+      "solar_kw": 79044.2,
+      "wind_hub_m": 138.7,
+      "wind_kw": 47700.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 10.9,
+      "solar_kw": 60390.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 11.1,
+      "solar_kw": 123889.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 11.3,
+      "solar_kw": 51189.9,
+      "wind_hub_m": 98.0,
+      "wind_kw": 1500.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 11.5,
+      "solar_kw": 32074.2,
+      "wind_hub_m": 140.2,
+      "wind_kw": 21600.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 11.7,
+      "solar_kw": 141103.4,
+      "wind_hub_m": 140.8,
+      "wind_kw": 12000.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 11.9,
+      "solar_kw": 68716.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 12.1,
+      "solar_kw": 136584.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 12.3,
+      "solar_kw": 60600.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 150.0
+    },
+    {
+      "lat": 49.7,
+      "lon": 12.5,
+      "solar_kw": 10945.0,
+      "wind_hub_m": 80.0,
+      "wind_kw": 2600.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 6.1,
+      "solar_kw": 16731.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 6.3,
+      "solar_kw": 89862.6,
+      "wind_hub_m": 118.6,
+      "wind_kw": 72350.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 6.5,
+      "solar_kw": 47205.9,
+      "wind_hub_m": 107.9,
+      "wind_kw": 81760.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 6.7,
+      "solar_kw": 135261.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 6.9,
+      "solar_kw": 127871.6,
+      "wind_hub_m": 143.7,
+      "wind_kw": 50700.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 7.1,
+      "solar_kw": 34942.2,
+      "wind_hub_m": 149.4,
+      "wind_kw": 118150.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 7.3,
+      "solar_kw": 102981.6,
+      "wind_hub_m": 132.8,
+      "wind_kw": 58300.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 7.5,
+      "solar_kw": 74140.1,
+      "wind_hub_m": 129.3,
+      "wind_kw": 53840.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 7.7,
+      "solar_kw": 26693.3,
+      "wind_hub_m": 135.4,
+      "wind_kw": 146010.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 7.9,
+      "solar_kw": 85084.9,
+      "wind_hub_m": 107.9,
+      "wind_kw": 5450.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 8.1,
+      "solar_kw": 35277.2,
+      "wind_hub_m": 154.7,
+      "wind_kw": 173250.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 8.3,
+      "solar_kw": 59674.8,
+      "wind_hub_m": 121.3,
+      "wind_kw": 50750.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 8.5,
+      "solar_kw": 75048.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 8.7,
+      "solar_kw": 50076.5,
+      "wind_hub_m": 129.4,
+      "wind_kw": 13460.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 8.9,
+      "solar_kw": 40362.7,
+      "wind_hub_m": 115.3,
+      "wind_kw": 6000.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 9.1,
+      "solar_kw": 77054.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 9.3,
+      "solar_kw": 8822.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 9.5,
+      "solar_kw": 56366.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 9.7,
+      "solar_kw": 51244.0,
+      "wind_hub_m": 118.3,
+      "wind_kw": 56450.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 9.9,
+      "solar_kw": 74418.8,
+      "wind_hub_m": 116.1,
+      "wind_kw": 75042.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 10.1,
+      "solar_kw": 106213.3,
+      "wind_hub_m": 138.7,
+      "wind_kw": 64550.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 10.3,
+      "solar_kw": 209965.5,
+      "wind_hub_m": 133.0,
+      "wind_kw": 11110.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 10.5,
+      "solar_kw": 49305.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 10.7,
+      "solar_kw": 124744.8,
+      "wind_hub_m": 149.0,
+      "wind_kw": 6000.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 10.9,
+      "solar_kw": 71996.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 11.1,
+      "solar_kw": 48754.6,
+      "wind_hub_m": 132.4,
+      "wind_kw": 49275.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 11.3,
+      "solar_kw": 9393.1,
+      "wind_hub_m": 139.4,
+      "wind_kw": 24500.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 11.5,
+      "solar_kw": 16863.1,
+      "wind_hub_m": 146.0,
+      "wind_kw": 73160.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 11.7,
+      "solar_kw": 61461.4,
+      "wind_hub_m": 133.4,
+      "wind_kw": 23700.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 11.9,
+      "solar_kw": 79973.8,
+      "wind_hub_m": 50.0,
+      "wind_kw": 1500.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 12.1,
+      "solar_kw": 66669.3,
+      "wind_hub_m": 40.0,
+      "wind_kw": 80.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 12.3,
+      "solar_kw": 45666.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 49.9,
+      "lon": 12.5,
+      "solar_kw": 12727.9,
+      "wind_hub_m": 119.8,
+      "wind_kw": 16430.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 6.1,
+      "solar_kw": 60013.9,
+      "wind_hub_m": 145.7,
+      "wind_kw": 7450.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 6.3,
+      "solar_kw": 178650.9,
+      "wind_hub_m": 110.6,
+      "wind_kw": 174930.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 6.5,
+      "solar_kw": 49145.7,
+      "wind_hub_m": 95.9,
+      "wind_kw": 68060.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 6.7,
+      "solar_kw": 45506.6,
+      "wind_hub_m": 98.1,
+      "wind_kw": 8270.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 6.9,
+      "solar_kw": 82083.8,
+      "wind_hub_m": 132.0,
+      "wind_kw": 34360.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 7.1,
+      "solar_kw": 130170.2,
+      "wind_hub_m": 115.0,
+      "wind_kw": 24950.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 7.3,
+      "solar_kw": 137811.2,
+      "wind_hub_m": 130.2,
+      "wind_kw": 178900.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 7.5,
+      "solar_kw": 49549.0,
+      "wind_hub_m": 130.6,
+      "wind_kw": 348230.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 7.7,
+      "solar_kw": 4540.7,
+      "wind_hub_m": 139.3,
+      "wind_kw": 135385.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 7.9,
+      "solar_kw": 18884.1,
+      "wind_hub_m": 143.7,
+      "wind_kw": 19120.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 8.1,
+      "solar_kw": 20113.1,
+      "wind_hub_m": 135.3,
+      "wind_kw": 21890.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 8.3,
+      "solar_kw": 53537.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 8.5,
+      "solar_kw": 65287.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 8.7,
+      "solar_kw": 72812.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 8.9,
+      "solar_kw": 96525.5,
+      "wind_hub_m": 136.2,
+      "wind_kw": 12100.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 9.1,
+      "solar_kw": 98910.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 9.3,
+      "solar_kw": 19060.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 9.5,
+      "solar_kw": 16941.6,
+      "wind_hub_m": 136.4,
+      "wind_kw": 17180.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 9.7,
+      "solar_kw": 33859.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 9.9,
+      "solar_kw": 94464.4,
+      "wind_hub_m": 150.5,
+      "wind_kw": 46200.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 10.1,
+      "solar_kw": 71887.9,
+      "wind_hub_m": 130.5,
+      "wind_kw": 54900.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 10.3,
+      "solar_kw": 113645.4,
+      "wind_hub_m": 116.8,
+      "wind_kw": 51585.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 10.5,
+      "solar_kw": 160042.5,
+      "wind_hub_m": 137.3,
+      "wind_kw": 28600.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 10.7,
+      "solar_kw": 174400.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 10.9,
+      "solar_kw": 187860.5,
+      "wind_hub_m": 147.3,
+      "wind_kw": 15160.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 11.1,
+      "solar_kw": 65822.2,
+      "wind_hub_m": 139.0,
+      "wind_kw": 28620.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 11.3,
+      "solar_kw": 91271.9,
+      "wind_hub_m": 139.5,
+      "wind_kw": 48200.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 11.5,
+      "solar_kw": 149556.7,
+      "wind_hub_m": 114.7,
+      "wind_kw": 6200.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 11.7,
+      "solar_kw": 80815.8,
+      "wind_hub_m": 129.6,
+      "wind_kw": 45050.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 11.9,
+      "solar_kw": 92381.1,
+      "wind_hub_m": 139.0,
+      "wind_kw": 8340.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 12.1,
+      "solar_kw": 116357.1,
+      "wind_hub_m": 134.7,
+      "wind_kw": 64950.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 12.3,
+      "solar_kw": 4957.8,
+      "wind_hub_m": 141.0,
+      "wind_kw": 7200.0
+    },
+    {
+      "lat": 50.1,
+      "lon": 13.1,
+      "solar_kw": 949.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 6.1,
+      "solar_kw": 96.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 6.3,
+      "solar_kw": 21587.1,
+      "wind_hub_m": 123.5,
+      "wind_kw": 38600.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 6.5,
+      "solar_kw": 32902.1,
+      "wind_hub_m": 126.8,
+      "wind_kw": 271665.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 6.7,
+      "solar_kw": 16190.8,
+      "wind_hub_m": 83.3,
+      "wind_kw": 6300.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 6.9,
+      "solar_kw": 29541.9,
+      "wind_hub_m": 96.6,
+      "wind_kw": 19500.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 7.1,
+      "solar_kw": 34990.6,
+      "wind_hub_m": 120.7,
+      "wind_kw": 132950.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 7.3,
+      "solar_kw": 68026.6,
+      "wind_hub_m": 110.4,
+      "wind_kw": 62510.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 7.5,
+      "solar_kw": 69605.4,
+      "wind_hub_m": 143.0,
+      "wind_kw": 6400.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 7.7,
+      "solar_kw": 12272.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 7.9,
+      "solar_kw": 17875.9,
+      "wind_hub_m": 119.6,
+      "wind_kw": 28390.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 8.1,
+      "solar_kw": 38157.7,
+      "wind_hub_m": 140.5,
+      "wind_kw": 27700.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 8.3,
+      "solar_kw": 37058.5,
+      "wind_hub_m": 142.4,
+      "wind_kw": 62800.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 8.5,
+      "solar_kw": 25788.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 8.7,
+      "solar_kw": 26152.5,
+      "wind_hub_m": 93.9,
+      "wind_kw": 12000.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 8.9,
+      "solar_kw": 32573.3,
+      "wind_hub_m": 112.5,
+      "wind_kw": 12600.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 9.1,
+      "solar_kw": 25791.1,
+      "wind_hub_m": 149.1,
+      "wind_kw": 9000.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 9.3,
+      "solar_kw": 38049.5,
+      "wind_hub_m": 135.1,
+      "wind_kw": 142650.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 9.5,
+      "solar_kw": 47510.3,
+      "wind_hub_m": 133.1,
+      "wind_kw": 92875.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 9.7,
+      "solar_kw": 14098.7,
+      "wind_hub_m": 143.0,
+      "wind_kw": 28530.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 9.9,
+      "solar_kw": 24090.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 10.1,
+      "solar_kw": 31613.5,
+      "wind_hub_m": 132.7,
+      "wind_kw": 34400.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 10.3,
+      "solar_kw": 157473.3,
+      "wind_hub_m": 139.8,
+      "wind_kw": 78400.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 10.5,
+      "solar_kw": 168973.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 10.7,
+      "solar_kw": 43545.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 10.9,
+      "solar_kw": 153991.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 11.1,
+      "solar_kw": 128374.3,
+      "wind_hub_m": 139.0,
+      "wind_kw": 13750.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 11.3,
+      "solar_kw": 102795.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 11.5,
+      "solar_kw": 14598.4,
+      "wind_hub_m": 110.9,
+      "wind_kw": 14300.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 11.7,
+      "solar_kw": 141894.8,
+      "wind_hub_m": 122.1,
+      "wind_kw": 86550.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 11.9,
+      "solar_kw": 134133.5,
+      "wind_hub_m": 133.1,
+      "wind_kw": 67850.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 12.1,
+      "solar_kw": 25420.0,
+      "wind_hub_m": 127.2,
+      "wind_kw": 33375.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 12.3,
+      "solar_kw": 25012.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.3,
+      "lon": 12.5,
+      "solar_kw": 2136.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 6.1,
+      "solar_kw": 79.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 6.3,
+      "solar_kw": 5579.3,
+      "wind_hub_m": 113.2,
+      "wind_kw": 87850.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 6.5,
+      "solar_kw": 23808.4,
+      "wind_hub_m": 122.5,
+      "wind_kw": 85560.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 6.7,
+      "solar_kw": 19018.4,
+      "wind_hub_m": 114.3,
+      "wind_kw": 40870.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 6.9,
+      "solar_kw": 3912.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 7.1,
+      "solar_kw": 28807.4,
+      "wind_hub_m": 100.6,
+      "wind_kw": 18700.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 7.3,
+      "solar_kw": 22700.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 7.5,
+      "solar_kw": 70659.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 7.7,
+      "solar_kw": 54767.7,
+      "wind_hub_m": 160.0,
+      "wind_kw": 7700.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 7.9,
+      "solar_kw": 76850.0,
+      "wind_hub_m": 134.5,
+      "wind_kw": 45210.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 8.1,
+      "solar_kw": 77318.2,
+      "wind_hub_m": 134.0,
+      "wind_kw": 19950.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 8.3,
+      "solar_kw": 19115.5,
+      "wind_hub_m": 148.2,
+      "wind_kw": 27490.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 8.5,
+      "solar_kw": 38349.2,
+      "wind_hub_m": 139.0,
+      "wind_kw": 25020.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 8.7,
+      "solar_kw": 85023.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 8.9,
+      "solar_kw": 50820.9,
+      "wind_hub_m": 139.0,
+      "wind_kw": 2780.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 9.1,
+      "solar_kw": 7651.4,
+      "wind_hub_m": 123.3,
+      "wind_kw": 48510.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 9.3,
+      "solar_kw": 70270.4,
+      "wind_hub_m": 121.2,
+      "wind_kw": 86000.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 9.5,
+      "solar_kw": 32857.7,
+      "wind_hub_m": 138.2,
+      "wind_kw": 54950.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 9.7,
+      "solar_kw": 86316.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 9.9,
+      "solar_kw": 14682.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 10.1,
+      "solar_kw": 35033.3,
+      "wind_hub_m": 70.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 10.3,
+      "solar_kw": 26055.0,
+      "wind_hub_m": 75.0,
+      "wind_kw": 3000.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 10.5,
+      "solar_kw": 57955.2,
+      "wind_hub_m": 72.1,
+      "wind_kw": 1800.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 10.7,
+      "solar_kw": 42481.6,
+      "wind_hub_m": 134.4,
+      "wind_kw": 14450.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 10.9,
+      "solar_kw": 31721.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 11.1,
+      "solar_kw": 8935.7,
+      "wind_hub_m": 40.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 11.3,
+      "solar_kw": 68742.3,
+      "wind_hub_m": 63.3,
+      "wind_kw": 1800.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 11.5,
+      "solar_kw": 47875.9,
+      "wind_hub_m": 57.4,
+      "wind_kw": 3300.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 11.7,
+      "solar_kw": 24745.1,
+      "wind_hub_m": 59.5,
+      "wind_kw": 1100.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 11.9,
+      "solar_kw": 38244.3,
+      "wind_hub_m": 128.6,
+      "wind_kw": 96950.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 12.1,
+      "solar_kw": 36756.4,
+      "wind_hub_m": 100.0,
+      "wind_kw": 8200.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 12.3,
+      "solar_kw": 45747.6,
+      "wind_hub_m": 105.2,
+      "wind_kw": 7400.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 12.5,
+      "solar_kw": 21708.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 12.7,
+      "solar_kw": 19295.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 12.9,
+      "solar_kw": 24741.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 13.1,
+      "solar_kw": 9066.1,
+      "wind_hub_m": 57.8,
+      "wind_kw": 3750.0
+    },
+    {
+      "lat": 50.5,
+      "lon": 13.3,
+      "solar_kw": 38.6,
+      "wind_hub_m": 40.0,
+      "wind_kw": 150.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 6.1,
+      "solar_kw": 36316.3,
+      "wind_hub_m": 140.0,
+      "wind_kw": 23100.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 6.3,
+      "solar_kw": 17723.6,
+      "wind_hub_m": 106.9,
+      "wind_kw": 103400.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 6.5,
+      "solar_kw": 35880.1,
+      "wind_hub_m": 106.9,
+      "wind_kw": 59160.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 6.7,
+      "solar_kw": 69425.8,
+      "wind_hub_m": 94.3,
+      "wind_kw": 182630.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 6.9,
+      "solar_kw": 75050.1,
+      "wind_hub_m": 100.9,
+      "wind_kw": 27700.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 7.1,
+      "solar_kw": 53253.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 7.3,
+      "solar_kw": 35045.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 7.5,
+      "solar_kw": 15667.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 7.7,
+      "solar_kw": 31103.4,
+      "wind_hub_m": 124.6,
+      "wind_kw": 76000.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 7.9,
+      "solar_kw": 53916.5,
+      "wind_hub_m": 100.0,
+      "wind_kw": 29150.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 8.1,
+      "solar_kw": 30919.1,
+      "wind_hub_m": 109.2,
+      "wind_kw": 95050.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 8.3,
+      "solar_kw": 35225.9,
+      "wind_hub_m": 132.5,
+      "wind_kw": 33200.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 8.5,
+      "solar_kw": 18934.2,
+      "wind_hub_m": 145.9,
+      "wind_kw": 92380.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 8.7,
+      "solar_kw": 40030.7,
+      "wind_hub_m": 153.2,
+      "wind_kw": 30000.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 8.9,
+      "solar_kw": 12645.5,
+      "wind_hub_m": 127.7,
+      "wind_kw": 42390.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 9.1,
+      "solar_kw": 11700.5,
+      "wind_hub_m": 115.6,
+      "wind_kw": 94390.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 9.3,
+      "solar_kw": 33378.3,
+      "wind_hub_m": 131.3,
+      "wind_kw": 179100.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 9.5,
+      "solar_kw": 32948.7,
+      "wind_hub_m": 143.0,
+      "wind_kw": 93600.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 9.7,
+      "solar_kw": 22843.9,
+      "wind_hub_m": 150.2,
+      "wind_kw": 80150.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 9.9,
+      "solar_kw": 18667.4,
+      "wind_hub_m": 155.2,
+      "wind_kw": 34300.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 10.1,
+      "solar_kw": 14025.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 10.3,
+      "solar_kw": 67202.0,
+      "wind_hub_m": 50.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 10.5,
+      "solar_kw": 15112.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 10.7,
+      "solar_kw": 13584.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 10.9,
+      "solar_kw": 24303.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 11.1,
+      "solar_kw": 14321.9,
+      "wind_hub_m": 76.0,
+      "wind_kw": 1600.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 11.3,
+      "solar_kw": 36005.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 11.5,
+      "solar_kw": 23414.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 11.7,
+      "solar_kw": 58873.8,
+      "wind_hub_m": 48.4,
+      "wind_kw": 825.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 11.9,
+      "solar_kw": 45916.8,
+      "wind_hub_m": 126.1,
+      "wind_kw": 18632.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 12.1,
+      "solar_kw": 41719.1,
+      "wind_hub_m": 45.0,
+      "wind_kw": 1100.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 12.3,
+      "solar_kw": 47787.4,
+      "wind_hub_m": 103.6,
+      "wind_kw": 14325.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 12.5,
+      "solar_kw": 109789.6,
+      "wind_hub_m": 159.7,
+      "wind_kw": 75400.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 12.7,
+      "solar_kw": 38523.4,
+      "wind_hub_m": 130.5,
+      "wind_kw": 37525.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 12.9,
+      "solar_kw": 38514.0,
+      "wind_hub_m": 166.0,
+      "wind_kw": 5600.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 13.1,
+      "solar_kw": 96359.1,
+      "wind_hub_m": 97.5,
+      "wind_kw": 22910.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 13.3,
+      "solar_kw": 19912.8,
+      "wind_hub_m": 97.0,
+      "wind_kw": 75850.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 13.5,
+      "solar_kw": 16548.9,
+      "wind_hub_m": 100.5,
+      "wind_kw": 7700.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 13.7,
+      "solar_kw": 11016.7,
+      "wind_hub_m": 49.0,
+      "wind_kw": 1000.0
+    },
+    {
+      "lat": 50.7,
+      "lon": 13.9,
+      "solar_kw": 2867.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 5.9,
+      "solar_kw": 2723.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 6.1,
+      "solar_kw": 79048.5,
+      "wind_hub_m": 102.2,
+      "wind_kw": 103450.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 6.3,
+      "solar_kw": 101366.1,
+      "wind_hub_m": 123.5,
+      "wind_kw": 347555.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 6.5,
+      "solar_kw": 121298.1,
+      "wind_hub_m": 113.8,
+      "wind_kw": 143080.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 6.7,
+      "solar_kw": 63999.7,
+      "wind_hub_m": 95.7,
+      "wind_kw": 71650.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 6.9,
+      "solar_kw": 130807.2,
+      "wind_hub_m": 109.1,
+      "wind_kw": 5140.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 7.1,
+      "solar_kw": 66293.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 7.3,
+      "solar_kw": 18831.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 7.5,
+      "solar_kw": 17304.0,
+      "wind_hub_m": 78.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 7.7,
+      "solar_kw": 11905.7,
+      "wind_hub_m": 73.3,
+      "wind_kw": 4200.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 7.9,
+      "solar_kw": 30729.6,
+      "wind_hub_m": 126.4,
+      "wind_kw": 10500.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 8.1,
+      "solar_kw": 27723.0,
+      "wind_hub_m": 122.1,
+      "wind_kw": 12625.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 8.3,
+      "solar_kw": 12983.0,
+      "wind_hub_m": 130.6,
+      "wind_kw": 58000.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 8.5,
+      "solar_kw": 17695.5,
+      "wind_hub_m": 142.1,
+      "wind_kw": 64500.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 8.7,
+      "solar_kw": 23731.2,
+      "wind_hub_m": 142.3,
+      "wind_kw": 41300.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 8.9,
+      "solar_kw": 52822.0,
+      "wind_hub_m": 134.9,
+      "wind_kw": 39300.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 9.1,
+      "solar_kw": 37160.4,
+      "wind_hub_m": 143.1,
+      "wind_kw": 141950.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 9.3,
+      "solar_kw": 22051.4,
+      "wind_hub_m": 150.5,
+      "wind_kw": 42900.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 9.5,
+      "solar_kw": 21150.1,
+      "wind_hub_m": 122.3,
+      "wind_kw": 42150.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 9.7,
+      "solar_kw": 50318.7,
+      "wind_hub_m": 146.7,
+      "wind_kw": 29100.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 9.9,
+      "solar_kw": 34349.9,
+      "wind_hub_m": 143.3,
+      "wind_kw": 116900.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 10.1,
+      "solar_kw": 42303.1,
+      "wind_hub_m": 111.8,
+      "wind_kw": 41870.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 10.3,
+      "solar_kw": 54314.5,
+      "wind_hub_m": 77.4,
+      "wind_kw": 4700.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 10.5,
+      "solar_kw": 36519.6,
+      "wind_hub_m": 132.6,
+      "wind_kw": 54850.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 10.7,
+      "solar_kw": 64621.1,
+      "wind_hub_m": 67.5,
+      "wind_kw": 11900.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 10.9,
+      "solar_kw": 74746.8,
+      "wind_hub_m": 66.6,
+      "wind_kw": 22400.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 11.1,
+      "solar_kw": 46754.6,
+      "wind_hub_m": 69.3,
+      "wind_kw": 10800.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 11.3,
+      "solar_kw": 67785.1,
+      "wind_hub_m": 107.0,
+      "wind_kw": 9400.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 11.5,
+      "solar_kw": 43001.8,
+      "wind_hub_m": 147.2,
+      "wind_kw": 41700.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 11.7,
+      "solar_kw": 32171.6,
+      "wind_hub_m": 100.0,
+      "wind_kw": 2050.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 11.9,
+      "solar_kw": 66874.2,
+      "wind_hub_m": 105.6,
+      "wind_kw": 9648.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 12.1,
+      "solar_kw": 99323.0,
+      "wind_hub_m": 111.0,
+      "wind_kw": 27990.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 12.3,
+      "solar_kw": 74463.8,
+      "wind_hub_m": 123.2,
+      "wind_kw": 112436.5
+    },
+    {
+      "lat": 50.9,
+      "lon": 12.5,
+      "solar_kw": 107670.7,
+      "wind_hub_m": 126.9,
+      "wind_kw": 18250.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 12.7,
+      "solar_kw": 42750.7,
+      "wind_hub_m": 118.3,
+      "wind_kw": 64960.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 12.9,
+      "solar_kw": 111386.0,
+      "wind_hub_m": 121.0,
+      "wind_kw": 27670.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 13.1,
+      "solar_kw": 82321.5,
+      "wind_hub_m": 65.9,
+      "wind_kw": 10500.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 13.3,
+      "solar_kw": 218052.0,
+      "wind_hub_m": 110.5,
+      "wind_kw": 38320.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 13.5,
+      "solar_kw": 28600.2,
+      "wind_hub_m": 73.4,
+      "wind_kw": 24875.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 13.7,
+      "solar_kw": 62528.0,
+      "wind_hub_m": 82.8,
+      "wind_kw": 20570.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 13.9,
+      "solar_kw": 51428.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 1600.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 14.1,
+      "solar_kw": 6052.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 14.3,
+      "solar_kw": 4000.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 14.5,
+      "solar_kw": 1964.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 14.7,
+      "solar_kw": 37285.6,
+      "wind_hub_m": 52.2,
+      "wind_kw": 3850.0
+    },
+    {
+      "lat": 50.9,
+      "lon": 14.9,
+      "solar_kw": 26927.0,
+      "wind_hub_m": 114.3,
+      "wind_kw": 37100.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 5.1,
+      "solar_kw": 152.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 5.9,
+      "solar_kw": 4795.9,
+      "wind_hub_m": 122.2,
+      "wind_kw": 39900.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 6.1,
+      "solar_kw": 39829.4,
+      "wind_hub_m": 118.7,
+      "wind_kw": 128915.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 6.3,
+      "solar_kw": 50626.3,
+      "wind_hub_m": 129.6,
+      "wind_kw": 168080.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 6.5,
+      "solar_kw": 216307.4,
+      "wind_hub_m": 134.9,
+      "wind_kw": 274800.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 6.7,
+      "solar_kw": 72981.2,
+      "wind_hub_m": 125.1,
+      "wind_kw": 101000.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 6.9,
+      "solar_kw": 98189.2,
+      "wind_hub_m": 63.9,
+      "wind_kw": 4600.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 7.1,
+      "solar_kw": 52761.6,
+      "wind_hub_m": 35.0,
+      "wind_kw": 275.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 7.3,
+      "solar_kw": 27185.7,
+      "wind_hub_m": 97.1,
+      "wind_kw": 5600.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 7.5,
+      "solar_kw": 27855.7,
+      "wind_hub_m": 72.7,
+      "wind_kw": 3500.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 7.7,
+      "solar_kw": 16038.4,
+      "wind_hub_m": 94.2,
+      "wind_kw": 13360.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 7.9,
+      "solar_kw": 26581.8,
+      "wind_hub_m": 117.9,
+      "wind_kw": 28650.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 8.1,
+      "solar_kw": 10855.1,
+      "wind_hub_m": 146.6,
+      "wind_kw": 57660.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 8.3,
+      "solar_kw": 13531.2,
+      "wind_hub_m": 91.5,
+      "wind_kw": 6500.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 8.5,
+      "solar_kw": 3589.1,
+      "wind_hub_m": 126.3,
+      "wind_kw": 16900.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 8.7,
+      "solar_kw": 18076.2,
+      "wind_hub_m": 41.0,
+      "wind_kw": 150.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 8.9,
+      "solar_kw": 6892.9,
+      "wind_hub_m": 100.7,
+      "wind_kw": 4500.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 9.1,
+      "solar_kw": 13759.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 9.3,
+      "solar_kw": 60467.8,
+      "wind_hub_m": 50.0,
+      "wind_kw": 740.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 9.5,
+      "solar_kw": 29941.6,
+      "wind_hub_m": 114.7,
+      "wind_kw": 29400.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 9.7,
+      "solar_kw": 29541.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 9.9,
+      "solar_kw": 28199.6,
+      "wind_hub_m": 128.6,
+      "wind_kw": 20400.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 10.1,
+      "solar_kw": 14113.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 10.3,
+      "solar_kw": 70992.8,
+      "wind_hub_m": 127.1,
+      "wind_kw": 97900.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 10.5,
+      "solar_kw": 84610.7,
+      "wind_hub_m": 148.6,
+      "wind_kw": 46300.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 10.7,
+      "solar_kw": 75298.1,
+      "wind_hub_m": 125.9,
+      "wind_kw": 258400.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 10.9,
+      "solar_kw": 65406.6,
+      "wind_hub_m": 148.5,
+      "wind_kw": 41450.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 11.1,
+      "solar_kw": 76956.8,
+      "wind_hub_m": 129.1,
+      "wind_kw": 130400.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 11.3,
+      "solar_kw": 23097.6,
+      "wind_hub_m": 135.4,
+      "wind_kw": 170200.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 11.5,
+      "solar_kw": 50028.0,
+      "wind_hub_m": 152.4,
+      "wind_kw": 37500.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 11.7,
+      "solar_kw": 48127.8,
+      "wind_hub_m": 113.8,
+      "wind_kw": 202600.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 11.9,
+      "solar_kw": 76830.4,
+      "wind_hub_m": 127.7,
+      "wind_kw": 332089.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 12.1,
+      "solar_kw": 95023.4,
+      "wind_hub_m": 107.2,
+      "wind_kw": 90600.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 12.3,
+      "solar_kw": 196195.9,
+      "wind_hub_m": 114.3,
+      "wind_kw": 107310.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 12.5,
+      "solar_kw": 748718.7,
+      "wind_hub_m": 85.0,
+      "wind_kw": 9000.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 12.7,
+      "solar_kw": 42293.0,
+      "wind_hub_m": 101.1,
+      "wind_kw": 14900.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 12.9,
+      "solar_kw": 48170.3,
+      "wind_hub_m": 91.5,
+      "wind_kw": 44110.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 13.1,
+      "solar_kw": 58794.4,
+      "wind_hub_m": 76.4,
+      "wind_kw": 73820.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 13.3,
+      "solar_kw": 41333.2,
+      "wind_hub_m": 94.9,
+      "wind_kw": 54820.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 13.5,
+      "solar_kw": 53970.8,
+      "wind_hub_m": 91.4,
+      "wind_kw": 21170.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 13.7,
+      "solar_kw": 54371.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 13.9,
+      "solar_kw": 32513.6,
+      "wind_hub_m": 77.6,
+      "wind_kw": 7700.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 14.1,
+      "solar_kw": 26689.7,
+      "wind_hub_m": 84.7,
+      "wind_kw": 33900.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 14.3,
+      "solar_kw": 56721.1,
+      "wind_hub_m": 105.0,
+      "wind_kw": 2000.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 14.5,
+      "solar_kw": 66676.6,
+      "wind_hub_m": 61.8,
+      "wind_kw": 2620.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 14.7,
+      "solar_kw": 33513.5,
+      "wind_hub_m": 91.4,
+      "wind_kw": 47000.0
+    },
+    {
+      "lat": 51.1,
+      "lon": 14.9,
+      "solar_kw": 29296.1,
+      "wind_hub_m": 84.8,
+      "wind_kw": 61700.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 6.1,
+      "solar_kw": 15683.2,
+      "wind_hub_m": 154.2,
+      "wind_kw": 7280.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 6.3,
+      "solar_kw": 69034.1,
+      "wind_hub_m": 110.8,
+      "wind_kw": 101570.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 6.5,
+      "solar_kw": 105163.4,
+      "wind_hub_m": 86.2,
+      "wind_kw": 43550.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 6.7,
+      "solar_kw": 91565.5,
+      "wind_hub_m": 95.0,
+      "wind_kw": 2000.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 6.9,
+      "solar_kw": 48094.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 7.1,
+      "solar_kw": 65287.9,
+      "wind_hub_m": 73.0,
+      "wind_kw": 7435.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 7.3,
+      "solar_kw": 68049.2,
+      "wind_hub_m": 81.6,
+      "wind_kw": 10080.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 7.5,
+      "solar_kw": 34425.7,
+      "wind_hub_m": 128.9,
+      "wind_kw": 69140.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 7.7,
+      "solar_kw": 33467.0,
+      "wind_hub_m": 145.6,
+      "wind_kw": 25750.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 7.9,
+      "solar_kw": 27168.3,
+      "wind_hub_m": 142.1,
+      "wind_kw": 53950.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 8.1,
+      "solar_kw": 22448.2,
+      "wind_hub_m": 121.2,
+      "wind_kw": 24600.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 8.3,
+      "solar_kw": 45769.4,
+      "wind_hub_m": 113.0,
+      "wind_kw": 26100.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 8.5,
+      "solar_kw": 15460.7,
+      "wind_hub_m": 152.3,
+      "wind_kw": 94910.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 8.7,
+      "solar_kw": 20181.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 8.9,
+      "solar_kw": 44241.4,
+      "wind_hub_m": 129.5,
+      "wind_kw": 205035.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 9.1,
+      "solar_kw": 58756.8,
+      "wind_hub_m": 159.4,
+      "wind_kw": 100210.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 9.3,
+      "solar_kw": 95455.8,
+      "wind_hub_m": 126.3,
+      "wind_kw": 50350.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 9.5,
+      "solar_kw": 111738.0,
+      "wind_hub_m": 139.5,
+      "wind_kw": 22120.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 9.7,
+      "solar_kw": 18743.6,
+      "wind_hub_m": 146.5,
+      "wind_kw": 123000.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 9.9,
+      "solar_kw": 17331.4,
+      "wind_hub_m": 149.0,
+      "wind_kw": 3050.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 10.1,
+      "solar_kw": 30271.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 10.3,
+      "solar_kw": 46388.2,
+      "wind_hub_m": 104.9,
+      "wind_kw": 75100.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 10.5,
+      "solar_kw": 68429.4,
+      "wind_hub_m": 145.2,
+      "wind_kw": 29000.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 10.7,
+      "solar_kw": 30322.3,
+      "wind_hub_m": 116.9,
+      "wind_kw": 72200.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 10.9,
+      "solar_kw": 46428.9,
+      "wind_hub_m": 126.7,
+      "wind_kw": 181650.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 11.1,
+      "solar_kw": 49978.9,
+      "wind_hub_m": 24.0,
+      "wind_kw": 75.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 11.3,
+      "solar_kw": 56753.4,
+      "wind_hub_m": 108.1,
+      "wind_kw": 37850.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 11.5,
+      "solar_kw": 82833.2,
+      "wind_hub_m": 94.5,
+      "wind_kw": 10600.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 11.7,
+      "solar_kw": 58315.1,
+      "wind_hub_m": 96.4,
+      "wind_kw": 106850.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 11.9,
+      "solar_kw": 177052.0,
+      "wind_hub_m": 85.8,
+      "wind_kw": 32900.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 12.1,
+      "solar_kw": 73946.4,
+      "wind_hub_m": 132.7,
+      "wind_kw": 49900.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 12.3,
+      "solar_kw": 101772.1,
+      "wind_hub_m": 76.5,
+      "wind_kw": 15400.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 12.5,
+      "solar_kw": 95714.6,
+      "wind_hub_m": 65.0,
+      "wind_kw": 2800.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 12.7,
+      "solar_kw": 134709.9,
+      "wind_hub_m": 68.4,
+      "wind_kw": 3850.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 12.9,
+      "solar_kw": 44361.0,
+      "wind_hub_m": 99.9,
+      "wind_kw": 72000.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 13.1,
+      "solar_kw": 56465.2,
+      "wind_hub_m": 110.9,
+      "wind_kw": 46100.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 13.3,
+      "solar_kw": 188453.6,
+      "wind_hub_m": 129.8,
+      "wind_kw": 137600.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 13.5,
+      "solar_kw": 56347.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 13.7,
+      "solar_kw": 27828.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 13.9,
+      "solar_kw": 44905.7,
+      "wind_hub_m": 65.0,
+      "wind_kw": 2640.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 14.1,
+      "solar_kw": 53533.5,
+      "wind_hub_m": 87.3,
+      "wind_kw": 20500.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 14.3,
+      "solar_kw": 20243.2,
+      "wind_hub_m": 80.0,
+      "wind_kw": 23700.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 14.5,
+      "solar_kw": 13082.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 14.7,
+      "solar_kw": 14372.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 14.9,
+      "solar_kw": 91747.2,
+      "wind_hub_m": 92.5,
+      "wind_kw": 48850.0
+    },
+    {
+      "lat": 51.3,
+      "lon": 15.1,
+      "solar_kw": 1357.2,
+      "wind_hub_m": 100.8,
+      "wind_kw": 8300.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 6.1,
+      "solar_kw": 13472.4,
+      "wind_hub_m": 115.9,
+      "wind_kw": 24250.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 6.3,
+      "solar_kw": 86554.3,
+      "wind_hub_m": 128.0,
+      "wind_kw": 146860.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 6.5,
+      "solar_kw": 75256.9,
+      "wind_hub_m": 125.2,
+      "wind_kw": 99490.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 6.7,
+      "solar_kw": 71623.2,
+      "wind_hub_m": 120.0,
+      "wind_kw": 25900.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 6.9,
+      "solar_kw": 90414.0,
+      "wind_hub_m": 111.4,
+      "wind_kw": 15820.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 7.1,
+      "solar_kw": 108508.9,
+      "wind_hub_m": 88.6,
+      "wind_kw": 4650.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 7.3,
+      "solar_kw": 88912.7,
+      "wind_hub_m": 106.7,
+      "wind_kw": 19660.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 7.5,
+      "solar_kw": 102700.3,
+      "wind_hub_m": 120.7,
+      "wind_kw": 11000.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 7.7,
+      "solar_kw": 94273.4,
+      "wind_hub_m": 105.0,
+      "wind_kw": 30590.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 7.9,
+      "solar_kw": 85196.0,
+      "wind_hub_m": 104.3,
+      "wind_kw": 74190.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 8.1,
+      "solar_kw": 76608.0,
+      "wind_hub_m": 95.5,
+      "wind_kw": 93600.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 8.3,
+      "solar_kw": 47378.3,
+      "wind_hub_m": 117.4,
+      "wind_kw": 176610.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 8.5,
+      "solar_kw": 65531.8,
+      "wind_hub_m": 116.9,
+      "wind_kw": 118555.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 8.7,
+      "solar_kw": 27306.0,
+      "wind_hub_m": 139.7,
+      "wind_kw": 427020.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 8.9,
+      "solar_kw": 22769.2,
+      "wind_hub_m": 146.5,
+      "wind_kw": 451800.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 9.1,
+      "solar_kw": 46697.9,
+      "wind_hub_m": 144.8,
+      "wind_kw": 81010.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 9.3,
+      "solar_kw": 24558.5,
+      "wind_hub_m": 113.3,
+      "wind_kw": 125970.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 9.5,
+      "solar_kw": 17175.4,
+      "wind_hub_m": 57.2,
+      "wind_kw": 5300.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 9.7,
+      "solar_kw": 28124.9,
+      "wind_hub_m": 113.9,
+      "wind_kw": 8200.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 9.9,
+      "solar_kw": 160918.0,
+      "wind_hub_m": 139.0,
+      "wind_kw": 27400.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 10.1,
+      "solar_kw": 7370.1,
+      "wind_hub_m": 107.8,
+      "wind_kw": 22000.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 10.3,
+      "solar_kw": 33445.1,
+      "wind_hub_m": 135.7,
+      "wind_kw": 30800.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 10.5,
+      "solar_kw": 48049.4,
+      "wind_hub_m": 69.5,
+      "wind_kw": 5500.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 10.7,
+      "solar_kw": 148297.1,
+      "wind_hub_m": 123.9,
+      "wind_kw": 40900.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 10.9,
+      "solar_kw": 35233.0,
+      "wind_hub_m": 144.8,
+      "wind_kw": 37770.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 11.1,
+      "solar_kw": 47501.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 11.3,
+      "solar_kw": 108696.2,
+      "wind_hub_m": 112.0,
+      "wind_kw": 51400.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 11.5,
+      "solar_kw": 126731.3,
+      "wind_hub_m": 104.0,
+      "wind_kw": 126330.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 11.7,
+      "solar_kw": 85265.4,
+      "wind_hub_m": 118.4,
+      "wind_kw": 228450.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 11.9,
+      "solar_kw": 164366.1,
+      "wind_hub_m": 131.1,
+      "wind_kw": 113100.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 12.1,
+      "solar_kw": 179953.1,
+      "wind_hub_m": 81.7,
+      "wind_kw": 84240.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 12.3,
+      "solar_kw": 184338.4,
+      "wind_hub_m": 92.4,
+      "wind_kw": 78660.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 12.5,
+      "solar_kw": 55244.2,
+      "wind_hub_m": 128.6,
+      "wind_kw": 11911.7
+    },
+    {
+      "lat": 51.5,
+      "lon": 12.7,
+      "solar_kw": 54117.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 12.9,
+      "solar_kw": 85593.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 13.1,
+      "solar_kw": 173991.4,
+      "wind_hub_m": 129.8,
+      "wind_kw": 73650.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 13.3,
+      "solar_kw": 142677.8,
+      "wind_hub_m": 112.7,
+      "wind_kw": 214465.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 13.5,
+      "solar_kw": 50326.2,
+      "wind_hub_m": 102.2,
+      "wind_kw": 47750.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 13.7,
+      "solar_kw": 150097.8,
+      "wind_hub_m": 140.0,
+      "wind_kw": 3075.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 13.9,
+      "solar_kw": 509593.8,
+      "wind_hub_m": 131.7,
+      "wind_kw": 186600.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 14.1,
+      "solar_kw": 150808.2,
+      "wind_hub_m": 121.3,
+      "wind_kw": 43775.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 14.3,
+      "solar_kw": 126760.3,
+      "wind_hub_m": 102.5,
+      "wind_kw": 38850.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 14.5,
+      "solar_kw": 57453.7,
+      "wind_hub_m": 131.0,
+      "wind_kw": 59350.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 14.7,
+      "solar_kw": 24662.2,
+      "wind_hub_m": 70.0,
+      "wind_kw": 1200.0
+    },
+    {
+      "lat": 51.5,
+      "lon": 14.9,
+      "solar_kw": 1311.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 5.9,
+      "solar_kw": 310.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 6.1,
+      "solar_kw": 62078.9,
+      "wind_hub_m": 90.0,
+      "wind_kw": 25460.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 6.3,
+      "solar_kw": 62775.4,
+      "wind_hub_m": 103.6,
+      "wind_kw": 108680.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 6.5,
+      "solar_kw": 50023.6,
+      "wind_hub_m": 108.3,
+      "wind_kw": 57975.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 6.7,
+      "solar_kw": 86406.4,
+      "wind_hub_m": 130.4,
+      "wind_kw": 36380.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 6.9,
+      "solar_kw": 66931.9,
+      "wind_hub_m": 137.3,
+      "wind_kw": 124770.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 7.1,
+      "solar_kw": 76027.5,
+      "wind_hub_m": 141.6,
+      "wind_kw": 150100.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 7.3,
+      "solar_kw": 40550.5,
+      "wind_hub_m": 142.4,
+      "wind_kw": 56900.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 7.5,
+      "solar_kw": 58684.4,
+      "wind_hub_m": 123.2,
+      "wind_kw": 22180.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 7.7,
+      "solar_kw": 78680.2,
+      "wind_hub_m": 131.9,
+      "wind_kw": 84950.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 7.9,
+      "solar_kw": 63326.2,
+      "wind_hub_m": 114.5,
+      "wind_kw": 84910.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 8.1,
+      "solar_kw": 37044.2,
+      "wind_hub_m": 123.0,
+      "wind_kw": 93890.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 8.3,
+      "solar_kw": 85990.9,
+      "wind_hub_m": 140.4,
+      "wind_kw": 49770.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 8.5,
+      "solar_kw": 80259.3,
+      "wind_hub_m": 80.1,
+      "wind_kw": 19970.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 8.7,
+      "solar_kw": 99466.9,
+      "wind_hub_m": 140.8,
+      "wind_kw": 236800.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 8.9,
+      "solar_kw": 21951.8,
+      "wind_hub_m": 136.5,
+      "wind_kw": 736760.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 9.1,
+      "solar_kw": 42309.4,
+      "wind_hub_m": 130.5,
+      "wind_kw": 117100.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 9.3,
+      "solar_kw": 31081.6,
+      "wind_hub_m": 121.4,
+      "wind_kw": 91500.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 9.5,
+      "solar_kw": 6172.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 9.7,
+      "solar_kw": 17010.1,
+      "wind_hub_m": 130.3,
+      "wind_kw": 12010.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 9.9,
+      "solar_kw": 67614.0,
+      "wind_hub_m": 151.4,
+      "wind_kw": 55350.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 10.1,
+      "solar_kw": 17971.9,
+      "wind_hub_m": 146.6,
+      "wind_kw": 31900.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 10.3,
+      "solar_kw": 37497.0,
+      "wind_hub_m": 129.2,
+      "wind_kw": 23600.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 10.5,
+      "solar_kw": 2098.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 10.7,
+      "solar_kw": 758.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 10.9,
+      "solar_kw": 10906.6,
+      "wind_hub_m": 65.0,
+      "wind_kw": 500.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 11.1,
+      "solar_kw": 43112.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 11.3,
+      "solar_kw": 46042.1,
+      "wind_hub_m": 115.6,
+      "wind_kw": 31500.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 11.5,
+      "solar_kw": 177756.2,
+      "wind_hub_m": 105.2,
+      "wind_kw": 241880.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 11.7,
+      "solar_kw": 94702.2,
+      "wind_hub_m": 104.4,
+      "wind_kw": 235766.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 11.9,
+      "solar_kw": 220899.2,
+      "wind_hub_m": 108.5,
+      "wind_kw": 192700.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 12.1,
+      "solar_kw": 109092.5,
+      "wind_hub_m": 107.5,
+      "wind_kw": 158350.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 12.3,
+      "solar_kw": 148544.6,
+      "wind_hub_m": 104.1,
+      "wind_kw": 63900.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 12.5,
+      "solar_kw": 35073.1,
+      "wind_hub_m": 166.6,
+      "wind_kw": 22000.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 12.7,
+      "solar_kw": 14293.8,
+      "wind_hub_m": 115.4,
+      "wind_kw": 84245.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 12.9,
+      "solar_kw": 51461.0,
+      "wind_hub_m": 94.0,
+      "wind_kw": 31800.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 13.1,
+      "solar_kw": 8822.3,
+      "wind_hub_m": 60.0,
+      "wind_kw": 3900.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 13.3,
+      "solar_kw": 43881.6,
+      "wind_hub_m": 107.0,
+      "wind_kw": 98800.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 13.5,
+      "solar_kw": 60942.4,
+      "wind_hub_m": 102.9,
+      "wind_kw": 50450.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 13.7,
+      "solar_kw": 93007.9,
+      "wind_hub_m": 114.3,
+      "wind_kw": 24800.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 13.9,
+      "solar_kw": 63899.6,
+      "wind_hub_m": 137.2,
+      "wind_kw": 255205.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 14.1,
+      "solar_kw": 103091.7,
+      "wind_hub_m": 126.8,
+      "wind_kw": 149270.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 14.3,
+      "solar_kw": 94372.8,
+      "wind_hub_m": 144.4,
+      "wind_kw": 39050.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 14.5,
+      "solar_kw": 194554.0,
+      "wind_hub_m": 126.3,
+      "wind_kw": 98200.0
+    },
+    {
+      "lat": 51.7,
+      "lon": 14.7,
+      "solar_kw": 172955.3,
+      "wind_hub_m": 158.3,
+      "wind_kw": 66400.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 5.9,
+      "solar_kw": 2185.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 6.1,
+      "solar_kw": 21722.5,
+      "wind_hub_m": 68.3,
+      "wind_kw": 3110.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 6.3,
+      "solar_kw": 16816.3,
+      "wind_hub_m": 87.4,
+      "wind_kw": 14670.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 6.5,
+      "solar_kw": 32447.3,
+      "wind_hub_m": 94.5,
+      "wind_kw": 45000.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 6.7,
+      "solar_kw": 52420.5,
+      "wind_hub_m": 92.8,
+      "wind_kw": 16060.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 6.9,
+      "solar_kw": 138279.4,
+      "wind_hub_m": 128.4,
+      "wind_kw": 149415.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 7.1,
+      "solar_kw": 104710.6,
+      "wind_hub_m": 134.7,
+      "wind_kw": 226150.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 7.3,
+      "solar_kw": 74008.2,
+      "wind_hub_m": 94.1,
+      "wind_kw": 45400.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 7.5,
+      "solar_kw": 60976.2,
+      "wind_hub_m": 130.9,
+      "wind_kw": 66230.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 7.7,
+      "solar_kw": 63377.1,
+      "wind_hub_m": 98.9,
+      "wind_kw": 43840.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 7.9,
+      "solar_kw": 37542.1,
+      "wind_hub_m": 118.9,
+      "wind_kw": 152550.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 8.1,
+      "solar_kw": 59241.8,
+      "wind_hub_m": 147.8,
+      "wind_kw": 64310.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 8.3,
+      "solar_kw": 86703.1,
+      "wind_hub_m": 135.1,
+      "wind_kw": 51490.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 8.5,
+      "solar_kw": 89956.5,
+      "wind_hub_m": 129.4,
+      "wind_kw": 25000.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 8.7,
+      "solar_kw": 49426.9,
+      "wind_hub_m": 95.1,
+      "wind_kw": 10800.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 8.9,
+      "solar_kw": 53974.1,
+      "wind_hub_m": 134.9,
+      "wind_kw": 86520.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 9.1,
+      "solar_kw": 62593.3,
+      "wind_hub_m": 138.4,
+      "wind_kw": 103410.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 9.3,
+      "solar_kw": 15021.3,
+      "wind_hub_m": 132.9,
+      "wind_kw": 135660.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 9.5,
+      "solar_kw": 24973.4,
+      "wind_hub_m": 66.6,
+      "wind_kw": 9500.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 9.7,
+      "solar_kw": 19121.6,
+      "wind_hub_m": 108.0,
+      "wind_kw": 8750.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 9.9,
+      "solar_kw": 12371.1,
+      "wind_hub_m": 97.9,
+      "wind_kw": 19500.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 10.1,
+      "solar_kw": 42280.5,
+      "wind_hub_m": 151.5,
+      "wind_kw": 136160.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 10.3,
+      "solar_kw": 30363.7,
+      "wind_hub_m": 169.0,
+      "wind_kw": 70200.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 10.5,
+      "solar_kw": 34255.1,
+      "wind_hub_m": 129.7,
+      "wind_kw": 39900.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 10.7,
+      "solar_kw": 49441.0,
+      "wind_hub_m": 34.8,
+      "wind_kw": 325.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 10.9,
+      "solar_kw": 57232.0,
+      "wind_hub_m": 122.6,
+      "wind_kw": 44900.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 11.1,
+      "solar_kw": 158338.6,
+      "wind_hub_m": 95.8,
+      "wind_kw": 43000.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 11.3,
+      "solar_kw": 45239.1,
+      "wind_hub_m": 115.7,
+      "wind_kw": 84700.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 11.5,
+      "solar_kw": 75349.1,
+      "wind_hub_m": 110.8,
+      "wind_kw": 218000.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 11.7,
+      "solar_kw": 106322.0,
+      "wind_hub_m": 120.3,
+      "wind_kw": 147600.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 11.9,
+      "solar_kw": 44028.2,
+      "wind_hub_m": 131.1,
+      "wind_kw": 109600.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 12.1,
+      "solar_kw": 226128.1,
+      "wind_hub_m": 97.7,
+      "wind_kw": 28600.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 12.3,
+      "solar_kw": 86339.7,
+      "wind_hub_m": 112.8,
+      "wind_kw": 35260.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 12.5,
+      "solar_kw": 43113.2,
+      "wind_hub_m": 76.5,
+      "wind_kw": 7050.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 12.7,
+      "solar_kw": 77047.9,
+      "wind_hub_m": 89.2,
+      "wind_kw": 31600.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 12.9,
+      "solar_kw": 42480.1,
+      "wind_hub_m": 143.8,
+      "wind_kw": 206940.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 13.1,
+      "solar_kw": 28245.0,
+      "wind_hub_m": 108.3,
+      "wind_kw": 126090.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 13.3,
+      "solar_kw": 87354.1,
+      "wind_hub_m": 123.9,
+      "wind_kw": 280420.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 13.5,
+      "solar_kw": 26654.8,
+      "wind_hub_m": 121.8,
+      "wind_kw": 326890.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 13.7,
+      "solar_kw": 211386.4,
+      "wind_hub_m": 124.0,
+      "wind_kw": 260100.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 13.9,
+      "solar_kw": 52119.1,
+      "wind_hub_m": 127.9,
+      "wind_kw": 99100.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 14.1,
+      "solar_kw": 21411.9,
+      "wind_hub_m": 137.4,
+      "wind_kw": 143000.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 14.3,
+      "solar_kw": 63385.8,
+      "wind_hub_m": 96.8,
+      "wind_kw": 15800.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 14.5,
+      "solar_kw": 64536.8,
+      "wind_hub_m": 157.9,
+      "wind_kw": 74100.0
+    },
+    {
+      "lat": 51.9,
+      "lon": 14.7,
+      "solar_kw": 27155.7,
+      "wind_hub_m": 116.8,
+      "wind_kw": 24300.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 6.1,
+      "solar_kw": 90.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 6.7,
+      "solar_kw": 23516.2,
+      "wind_hub_m": 130.1,
+      "wind_kw": 4200.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 6.9,
+      "solar_kw": 57653.5,
+      "wind_hub_m": 140.6,
+      "wind_kw": 169420.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 7.1,
+      "solar_kw": 96883.0,
+      "wind_hub_m": 130.5,
+      "wind_kw": 270740.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 7.3,
+      "solar_kw": 53301.6,
+      "wind_hub_m": 139.7,
+      "wind_kw": 320295.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 7.5,
+      "solar_kw": 84739.2,
+      "wind_hub_m": 114.4,
+      "wind_kw": 135510.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 7.7,
+      "solar_kw": 60543.3,
+      "wind_hub_m": 104.2,
+      "wind_kw": 49250.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 7.9,
+      "solar_kw": 41371.6,
+      "wind_hub_m": 138.5,
+      "wind_kw": 118700.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 8.1,
+      "solar_kw": 65070.9,
+      "wind_hub_m": 124.6,
+      "wind_kw": 63500.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 8.3,
+      "solar_kw": 56854.6,
+      "wind_hub_m": 118.3,
+      "wind_kw": 16980.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 8.5,
+      "solar_kw": 86515.7,
+      "wind_hub_m": 143.4,
+      "wind_kw": 16815.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 8.7,
+      "solar_kw": 80053.5,
+      "wind_hub_m": 88.5,
+      "wind_kw": 13230.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 8.9,
+      "solar_kw": 36021.6,
+      "wind_hub_m": 103.9,
+      "wind_kw": 91425.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 9.1,
+      "solar_kw": 45351.0,
+      "wind_hub_m": 114.8,
+      "wind_kw": 94825.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 9.3,
+      "solar_kw": 23958.4,
+      "wind_hub_m": 129.5,
+      "wind_kw": 39250.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 9.5,
+      "solar_kw": 10540.2,
+      "wind_hub_m": 125.2,
+      "wind_kw": 119000.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 9.7,
+      "solar_kw": 21161.8,
+      "wind_hub_m": 102.2,
+      "wind_kw": 42450.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 9.9,
+      "solar_kw": 30143.5,
+      "wind_hub_m": 65.0,
+      "wind_kw": 9000.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 10.1,
+      "solar_kw": 35325.9,
+      "wind_hub_m": 113.6,
+      "wind_kw": 62500.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 10.3,
+      "solar_kw": 22507.9,
+      "wind_hub_m": 135.6,
+      "wind_kw": 247125.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 10.5,
+      "solar_kw": 22435.8,
+      "wind_hub_m": 160.3,
+      "wind_kw": 159780.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 10.7,
+      "solar_kw": 9127.2,
+      "wind_hub_m": 139.3,
+      "wind_kw": 258700.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 10.9,
+      "solar_kw": 10162.1,
+      "wind_hub_m": 159.3,
+      "wind_kw": 46800.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 11.1,
+      "solar_kw": 94449.4,
+      "wind_hub_m": 97.3,
+      "wind_kw": 121000.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 11.3,
+      "solar_kw": 76036.8,
+      "wind_hub_m": 91.8,
+      "wind_kw": 266500.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 11.5,
+      "solar_kw": 97126.5,
+      "wind_hub_m": 92.6,
+      "wind_kw": 82080.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 11.7,
+      "solar_kw": 105005.9,
+      "wind_hub_m": 107.8,
+      "wind_kw": 23980.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 11.9,
+      "solar_kw": 27389.1,
+      "wind_hub_m": 113.3,
+      "wind_kw": 107800.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 12.1,
+      "solar_kw": 54998.0,
+      "wind_hub_m": 126.5,
+      "wind_kw": 43250.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 12.3,
+      "solar_kw": 29866.3,
+      "wind_hub_m": 108.6,
+      "wind_kw": 31700.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 12.5,
+      "solar_kw": 16812.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 12.7,
+      "solar_kw": 41403.8,
+      "wind_hub_m": 120.9,
+      "wind_kw": 92470.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 12.9,
+      "solar_kw": 31887.9,
+      "wind_hub_m": 124.8,
+      "wind_kw": 314530.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 13.1,
+      "solar_kw": 175386.5,
+      "wind_hub_m": 122.4,
+      "wind_kw": 106900.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 13.3,
+      "solar_kw": 93192.3,
+      "wind_hub_m": 122.7,
+      "wind_kw": 26100.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 13.5,
+      "solar_kw": 35347.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 13.7,
+      "solar_kw": 10769.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 13.9,
+      "solar_kw": 15896.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 14.1,
+      "solar_kw": 15759.0,
+      "wind_hub_m": 78.8,
+      "wind_kw": 22100.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 14.3,
+      "solar_kw": 31488.9,
+      "wind_hub_m": 132.3,
+      "wind_kw": 208200.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 14.5,
+      "solar_kw": 8934.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.1,
+      "lon": 14.7,
+      "solar_kw": 34350.7,
+      "wind_hub_m": 115.1,
+      "wind_kw": 24900.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 6.5,
+      "solar_kw": 699.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 6.9,
+      "solar_kw": 679.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 7.1,
+      "solar_kw": 85334.4,
+      "wind_hub_m": 118.4,
+      "wind_kw": 43330.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 7.3,
+      "solar_kw": 73208.0,
+      "wind_hub_m": 125.3,
+      "wind_kw": 77650.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 7.5,
+      "solar_kw": 81960.1,
+      "wind_hub_m": 132.6,
+      "wind_kw": 164910.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 7.7,
+      "solar_kw": 83549.4,
+      "wind_hub_m": 133.7,
+      "wind_kw": 69270.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 7.9,
+      "solar_kw": 51112.7,
+      "wind_hub_m": 104.6,
+      "wind_kw": 35840.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 8.1,
+      "solar_kw": 64343.6,
+      "wind_hub_m": 112.0,
+      "wind_kw": 14450.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 8.3,
+      "solar_kw": 51332.1,
+      "wind_hub_m": 127.9,
+      "wind_kw": 61650.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 8.5,
+      "solar_kw": 44528.5,
+      "wind_hub_m": 94.5,
+      "wind_kw": 27129.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 8.7,
+      "solar_kw": 75413.7,
+      "wind_hub_m": 85.1,
+      "wind_kw": 21250.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 8.9,
+      "solar_kw": 56847.1,
+      "wind_hub_m": 98.7,
+      "wind_kw": 11135.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 9.1,
+      "solar_kw": 44725.6,
+      "wind_hub_m": 53.3,
+      "wind_kw": 3155.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 9.3,
+      "solar_kw": 28895.6,
+      "wind_hub_m": 78.2,
+      "wind_kw": 32160.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 9.5,
+      "solar_kw": 29619.1,
+      "wind_hub_m": 78.5,
+      "wind_kw": 36500.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 9.7,
+      "solar_kw": 46048.9,
+      "wind_hub_m": 83.6,
+      "wind_kw": 52930.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 9.9,
+      "solar_kw": 66992.4,
+      "wind_hub_m": 70.4,
+      "wind_kw": 45000.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 10.1,
+      "solar_kw": 20202.0,
+      "wind_hub_m": 116.6,
+      "wind_kw": 269480.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 10.3,
+      "solar_kw": 19859.1,
+      "wind_hub_m": 121.7,
+      "wind_kw": 80200.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 10.5,
+      "solar_kw": 43894.5,
+      "wind_hub_m": 70.0,
+      "wind_kw": 14500.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 10.7,
+      "solar_kw": 55775.4,
+      "wind_hub_m": 73.1,
+      "wind_kw": 10700.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 10.9,
+      "solar_kw": 23351.7,
+      "wind_hub_m": 156.3,
+      "wind_kw": 104400.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 11.1,
+      "solar_kw": 31524.2,
+      "wind_hub_m": 95.1,
+      "wind_kw": 81900.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 11.3,
+      "solar_kw": 122173.1,
+      "wind_hub_m": 91.7,
+      "wind_kw": 33500.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 11.5,
+      "solar_kw": 47685.7,
+      "wind_hub_m": 98.3,
+      "wind_kw": 50600.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 11.7,
+      "solar_kw": 64116.8,
+      "wind_hub_m": 122.5,
+      "wind_kw": 33700.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 11.9,
+      "solar_kw": 74064.7,
+      "wind_hub_m": 132.0,
+      "wind_kw": 115700.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 12.1,
+      "solar_kw": 39326.5,
+      "wind_hub_m": 105.0,
+      "wind_kw": 26800.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 12.3,
+      "solar_kw": 33084.8,
+      "wind_hub_m": 103.1,
+      "wind_kw": 64450.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 12.5,
+      "solar_kw": 54270.2,
+      "wind_hub_m": 86.4,
+      "wind_kw": 5350.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 12.7,
+      "solar_kw": 45927.8,
+      "wind_hub_m": 93.5,
+      "wind_kw": 37180.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 12.9,
+      "solar_kw": 24637.6,
+      "wind_hub_m": 167.5,
+      "wind_kw": 42600.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 13.1,
+      "solar_kw": 31922.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 13.3,
+      "solar_kw": 52861.9,
+      "wind_hub_m": 121.7,
+      "wind_kw": 121300.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 13.5,
+      "solar_kw": 57035.1,
+      "wind_hub_m": 104.3,
+      "wind_kw": 17800.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 13.7,
+      "solar_kw": 43431.6,
+      "wind_hub_m": 144.4,
+      "wind_kw": 75210.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 13.9,
+      "solar_kw": 30485.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 14.1,
+      "solar_kw": 103744.2,
+      "wind_hub_m": 73.3,
+      "wind_kw": 18000.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 14.3,
+      "solar_kw": 39347.1,
+      "wind_hub_m": 147.9,
+      "wind_kw": 327230.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 14.5,
+      "solar_kw": 50567.2,
+      "wind_hub_m": 130.4,
+      "wind_kw": 43600.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 14.7,
+      "solar_kw": 663.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.3,
+      "lon": 15.5,
+      "solar_kw": 102.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 6.7,
+      "solar_kw": 11903.7,
+      "wind_hub_m": 149.0,
+      "wind_kw": 18000.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 6.9,
+      "solar_kw": 26427.6,
+      "wind_hub_m": 123.6,
+      "wind_kw": 61700.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 7.1,
+      "solar_kw": 68417.2,
+      "wind_hub_m": 131.6,
+      "wind_kw": 76120.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 7.3,
+      "solar_kw": 59299.5,
+      "wind_hub_m": 93.5,
+      "wind_kw": 21990.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 7.5,
+      "solar_kw": 55368.5,
+      "wind_hub_m": 136.6,
+      "wind_kw": 174730.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 7.7,
+      "solar_kw": 47084.2,
+      "wind_hub_m": 130.3,
+      "wind_kw": 188279.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 7.9,
+      "solar_kw": 62957.8,
+      "wind_hub_m": 112.5,
+      "wind_kw": 47060.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 8.1,
+      "solar_kw": 75029.9,
+      "wind_hub_m": 138.7,
+      "wind_kw": 141500.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 8.3,
+      "solar_kw": 63265.2,
+      "wind_hub_m": 127.1,
+      "wind_kw": 85255.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 8.5,
+      "solar_kw": 42168.9,
+      "wind_hub_m": 122.4,
+      "wind_kw": 113270.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 8.7,
+      "solar_kw": 46552.8,
+      "wind_hub_m": 120.7,
+      "wind_kw": 42460.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 8.9,
+      "solar_kw": 21390.6,
+      "wind_hub_m": 121.2,
+      "wind_kw": 146400.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 9.1,
+      "solar_kw": 29931.3,
+      "wind_hub_m": 107.2,
+      "wind_kw": 109350.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 9.3,
+      "solar_kw": 12401.6,
+      "wind_hub_m": 62.5,
+      "wind_kw": 6000.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 9.5,
+      "solar_kw": 29315.5,
+      "wind_hub_m": 90.0,
+      "wind_kw": 27075.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 9.7,
+      "solar_kw": 57092.1,
+      "wind_hub_m": 90.8,
+      "wind_kw": 14560.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 9.9,
+      "solar_kw": 23868.9,
+      "wind_hub_m": 70.6,
+      "wind_kw": 12300.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 10.1,
+      "solar_kw": 25319.4,
+      "wind_hub_m": 112.2,
+      "wind_kw": 86100.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 10.3,
+      "solar_kw": 13959.7,
+      "wind_hub_m": 106.5,
+      "wind_kw": 92600.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 10.5,
+      "solar_kw": 32884.2,
+      "wind_hub_m": 70.0,
+      "wind_kw": 12050.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 10.7,
+      "solar_kw": 12081.0,
+      "wind_hub_m": 108.5,
+      "wind_kw": 40700.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 10.9,
+      "solar_kw": 16625.5,
+      "wind_hub_m": 139.2,
+      "wind_kw": 34300.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 11.1,
+      "solar_kw": 45485.7,
+      "wind_hub_m": 124.4,
+      "wind_kw": 45600.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 11.3,
+      "solar_kw": 200209.4,
+      "wind_hub_m": 90.8,
+      "wind_kw": 14900.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 11.5,
+      "solar_kw": 43386.0,
+      "wind_hub_m": 130.4,
+      "wind_kw": 72100.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 11.7,
+      "solar_kw": 80063.1,
+      "wind_hub_m": 116.2,
+      "wind_kw": 144420.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 11.9,
+      "solar_kw": 88945.2,
+      "wind_hub_m": 138.0,
+      "wind_kw": 82900.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 12.1,
+      "solar_kw": 131013.8,
+      "wind_hub_m": 103.7,
+      "wind_kw": 127100.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 12.3,
+      "solar_kw": 124871.1,
+      "wind_hub_m": 123.7,
+      "wind_kw": 15885.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 12.5,
+      "solar_kw": 150510.4,
+      "wind_hub_m": 105.0,
+      "wind_kw": 4000.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 12.7,
+      "solar_kw": 63750.0,
+      "wind_hub_m": 110.9,
+      "wind_kw": 25750.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 12.9,
+      "solar_kw": 193279.3,
+      "wind_hub_m": 104.9,
+      "wind_kw": 313500.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 13.1,
+      "solar_kw": 55940.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 13.3,
+      "solar_kw": 77063.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 13.5,
+      "solar_kw": 103472.0,
+      "wind_hub_m": 152.3,
+      "wind_kw": 6500.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 13.7,
+      "solar_kw": 76666.4,
+      "wind_hub_m": 143.8,
+      "wind_kw": 41600.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 13.9,
+      "solar_kw": 101641.1,
+      "wind_hub_m": 105.3,
+      "wind_kw": 67550.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 14.1,
+      "solar_kw": 48354.7,
+      "wind_hub_m": 90.7,
+      "wind_kw": 26000.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 14.3,
+      "solar_kw": 291146.5,
+      "wind_hub_m": 151.2,
+      "wind_kw": 179250.0
+    },
+    {
+      "lat": 52.5,
+      "lon": 14.5,
+      "solar_kw": 102377.5,
+      "wind_hub_m": 131.3,
+      "wind_kw": 148300.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 6.7,
+      "solar_kw": 6712.1,
+      "wind_hub_m": 100.0,
+      "wind_kw": 8200.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 6.9,
+      "solar_kw": 15190.3,
+      "wind_hub_m": 149.0,
+      "wind_kw": 18000.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 7.1,
+      "solar_kw": 51491.6,
+      "wind_hub_m": 136.1,
+      "wind_kw": 109600.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 7.3,
+      "solar_kw": 46186.4,
+      "wind_hub_m": 173.0,
+      "wind_kw": 75979.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 7.5,
+      "solar_kw": 45052.1,
+      "wind_hub_m": 137.5,
+      "wind_kw": 94580.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 7.7,
+      "solar_kw": 41500.0,
+      "wind_hub_m": 124.8,
+      "wind_kw": 36400.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 7.9,
+      "solar_kw": 44275.5,
+      "wind_hub_m": 121.7,
+      "wind_kw": 40160.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 8.1,
+      "solar_kw": 62237.7,
+      "wind_hub_m": 137.6,
+      "wind_kw": 146800.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 8.3,
+      "solar_kw": 102785.1,
+      "wind_hub_m": 123.7,
+      "wind_kw": 55230.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 8.5,
+      "solar_kw": 51043.4,
+      "wind_hub_m": 115.0,
+      "wind_kw": 128600.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 8.7,
+      "solar_kw": 21944.5,
+      "wind_hub_m": 121.4,
+      "wind_kw": 215890.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 8.9,
+      "solar_kw": 22104.0,
+      "wind_hub_m": 109.5,
+      "wind_kw": 154170.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 9.1,
+      "solar_kw": 35812.6,
+      "wind_hub_m": 106.7,
+      "wind_kw": 75700.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 9.3,
+      "solar_kw": 26758.8,
+      "wind_hub_m": 123.5,
+      "wind_kw": 49730.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 9.5,
+      "solar_kw": 8487.5,
+      "wind_hub_m": 103.6,
+      "wind_kw": 154900.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 9.7,
+      "solar_kw": 18554.7,
+      "wind_hub_m": 115.9,
+      "wind_kw": 84000.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 9.9,
+      "solar_kw": 12471.0,
+      "wind_hub_m": 73.3,
+      "wind_kw": 7750.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 10.1,
+      "solar_kw": 12824.2,
+      "wind_hub_m": 102.1,
+      "wind_kw": 10500.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 10.3,
+      "solar_kw": 48755.5,
+      "wind_hub_m": 101.1,
+      "wind_kw": 70850.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 10.5,
+      "solar_kw": 12951.3,
+      "wind_hub_m": 103.2,
+      "wind_kw": 150000.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 10.7,
+      "solar_kw": 7759.4,
+      "wind_hub_m": 120.1,
+      "wind_kw": 34750.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 10.9,
+      "solar_kw": 84161.6,
+      "wind_hub_m": 128.1,
+      "wind_kw": 39450.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 11.1,
+      "solar_kw": 42853.3,
+      "wind_hub_m": 70.3,
+      "wind_kw": 4200.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 11.3,
+      "solar_kw": 34970.9,
+      "wind_hub_m": 115.8,
+      "wind_kw": 90530.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 11.5,
+      "solar_kw": 28389.9,
+      "wind_hub_m": 111.8,
+      "wind_kw": 169470.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 11.7,
+      "solar_kw": 55418.0,
+      "wind_hub_m": 115.4,
+      "wind_kw": 160630.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 11.9,
+      "solar_kw": 184009.6,
+      "wind_hub_m": 139.2,
+      "wind_kw": 309925.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 12.1,
+      "solar_kw": 28471.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 12.3,
+      "solar_kw": 27581.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 12.5,
+      "solar_kw": 26874.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 12.7,
+      "solar_kw": 21821.8,
+      "wind_hub_m": 113.0,
+      "wind_kw": 2000.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 12.9,
+      "solar_kw": 74520.3,
+      "wind_hub_m": 100.7,
+      "wind_kw": 8400.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 13.1,
+      "solar_kw": 39582.1,
+      "wind_hub_m": 98.7,
+      "wind_kw": 5600.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 13.3,
+      "solar_kw": 69167.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 13.5,
+      "solar_kw": 21084.2,
+      "wind_hub_m": 133.7,
+      "wind_kw": 94635.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 13.7,
+      "solar_kw": 261814.8,
+      "wind_hub_m": 131.6,
+      "wind_kw": 245725.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 13.9,
+      "solar_kw": 12115.7,
+      "wind_hub_m": 122.3,
+      "wind_kw": 196400.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 14.1,
+      "solar_kw": 304478.2,
+      "wind_hub_m": 103.8,
+      "wind_kw": 148260.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 14.3,
+      "solar_kw": 488116.6,
+      "wind_hub_m": 100.5,
+      "wind_kw": 23870.0
+    },
+    {
+      "lat": 52.7,
+      "lon": 14.5,
+      "solar_kw": 9714.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 7.1,
+      "solar_kw": 18759.5,
+      "wind_hub_m": 120.7,
+      "wind_kw": 134700.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 7.3,
+      "solar_kw": 66193.8,
+      "wind_hub_m": 138.9,
+      "wind_kw": 170150.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 7.5,
+      "solar_kw": 37561.1,
+      "wind_hub_m": 139.1,
+      "wind_kw": 250710.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 7.7,
+      "solar_kw": 98157.2,
+      "wind_hub_m": 128.3,
+      "wind_kw": 233850.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 7.9,
+      "solar_kw": 62605.5,
+      "wind_hub_m": 102.1,
+      "wind_kw": 85610.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 8.1,
+      "solar_kw": 98510.0,
+      "wind_hub_m": 92.4,
+      "wind_kw": 24245.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 8.3,
+      "solar_kw": 107956.9,
+      "wind_hub_m": 136.2,
+      "wind_kw": 99280.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 8.5,
+      "solar_kw": 32990.3,
+      "wind_hub_m": 124.3,
+      "wind_kw": 165800.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 8.7,
+      "solar_kw": 47559.4,
+      "wind_hub_m": 119.8,
+      "wind_kw": 118270.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 8.9,
+      "solar_kw": 12033.4,
+      "wind_hub_m": 145.4,
+      "wind_kw": 178370.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 9.1,
+      "solar_kw": 34909.2,
+      "wind_hub_m": 103.4,
+      "wind_kw": 157775.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 9.3,
+      "solar_kw": 45107.2,
+      "wind_hub_m": 115.5,
+      "wind_kw": 55050.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 9.5,
+      "solar_kw": 33075.1,
+      "wind_hub_m": 106.0,
+      "wind_kw": 122300.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 9.7,
+      "solar_kw": 38653.8,
+      "wind_hub_m": 92.7,
+      "wind_kw": 48750.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 9.9,
+      "solar_kw": 25549.2,
+      "wind_hub_m": 70.3,
+      "wind_kw": 7100.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 10.1,
+      "solar_kw": 8757.3,
+      "wind_hub_m": 106.3,
+      "wind_kw": 42900.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 10.3,
+      "solar_kw": 2280.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 10.5,
+      "solar_kw": 29381.6,
+      "wind_hub_m": 123.9,
+      "wind_kw": 119970.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 10.7,
+      "solar_kw": 17499.4,
+      "wind_hub_m": 138.3,
+      "wind_kw": 126410.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 10.9,
+      "solar_kw": 12000.0,
+      "wind_hub_m": 144.1,
+      "wind_kw": 68200.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 11.1,
+      "solar_kw": 50654.8,
+      "wind_hub_m": 114.6,
+      "wind_kw": 105520.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 11.3,
+      "solar_kw": 51460.7,
+      "wind_hub_m": 77.3,
+      "wind_kw": 63050.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 11.5,
+      "solar_kw": 26076.3,
+      "wind_hub_m": 146.8,
+      "wind_kw": 33850.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 11.7,
+      "solar_kw": 31675.7,
+      "wind_hub_m": 132.1,
+      "wind_kw": 107375.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 11.9,
+      "solar_kw": 8730.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 12.1,
+      "solar_kw": 165248.1,
+      "wind_hub_m": 101.9,
+      "wind_kw": 134129.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 12.3,
+      "solar_kw": 117338.0,
+      "wind_hub_m": 95.8,
+      "wind_kw": 148300.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 12.5,
+      "solar_kw": 67688.2,
+      "wind_hub_m": 121.7,
+      "wind_kw": 150010.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 12.7,
+      "solar_kw": 149736.9,
+      "wind_hub_m": 93.6,
+      "wind_kw": 93750.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 12.9,
+      "solar_kw": 40901.0,
+      "wind_hub_m": 65.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 13.1,
+      "solar_kw": 76848.8,
+      "wind_hub_m": 105.0,
+      "wind_kw": 8600.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 13.3,
+      "solar_kw": 28926.8,
+      "wind_hub_m": 100.9,
+      "wind_kw": 105500.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 13.5,
+      "solar_kw": 10884.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 13.7,
+      "solar_kw": 107515.4,
+      "wind_hub_m": 85.6,
+      "wind_kw": 8400.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 13.9,
+      "solar_kw": 43465.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 14.1,
+      "solar_kw": 19046.1,
+      "wind_hub_m": 100.7,
+      "wind_kw": 53100.0
+    },
+    {
+      "lat": 52.9,
+      "lon": 14.3,
+      "solar_kw": 328.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 7.1,
+      "solar_kw": 552.9,
+      "wind_hub_m": 50.0,
+      "wind_kw": 600.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 7.3,
+      "solar_kw": 47069.2,
+      "wind_hub_m": 131.1,
+      "wind_kw": 214160.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 7.5,
+      "solar_kw": 32912.1,
+      "wind_hub_m": 89.4,
+      "wind_kw": 51160.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 7.7,
+      "solar_kw": 48419.2,
+      "wind_hub_m": 121.3,
+      "wind_kw": 137880.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 7.9,
+      "solar_kw": 44644.2,
+      "wind_hub_m": 125.5,
+      "wind_kw": 91430.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 8.1,
+      "solar_kw": 69587.0,
+      "wind_hub_m": 101.5,
+      "wind_kw": 34150.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 8.3,
+      "solar_kw": 40702.1,
+      "wind_hub_m": 123.2,
+      "wind_kw": 102500.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 8.5,
+      "solar_kw": 53480.3,
+      "wind_hub_m": 117.5,
+      "wind_kw": 76650.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 8.7,
+      "solar_kw": 76544.3,
+      "wind_hub_m": 106.9,
+      "wind_kw": 106800.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 8.9,
+      "solar_kw": 58990.1,
+      "wind_hub_m": 112.7,
+      "wind_kw": 58750.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 9.1,
+      "solar_kw": 19886.3,
+      "wind_hub_m": 122.8,
+      "wind_kw": 120980.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 9.3,
+      "solar_kw": 44492.4,
+      "wind_hub_m": 123.8,
+      "wind_kw": 24200.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 9.5,
+      "solar_kw": 24255.8,
+      "wind_hub_m": 146.3,
+      "wind_kw": 112700.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 9.7,
+      "solar_kw": 9994.1,
+      "wind_hub_m": 88.5,
+      "wind_kw": 65250.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 9.9,
+      "solar_kw": 11412.8,
+      "wind_hub_m": 65.2,
+      "wind_kw": 21800.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 10.1,
+      "solar_kw": 14122.3,
+      "wind_hub_m": 131.8,
+      "wind_kw": 51260.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 10.3,
+      "solar_kw": 30083.0,
+      "wind_hub_m": 113.5,
+      "wind_kw": 149860.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 10.5,
+      "solar_kw": 10462.1,
+      "wind_hub_m": 106.2,
+      "wind_kw": 53400.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 10.7,
+      "solar_kw": 8678.4,
+      "wind_hub_m": 119.6,
+      "wind_kw": 125650.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 10.9,
+      "solar_kw": 15517.3,
+      "wind_hub_m": 153.7,
+      "wind_kw": 50000.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 11.1,
+      "solar_kw": 17962.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 11.3,
+      "solar_kw": 9028.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 11.5,
+      "solar_kw": 2494.6,
+      "wind_hub_m": 143.0,
+      "wind_kw": 92400.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 11.7,
+      "solar_kw": 35676.9,
+      "wind_hub_m": 132.1,
+      "wind_kw": 95850.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 11.9,
+      "solar_kw": 96742.2,
+      "wind_hub_m": 120.5,
+      "wind_kw": 112350.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 12.1,
+      "solar_kw": 27530.0,
+      "wind_hub_m": 113.6,
+      "wind_kw": 283280.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 12.3,
+      "solar_kw": 46584.3,
+      "wind_hub_m": 98.3,
+      "wind_kw": 119150.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 12.5,
+      "solar_kw": 39331.9,
+      "wind_hub_m": 125.7,
+      "wind_kw": 93750.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 12.7,
+      "solar_kw": 4307.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 12.9,
+      "solar_kw": 5331.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 13.1,
+      "solar_kw": 61444.7,
+      "wind_hub_m": 65.0,
+      "wind_kw": 500.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 13.3,
+      "solar_kw": 6505.7,
+      "wind_hub_m": 85.6,
+      "wind_kw": 26800.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 13.5,
+      "solar_kw": 142144.9,
+      "wind_hub_m": 98.6,
+      "wind_kw": 10500.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 13.7,
+      "solar_kw": 10939.0,
+      "wind_hub_m": 73.2,
+      "wind_kw": 5600.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 13.9,
+      "solar_kw": 7291.6,
+      "wind_hub_m": 151.9,
+      "wind_kw": 35800.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 14.1,
+      "solar_kw": 21435.3,
+      "wind_hub_m": 134.6,
+      "wind_kw": 196430.0
+    },
+    {
+      "lat": 53.1,
+      "lon": 14.3,
+      "solar_kw": 24536.1,
+      "wind_hub_m": 101.1,
+      "wind_kw": 49100.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 6.9,
+      "solar_kw": 99.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 7.1,
+      "solar_kw": 9556.6,
+      "wind_hub_m": 93.6,
+      "wind_kw": 141690.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 7.3,
+      "solar_kw": 17834.4,
+      "wind_hub_m": 113.3,
+      "wind_kw": 216895.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 7.5,
+      "solar_kw": 36957.5,
+      "wind_hub_m": 108.6,
+      "wind_kw": 80475.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 7.7,
+      "solar_kw": 21033.0,
+      "wind_hub_m": 100.3,
+      "wind_kw": 163200.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 7.9,
+      "solar_kw": 18297.0,
+      "wind_hub_m": 100.1,
+      "wind_kw": 64950.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 8.1,
+      "solar_kw": 32859.2,
+      "wind_hub_m": 80.3,
+      "wind_kw": 25200.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 8.3,
+      "solar_kw": 51049.5,
+      "wind_hub_m": 117.8,
+      "wind_kw": 137950.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 8.5,
+      "solar_kw": 29996.1,
+      "wind_hub_m": 96.3,
+      "wind_kw": 159210.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 8.7,
+      "solar_kw": 19671.6,
+      "wind_hub_m": 107.1,
+      "wind_kw": 120635.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 8.9,
+      "solar_kw": 27504.2,
+      "wind_hub_m": 116.2,
+      "wind_kw": 67300.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 9.1,
+      "solar_kw": 22207.2,
+      "wind_hub_m": 65.0,
+      "wind_kw": 2400.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 9.3,
+      "solar_kw": 14514.8,
+      "wind_hub_m": 139.3,
+      "wind_kw": 154350.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 9.5,
+      "solar_kw": 70574.2,
+      "wind_hub_m": 104.3,
+      "wind_kw": 80950.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 9.7,
+      "solar_kw": 25628.6,
+      "wind_hub_m": 126.0,
+      "wind_kw": 112000.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 9.9,
+      "solar_kw": 13521.3,
+      "wind_hub_m": 125.8,
+      "wind_kw": 14120.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 10.1,
+      "solar_kw": 52580.8,
+      "wind_hub_m": 115.3,
+      "wind_kw": 67900.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 10.3,
+      "solar_kw": 26074.6,
+      "wind_hub_m": 134.3,
+      "wind_kw": 23840.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 10.5,
+      "solar_kw": 26383.5,
+      "wind_hub_m": 108.4,
+      "wind_kw": 39280.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 10.7,
+      "solar_kw": 17807.7,
+      "wind_hub_m": 104.6,
+      "wind_kw": 38500.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 10.9,
+      "solar_kw": 72047.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 11.1,
+      "solar_kw": 17157.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 11.3,
+      "solar_kw": 18274.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 11.5,
+      "solar_kw": 90442.1,
+      "wind_hub_m": 102.0,
+      "wind_kw": 13800.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 11.7,
+      "solar_kw": 83507.6,
+      "wind_hub_m": 89.0,
+      "wind_kw": 16200.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 11.9,
+      "solar_kw": 142527.9,
+      "wind_hub_m": 102.5,
+      "wind_kw": 133200.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 12.1,
+      "solar_kw": 94270.1,
+      "wind_hub_m": 131.6,
+      "wind_kw": 292000.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 12.3,
+      "solar_kw": 380822.9,
+      "wind_hub_m": 126.4,
+      "wind_kw": 239260.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 12.5,
+      "solar_kw": 110088.9,
+      "wind_hub_m": 139.9,
+      "wind_kw": 95350.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 12.7,
+      "solar_kw": 43297.7,
+      "wind_hub_m": 65.0,
+      "wind_kw": 1200.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 12.9,
+      "solar_kw": 9415.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 13.1,
+      "solar_kw": 43521.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 13.3,
+      "solar_kw": 21701.8,
+      "wind_hub_m": 50.0,
+      "wind_kw": 3000.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 13.5,
+      "solar_kw": 8249.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 13.7,
+      "solar_kw": 279778.9,
+      "wind_hub_m": 133.8,
+      "wind_kw": 207900.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 13.9,
+      "solar_kw": 90867.5,
+      "wind_hub_m": 140.6,
+      "wind_kw": 570155.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 14.1,
+      "solar_kw": 50151.2,
+      "wind_hub_m": 122.3,
+      "wind_kw": 282975.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 14.3,
+      "solar_kw": 22223.3,
+      "wind_hub_m": 133.6,
+      "wind_kw": 168325.0
+    },
+    {
+      "lat": 53.3,
+      "lon": 14.5,
+      "solar_kw": 2093.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 6.1,
+      "solar_kw": 49.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 6.7,
+      "solar_kw": 1927.3,
+      "wind_hub_m": 65.0,
+      "wind_kw": 3600.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 7.1,
+      "solar_kw": 8288.1,
+      "wind_hub_m": 72.1,
+      "wind_kw": 207205.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 7.3,
+      "solar_kw": 39907.5,
+      "wind_hub_m": 78.7,
+      "wind_kw": 81880.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 7.5,
+      "solar_kw": 26305.0,
+      "wind_hub_m": 111.9,
+      "wind_kw": 92170.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 7.7,
+      "solar_kw": 20082.9,
+      "wind_hub_m": 79.1,
+      "wind_kw": 20950.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 7.9,
+      "solar_kw": 139350.0,
+      "wind_hub_m": 99.8,
+      "wind_kw": 90900.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 8.1,
+      "solar_kw": 92012.1,
+      "wind_hub_m": 90.0,
+      "wind_kw": 119327.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 8.3,
+      "solar_kw": 3371.6,
+      "wind_hub_m": 88.4,
+      "wind_kw": 97870.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 8.5,
+      "solar_kw": 70690.6,
+      "wind_hub_m": 91.9,
+      "wind_kw": 78795.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 8.7,
+      "solar_kw": 23241.7,
+      "wind_hub_m": 104.7,
+      "wind_kw": 98650.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 8.9,
+      "solar_kw": 11096.0,
+      "wind_hub_m": 111.3,
+      "wind_kw": 136920.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 9.1,
+      "solar_kw": 21154.3,
+      "wind_hub_m": 141.7,
+      "wind_kw": 175000.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 9.3,
+      "solar_kw": 46304.4,
+      "wind_hub_m": 144.8,
+      "wind_kw": 94725.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 9.5,
+      "solar_kw": 32127.6,
+      "wind_hub_m": 106.3,
+      "wind_kw": 113350.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 9.7,
+      "solar_kw": 40282.3,
+      "wind_hub_m": 109.4,
+      "wind_kw": 39950.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 9.9,
+      "solar_kw": 40470.8,
+      "wind_hub_m": 120.6,
+      "wind_kw": 61300.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 10.1,
+      "solar_kw": 48447.3,
+      "wind_hub_m": 92.5,
+      "wind_kw": 19570.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 10.3,
+      "solar_kw": 29034.6,
+      "wind_hub_m": 102.6,
+      "wind_kw": 41120.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 10.5,
+      "solar_kw": 90529.9,
+      "wind_hub_m": 101.9,
+      "wind_kw": 73000.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 10.7,
+      "solar_kw": 8838.2,
+      "wind_hub_m": 110.3,
+      "wind_kw": 19550.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 10.9,
+      "solar_kw": 62568.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 11.1,
+      "solar_kw": 46665.5,
+      "wind_hub_m": 64.0,
+      "wind_kw": 1025.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 11.3,
+      "solar_kw": 61085.6,
+      "wind_hub_m": 129.2,
+      "wind_kw": 98400.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 11.5,
+      "solar_kw": 127874.9,
+      "wind_hub_m": 96.9,
+      "wind_kw": 41900.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 11.7,
+      "solar_kw": 221240.7,
+      "wind_hub_m": 151.3,
+      "wind_kw": 45150.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 11.9,
+      "solar_kw": 19216.5,
+      "wind_hub_m": 105.3,
+      "wind_kw": 273375.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 12.1,
+      "solar_kw": 69648.7,
+      "wind_hub_m": 135.8,
+      "wind_kw": 117525.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 12.3,
+      "solar_kw": 110920.4,
+      "wind_hub_m": 116.9,
+      "wind_kw": 68000.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 12.5,
+      "solar_kw": 63888.8,
+      "wind_hub_m": 60.0,
+      "wind_kw": 660.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 12.7,
+      "solar_kw": 120610.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 12.9,
+      "solar_kw": 6251.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 13.1,
+      "solar_kw": 21165.3,
+      "wind_hub_m": 60.0,
+      "wind_kw": 4000.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 13.3,
+      "solar_kw": 157529.1,
+      "wind_hub_m": 50.0,
+      "wind_kw": 2400.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 13.5,
+      "solar_kw": 57027.5,
+      "wind_hub_m": 124.6,
+      "wind_kw": 57650.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 13.7,
+      "solar_kw": 61329.4,
+      "wind_hub_m": 109.1,
+      "wind_kw": 53350.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 13.9,
+      "solar_kw": 26279.2,
+      "wind_hub_m": 118.5,
+      "wind_kw": 255800.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 14.1,
+      "solar_kw": 67423.8,
+      "wind_hub_m": 107.4,
+      "wind_kw": 125180.0
+    },
+    {
+      "lat": 53.5,
+      "lon": 14.3,
+      "solar_kw": 44646.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 500.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 6.5,
+      "solar_kw": 0.0,
+      "wind_hub_m": 90.0,
+      "wind_kw": 113400.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 6.9,
+      "solar_kw": 141.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 7.1,
+      "solar_kw": 4399.4,
+      "wind_hub_m": 50.0,
+      "wind_kw": 200.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 7.3,
+      "solar_kw": 4188.0,
+      "wind_hub_m": 63.5,
+      "wind_kw": 216700.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 7.5,
+      "solar_kw": 4049.4,
+      "wind_hub_m": 93.2,
+      "wind_kw": 421050.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 7.7,
+      "solar_kw": 19245.6,
+      "wind_hub_m": 122.1,
+      "wind_kw": 134745.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 7.9,
+      "solar_kw": 14674.8,
+      "wind_hub_m": 91.2,
+      "wind_kw": 117885.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 8.1,
+      "solar_kw": 4042.5,
+      "wind_hub_m": 100.7,
+      "wind_kw": 60725.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 8.3,
+      "solar_kw": 99.7,
+      "wind_hub_m": 30.0,
+      "wind_kw": 150.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 8.5,
+      "solar_kw": 5289.4,
+      "wind_hub_m": 65.3,
+      "wind_kw": 81040.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 8.7,
+      "solar_kw": 36089.7,
+      "wind_hub_m": 93.9,
+      "wind_kw": 241400.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 8.9,
+      "solar_kw": 10601.9,
+      "wind_hub_m": 79.2,
+      "wind_kw": 83760.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 9.1,
+      "solar_kw": 13715.2,
+      "wind_hub_m": 117.2,
+      "wind_kw": 86350.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 9.3,
+      "solar_kw": 20005.1,
+      "wind_hub_m": 108.0,
+      "wind_kw": 194150.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 9.5,
+      "solar_kw": 24464.3,
+      "wind_hub_m": 88.6,
+      "wind_kw": 33275.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 9.7,
+      "solar_kw": 29322.3,
+      "wind_hub_m": 100.2,
+      "wind_kw": 32175.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 9.9,
+      "solar_kw": 38908.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 10.1,
+      "solar_kw": 23671.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 10.3,
+      "solar_kw": 23644.3,
+      "wind_hub_m": 104.0,
+      "wind_kw": 21750.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 10.5,
+      "solar_kw": 7334.4,
+      "wind_hub_m": 105.0,
+      "wind_kw": 73625.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 10.7,
+      "solar_kw": 12849.0,
+      "wind_hub_m": 125.4,
+      "wind_kw": 31500.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 10.9,
+      "solar_kw": 4467.8,
+      "wind_hub_m": 123.9,
+      "wind_kw": 34700.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 11.1,
+      "solar_kw": 38120.1,
+      "wind_hub_m": 90.6,
+      "wind_kw": 48550.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 11.3,
+      "solar_kw": 29826.4,
+      "wind_hub_m": 112.9,
+      "wind_kw": 45750.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 11.5,
+      "solar_kw": 8037.6,
+      "wind_hub_m": 78.8,
+      "wind_kw": 12000.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 11.7,
+      "solar_kw": 11588.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 11.9,
+      "solar_kw": 2785.5,
+      "wind_hub_m": 85.0,
+      "wind_kw": 21000.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 12.1,
+      "solar_kw": 17947.7,
+      "wind_hub_m": 112.7,
+      "wind_kw": 31550.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 12.3,
+      "solar_kw": 141824.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 12.5,
+      "solar_kw": 44390.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 12.7,
+      "solar_kw": 26424.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 12.9,
+      "solar_kw": 52257.0,
+      "wind_hub_m": 62.9,
+      "wind_kw": 10200.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 13.1,
+      "solar_kw": 50768.1,
+      "wind_hub_m": 121.1,
+      "wind_kw": 83200.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 13.3,
+      "solar_kw": 114866.1,
+      "wind_hub_m": 122.0,
+      "wind_kw": 275660.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 13.5,
+      "solar_kw": 85040.9,
+      "wind_hub_m": 104.1,
+      "wind_kw": 102525.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 13.7,
+      "solar_kw": 38307.6,
+      "wind_hub_m": 96.3,
+      "wind_kw": 102300.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 13.9,
+      "solar_kw": 55320.7,
+      "wind_hub_m": 155.5,
+      "wind_kw": 6600.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 14.1,
+      "solar_kw": 53305.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.7,
+      "lon": 14.3,
+      "solar_kw": 1316.5,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 6.1,
+      "solar_kw": 720.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 6.5,
+      "solar_kw": 0.0,
+      "wind_hub_m": 102.1,
+      "wind_kw": 721200.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 6.7,
+      "solar_kw": 0.0,
+      "wind_hub_m": 92.8,
+      "wind_kw": 206300.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 6.9,
+      "solar_kw": 0.0,
+      "wind_hub_m": 94.5,
+      "wind_kw": 253176.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 7.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 110.0,
+      "wind_kw": 31320.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 7.3,
+      "solar_kw": 272.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 7.9,
+      "solar_kw": 98.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 8.1,
+      "solar_kw": 63.6,
+      "wind_hub_m": 84.0,
+      "wind_kw": 110700.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 8.5,
+      "solar_kw": 284.8,
+      "wind_hub_m": 32.7,
+      "wind_kw": 150.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 8.7,
+      "solar_kw": 28954.5,
+      "wind_hub_m": 90.6,
+      "wind_kw": 66500.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 8.9,
+      "solar_kw": 21384.4,
+      "wind_hub_m": 73.6,
+      "wind_kw": 305100.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 9.1,
+      "solar_kw": 44619.3,
+      "wind_hub_m": 92.9,
+      "wind_kw": 446489.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 9.3,
+      "solar_kw": 152392.1,
+      "wind_hub_m": 87.8,
+      "wind_kw": 231150.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 9.5,
+      "solar_kw": 130778.1,
+      "wind_hub_m": 100.5,
+      "wind_kw": 234980.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 9.7,
+      "solar_kw": 49161.4,
+      "wind_hub_m": 117.6,
+      "wind_kw": 103800.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 9.9,
+      "solar_kw": 48729.9,
+      "wind_hub_m": 109.8,
+      "wind_kw": 147050.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 10.1,
+      "solar_kw": 13071.5,
+      "wind_hub_m": 140.5,
+      "wind_kw": 34600.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 10.3,
+      "solar_kw": 109219.0,
+      "wind_hub_m": 114.3,
+      "wind_kw": 70210.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 10.5,
+      "solar_kw": 40316.4,
+      "wind_hub_m": 98.1,
+      "wind_kw": 149060.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 10.7,
+      "solar_kw": 34071.9,
+      "wind_hub_m": 108.8,
+      "wind_kw": 26100.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 10.9,
+      "solar_kw": 36143.6,
+      "wind_hub_m": 110.3,
+      "wind_kw": 86170.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 11.1,
+      "solar_kw": 22664.7,
+      "wind_hub_m": 147.4,
+      "wind_kw": 101200.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 11.3,
+      "solar_kw": 17264.9,
+      "wind_hub_m": 87.1,
+      "wind_kw": 40960.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 11.5,
+      "solar_kw": 98809.1,
+      "wind_hub_m": 77.4,
+      "wind_kw": 28600.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 11.7,
+      "solar_kw": 32519.8,
+      "wind_hub_m": 97.9,
+      "wind_kw": 32400.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 11.9,
+      "solar_kw": 37004.3,
+      "wind_hub_m": 119.2,
+      "wind_kw": 209380.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 12.1,
+      "solar_kw": 43939.1,
+      "wind_hub_m": 124.2,
+      "wind_kw": 143050.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 12.3,
+      "solar_kw": 79370.6,
+      "wind_hub_m": 120.0,
+      "wind_kw": 101975.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 12.5,
+      "solar_kw": 19854.6,
+      "wind_hub_m": 109.5,
+      "wind_kw": 43310.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 12.7,
+      "solar_kw": 40453.0,
+      "wind_hub_m": 57.4,
+      "wind_kw": 2700.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 12.9,
+      "solar_kw": 30082.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 13.1,
+      "solar_kw": 166097.8,
+      "wind_hub_m": 111.9,
+      "wind_kw": 136150.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 13.3,
+      "solar_kw": 399291.7,
+      "wind_hub_m": 121.1,
+      "wind_kw": 96125.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 13.5,
+      "solar_kw": 29529.5,
+      "wind_hub_m": 116.0,
+      "wind_kw": 123350.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 13.7,
+      "solar_kw": 47081.5,
+      "wind_hub_m": 79.9,
+      "wind_kw": 59300.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 13.9,
+      "solar_kw": 3381.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 53.9,
+      "lon": 14.1,
+      "solar_kw": 11185.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 6.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 142.4,
+      "wind_kw": 462000.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 6.3,
+      "solar_kw": 0.0,
+      "wind_hub_m": 142.4,
+      "wind_kw": 473550.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 6.5,
+      "solar_kw": 0.0,
+      "wind_hub_m": 100.2,
+      "wind_kw": 791560.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 6.7,
+      "solar_kw": 0.0,
+      "wind_hub_m": 96.6,
+      "wind_kw": 76900.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 6.9,
+      "solar_kw": 0.0,
+      "wind_hub_m": 110.0,
+      "wind_kw": 306936.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 7.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 119.2,
+      "wind_kw": 478626.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 7.5,
+      "solar_kw": 99.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 7.9,
+      "solar_kw": 204.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 8.1,
+      "solar_kw": 661.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 8.3,
+      "solar_kw": 107.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 8.5,
+      "solar_kw": 0.0,
+      "wind_hub_m": 64.0,
+      "wind_kw": 29900.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 8.9,
+      "solar_kw": 27464.8,
+      "wind_hub_m": 85.0,
+      "wind_kw": 398080.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 9.1,
+      "solar_kw": 145994.4,
+      "wind_hub_m": 103.0,
+      "wind_kw": 382545.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 9.3,
+      "solar_kw": 82032.9,
+      "wind_hub_m": 112.0,
+      "wind_kw": 342515.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 9.5,
+      "solar_kw": 164957.9,
+      "wind_hub_m": 121.9,
+      "wind_kw": 296880.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 9.7,
+      "solar_kw": 41941.6,
+      "wind_hub_m": 117.6,
+      "wind_kw": 51800.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 9.9,
+      "solar_kw": 229444.6,
+      "wind_hub_m": 112.6,
+      "wind_kw": 207950.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 10.1,
+      "solar_kw": 60076.8,
+      "wind_hub_m": 109.4,
+      "wind_kw": 112550.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 10.3,
+      "solar_kw": 34225.2,
+      "wind_hub_m": 120.4,
+      "wind_kw": 27200.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 10.5,
+      "solar_kw": 19753.9,
+      "wind_hub_m": 122.6,
+      "wind_kw": 64450.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 10.7,
+      "solar_kw": 13052.3,
+      "wind_hub_m": 110.5,
+      "wind_kw": 90900.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 10.9,
+      "solar_kw": 22795.3,
+      "wind_hub_m": 92.2,
+      "wind_kw": 111150.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 11.1,
+      "solar_kw": 347.4,
+      "wind_hub_m": 35.0,
+      "wind_kw": 450.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 11.5,
+      "solar_kw": 513.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 11.7,
+      "solar_kw": 25497.5,
+      "wind_hub_m": 96.9,
+      "wind_kw": 115460.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 11.9,
+      "solar_kw": 26003.9,
+      "wind_hub_m": 102.2,
+      "wind_kw": 57290.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 12.1,
+      "solar_kw": 51860.9,
+      "wind_hub_m": 81.5,
+      "wind_kw": 33925.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 12.3,
+      "solar_kw": 34801.9,
+      "wind_hub_m": 107.4,
+      "wind_kw": 58425.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 12.5,
+      "solar_kw": 40816.0,
+      "wind_hub_m": 80.7,
+      "wind_kw": 41285.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 12.7,
+      "solar_kw": 44126.9,
+      "wind_hub_m": 114.4,
+      "wind_kw": 90300.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 12.9,
+      "solar_kw": 36781.3,
+      "wind_hub_m": 106.4,
+      "wind_kw": 89600.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 13.1,
+      "solar_kw": 120315.2,
+      "wind_hub_m": 114.4,
+      "wind_kw": 187220.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 13.3,
+      "solar_kw": 31338.7,
+      "wind_hub_m": 101.3,
+      "wind_kw": 92370.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 13.5,
+      "solar_kw": 30559.7,
+      "wind_hub_m": 68.2,
+      "wind_kw": 9750.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 13.7,
+      "solar_kw": 45723.3,
+      "wind_hub_m": 71.1,
+      "wind_kw": 35850.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 13.9,
+      "solar_kw": 4406.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.1,
+      "lon": 14.1,
+      "solar_kw": 168.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 5.7,
+      "solar_kw": 0.0,
+      "wind_hub_m": 108.3,
+      "wind_kw": 159600.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 5.9,
+      "solar_kw": 0.0,
+      "wind_hub_m": 99.4,
+      "wind_kw": 792400.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 6.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 122.7,
+      "wind_kw": 301000.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 6.3,
+      "solar_kw": 0.0,
+      "wind_hub_m": 140.7,
+      "wind_kw": 299400.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 7.7,
+      "solar_kw": 0.0,
+      "wind_hub_m": 89.0,
+      "wind_kw": 207900.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 8.3,
+      "solar_kw": 34.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 8.7,
+      "solar_kw": 16344.3,
+      "wind_hub_m": 64.0,
+      "wind_kw": 20700.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 8.9,
+      "solar_kw": 24816.5,
+      "wind_hub_m": 83.6,
+      "wind_kw": 354990.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 9.1,
+      "solar_kw": 53902.0,
+      "wind_hub_m": 105.1,
+      "wind_kw": 291970.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 9.3,
+      "solar_kw": 29422.9,
+      "wind_hub_m": 98.6,
+      "wind_kw": 55945.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 9.5,
+      "solar_kw": 11657.5,
+      "wind_hub_m": 97.5,
+      "wind_kw": 109325.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 9.7,
+      "solar_kw": 77000.3,
+      "wind_hub_m": 113.2,
+      "wind_kw": 67500.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 9.9,
+      "solar_kw": 218186.6,
+      "wind_hub_m": 109.7,
+      "wind_kw": 134770.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 10.1,
+      "solar_kw": 51356.1,
+      "wind_hub_m": 106.4,
+      "wind_kw": 16900.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 10.3,
+      "solar_kw": 14801.9,
+      "wind_hub_m": 62.0,
+      "wind_kw": 14450.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 10.5,
+      "solar_kw": 7248.1,
+      "wind_hub_m": 59.7,
+      "wind_kw": 7700.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 10.7,
+      "solar_kw": 13642.5,
+      "wind_hub_m": 93.0,
+      "wind_kw": 6400.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 10.9,
+      "solar_kw": 71779.0,
+      "wind_hub_m": 92.3,
+      "wind_kw": 276371.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 11.1,
+      "solar_kw": 17861.4,
+      "wind_hub_m": 109.7,
+      "wind_kw": 138910.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 11.3,
+      "solar_kw": 30.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 12.1,
+      "solar_kw": 228.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 12.3,
+      "solar_kw": 10442.0,
+      "wind_hub_m": 61.7,
+      "wind_kw": 3000.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 12.5,
+      "solar_kw": 42648.5,
+      "wind_hub_m": 63.9,
+      "wind_kw": 34500.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 12.7,
+      "solar_kw": 120054.4,
+      "wind_hub_m": 94.5,
+      "wind_kw": 34150.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 12.9,
+      "solar_kw": 25269.3,
+      "wind_hub_m": 65.0,
+      "wind_kw": 1500.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 13.1,
+      "solar_kw": 47919.5,
+      "wind_hub_m": 56.1,
+      "wind_kw": 13400.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 13.3,
+      "solar_kw": 36654.2,
+      "wind_hub_m": 53.0,
+      "wind_kw": 4000.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 13.5,
+      "solar_kw": 6555.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 13.7,
+      "solar_kw": 2141.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.3,
+      "lon": 14.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 102.0,
+      "wind_kw": 6300.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 5.9,
+      "solar_kw": 0.0,
+      "wind_hub_m": 90.0,
+      "wind_kw": 22000.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 6.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 90.0,
+      "wind_kw": 27500.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 6.3,
+      "solar_kw": 0.0,
+      "wind_hub_m": 100.2,
+      "wind_kw": 965050.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 6.5,
+      "solar_kw": 0.0,
+      "wind_hub_m": 92.4,
+      "wind_kw": 45000.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 7.7,
+      "solar_kw": 0.0,
+      "wind_hub_m": 97.5,
+      "wind_kw": 1034100.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 8.3,
+      "solar_kw": 165.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 8.5,
+      "solar_kw": 386.0,
+      "wind_hub_m": 93.0,
+      "wind_kw": 6800.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 8.7,
+      "solar_kw": 3719.6,
+      "wind_hub_m": 63.4,
+      "wind_kw": 14055.4
+    },
+    {
+      "lat": 54.5,
+      "lon": 8.9,
+      "solar_kw": 13205.2,
+      "wind_hub_m": 78.8,
+      "wind_kw": 216955.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 9.1,
+      "solar_kw": 88755.2,
+      "wind_hub_m": 82.0,
+      "wind_kw": 325875.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 9.3,
+      "solar_kw": 82291.7,
+      "wind_hub_m": 93.5,
+      "wind_kw": 369045.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 9.5,
+      "solar_kw": 136746.7,
+      "wind_hub_m": 75.5,
+      "wind_kw": 107500.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 9.7,
+      "solar_kw": 23746.9,
+      "wind_hub_m": 103.9,
+      "wind_kw": 14450.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 9.9,
+      "solar_kw": 14691.0,
+      "wind_hub_m": 105.9,
+      "wind_kw": 160580.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 10.1,
+      "solar_kw": 4853.1,
+      "wind_hub_m": 70.7,
+      "wind_kw": 15850.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 10.3,
+      "solar_kw": 1262.8,
+      "wind_hub_m": 53.0,
+      "wind_kw": 500.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 10.5,
+      "solar_kw": 105.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 10.9,
+      "solar_kw": 54.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 11.1,
+      "solar_kw": 21593.3,
+      "wind_hub_m": 63.9,
+      "wind_kw": 105205.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 11.3,
+      "solar_kw": 7005.5,
+      "wind_hub_m": 64.0,
+      "wind_kw": 59800.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 11.5,
+      "solar_kw": 62.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 12.1,
+      "solar_kw": 78.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 12.5,
+      "solar_kw": 1137.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 12.7,
+      "solar_kw": 362.4,
+      "wind_hub_m": 67.0,
+      "wind_kw": 9200.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 12.9,
+      "solar_kw": 327.2,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 13.1,
+      "solar_kw": 2509.3,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 13.3,
+      "solar_kw": 10046.7,
+      "wind_hub_m": 57.4,
+      "wind_kw": 10650.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 13.5,
+      "solar_kw": 14525.7,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.5,
+      "lon": 13.7,
+      "solar_kw": 1273.2,
+      "wind_hub_m": 40.0,
+      "wind_kw": 300.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 8.3,
+      "solar_kw": 211.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 8.5,
+      "solar_kw": 8335.7,
+      "wind_hub_m": 63.6,
+      "wind_kw": 6979.8
+    },
+    {
+      "lat": 54.7,
+      "lon": 8.7,
+      "solar_kw": 5450.7,
+      "wind_hub_m": 87.4,
+      "wind_kw": 140650.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 8.9,
+      "solar_kw": 145814.9,
+      "wind_hub_m": 97.5,
+      "wind_kw": 583800.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 9.1,
+      "solar_kw": 91143.1,
+      "wind_hub_m": 88.7,
+      "wind_kw": 818775.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 9.3,
+      "solar_kw": 272503.8,
+      "wind_hub_m": 102.7,
+      "wind_kw": 481870.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 9.5,
+      "solar_kw": 72292.4,
+      "wind_hub_m": 108.6,
+      "wind_kw": 126230.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 9.7,
+      "solar_kw": 54970.6,
+      "wind_hub_m": 87.0,
+      "wind_kw": 119930.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 9.9,
+      "solar_kw": 13743.8,
+      "wind_hub_m": 81.5,
+      "wind_kw": 21200.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 10.1,
+      "solar_kw": 563.6,
+      "wind_hub_m": 50.0,
+      "wind_kw": 1200.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 10.3,
+      "solar_kw": 73.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 11.3,
+      "solar_kw": 9914.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 12.7,
+      "solar_kw": 0.0,
+      "wind_hub_m": 67.0,
+      "wind_kw": 39100.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 13.3,
+      "solar_kw": 8847.5,
+      "wind_hub_m": 39.4,
+      "wind_kw": 1400.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 13.5,
+      "solar_kw": 100.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 13.7,
+      "solar_kw": 0.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 66675.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 13.9,
+      "solar_kw": 0.0,
+      "wind_hub_m": 107.0,
+      "wind_kw": 28575.0
+    },
+    {
+      "lat": 54.7,
+      "lon": 14.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 102.0,
+      "wind_kw": 315000.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 7.7,
+      "solar_kw": 0.0,
+      "wind_hub_m": 91.0,
+      "wind_kw": 82800.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 8.3,
+      "solar_kw": 2660.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 8.5,
+      "solar_kw": 99.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 8.7,
+      "solar_kw": 26985.0,
+      "wind_hub_m": 87.4,
+      "wind_kw": 195220.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 8.9,
+      "solar_kw": 140688.2,
+      "wind_hub_m": 97.9,
+      "wind_kw": 226290.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 9.1,
+      "solar_kw": 6456.7,
+      "wind_hub_m": 100.7,
+      "wind_kw": 149860.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 9.3,
+      "solar_kw": 7870.7,
+      "wind_hub_m": 119.6,
+      "wind_kw": 30890.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 9.5,
+      "solar_kw": 5671.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 9.7,
+      "solar_kw": 391.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 13.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 78.3,
+      "wind_kw": 215460.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 13.3,
+      "solar_kw": 0.0,
+      "wind_hub_m": 78.3,
+      "wind_kw": 30240.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 13.5,
+      "solar_kw": 57.6,
+      "wind_hub_m": 0.0,
+      "wind_kw": 38100.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 13.7,
+      "solar_kw": 0.0,
+      "wind_hub_m": 0.0,
+      "wind_kw": 152400.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 13.9,
+      "solar_kw": 0.0,
+      "wind_hub_m": 107.0,
+      "wind_kw": 447675.0
+    },
+    {
+      "lat": 54.9,
+      "lon": 14.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 98.1,
+      "wind_kw": 422800.0
+    },
+    {
+      "lat": 55.1,
+      "lon": 6.9,
+      "solar_kw": 149.9,
+      "wind_hub_m": 94.6,
+      "wind_kw": 155400.0
+    },
+    {
+      "lat": 55.1,
+      "lon": 7.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 88.0,
+      "wind_kw": 124740.0
+    },
+    {
+      "lat": 55.1,
+      "lon": 7.3,
+      "solar_kw": 0.0,
+      "wind_hub_m": 88.0,
+      "wind_kw": 128520.0
+    },
+    {
+      "lat": 55.1,
+      "lon": 7.7,
+      "solar_kw": 0.0,
+      "wind_hub_m": 91.0,
+      "wind_kw": 205200.0
+    },
+    {
+      "lat": 55.1,
+      "lon": 8.5,
+      "solar_kw": 99.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 55.1,
+      "lon": 13.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 78.3,
+      "wind_kw": 34020.0
+    },
+    {
+      "lat": 55.1,
+      "lon": 13.3,
+      "solar_kw": 0.0,
+      "wind_hub_m": 78.3,
+      "wind_kw": 22680.0
+    },
+    {
+      "lat": 55.1,
+      "lon": 14.1,
+      "solar_kw": 99.9,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 55.1,
+      "lon": 14.9,
+      "solar_kw": 9914.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 55.1,
+      "lon": 15.1,
+      "solar_kw": 9914.4,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 55.3,
+      "lon": 6.9,
+      "solar_kw": 0.0,
+      "wind_hub_m": 94.6,
+      "wind_kw": 147000.0
+    },
+    {
+      "lat": 55.3,
+      "lon": 7.1,
+      "solar_kw": 0.0,
+      "wind_hub_m": 88.0,
+      "wind_kw": 37800.0
+    },
+    {
+      "lat": 55.3,
+      "lon": 7.3,
+      "solar_kw": 0.0,
+      "wind_hub_m": 88.0,
+      "wind_kw": 11340.0
+    },
+    {
+      "lat": 55.7,
+      "lon": 11.5,
+      "solar_kw": 9959.8,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    },
+    {
+      "lat": 55.7,
+      "lon": 14.7,
+      "solar_kw": 2314.1,
+      "wind_hub_m": 0.0,
+      "wind_kw": 0.0
+    }
+  ],
+  "generated": "2026-06-25",
+  "solar_capture_frac": 0.6125,
+  "wind_capture_frac": 0.9998
+}

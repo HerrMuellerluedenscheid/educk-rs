@@ -1,7 +1,10 @@
 pub mod cloud;
 pub mod config;
 pub mod entsoe;
+pub mod grid;
+pub mod proxy;
 pub mod server;
+pub mod weather;
 
 use crate::entsoe::EntsoeClient;
 use crate::entsoe::analysis::RenewableSurplus;

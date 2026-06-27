@@ -18,21 +18,45 @@ use crate::config::Config;
 use crate::entsoe::analysis::{RenewableSurplus, summarize_forecast};
 use crate::entsoe::areas::get_primary_zone;
 use crate::entsoe::{EntsoeClient, areas};
+use crate::proxy::{self, ModelledPoint};
+use crate::weather::WeatherClient;
 
 /// How far ahead the SSR pages forecast, and how long a fetched series is reused.
 const LOOKAHEAD_HOURS: i64 = 25;
 const CACHE_TTL: std::time::Duration = std::time::Duration::from_secs(3600);
+/// While upstream is failing, how long to keep serving the last-known-good series
+/// before re-attempting a fetch. Stops every request from waiting on (and
+/// hammering) a downed ENTSO-E for the full `CACHE_TTL`.
+const STALE_RETRY_INTERVAL: std::time::Duration = std::time::Duration::from_secs(120);
 
-type SeriesCache = Arc<Mutex<HashMap<String, (Instant, Vec<RenewableSurplus>)>>>;
+/// A cached forecast series plus the bookkeeping needed to serve it stale during
+/// an upstream outage without re-fetching on every request.
+#[derive(Clone)]
+struct CacheEntry {
+    /// When the data was last successfully fetched (drives `CACHE_TTL`).
+    fetched_at: Instant,
+    /// When a fetch was last attempted (drives `STALE_RETRY_INTERVAL` backoff).
+    last_attempt: Instant,
+    data: Vec<RenewableSurplus>,
+}
+
+type SeriesCache = Arc<Mutex<HashMap<String, CacheEntry>>>;
+/// Cache for the modelled (MaStR × weather) German series; a single entry since
+/// the overlay is DE-only.
+type ModelledCache = Arc<Mutex<Option<(Instant, Vec<ModelledPoint>)>>>;
 
 #[derive(Clone)]
 struct AppState {
     entsoe_client: Arc<EntsoeClient>,
+    /// Open-Meteo client for the location-based renewable proxy.
+    weather_client: Arc<WeatherClient>,
     /// Public origin for canonical URLs / Open Graph tags on SSR pages.
     base_url: Arc<str>,
     /// Per-zone forecast cache so the SSR pages (esp. the apex landing) don't
     /// hit ENTSO-E on every request. Day-ahead data changes slowly.
     series_cache: SeriesCache,
+    /// Cached modelled German wind+solar series (weather refreshes hourly).
+    modelled_cache: ModelledCache,
 }
 
 impl AppState {
@@ -41,9 +65,15 @@ impl AppState {
     async fn series_for_zone(&self, zone_code: &str) -> Result<Vec<RenewableSurplus>, StatusCode> {
         {
             let cache = self.series_cache.lock().unwrap();
-            if let Some((fetched_at, data)) = cache.get(zone_code) {
-                if fetched_at.elapsed() < CACHE_TTL {
-                    return Ok(data.clone());
+            if let Some(entry) = cache.get(zone_code) {
+                // Fresh data within the TTL.
+                if entry.fetched_at.elapsed() < CACHE_TTL {
+                    return Ok(entry.data.clone());
+                }
+                // Stale data, but we tried to refresh very recently — upstream is
+                // likely still down, so serve stale instead of waiting on it again.
+                if entry.last_attempt.elapsed() < STALE_RETRY_INTERVAL {
+                    return Ok(entry.data.clone());
                 }
             }
         } // drop the guard before awaiting
@@ -52,20 +82,68 @@ impl AppState {
         let end = now + Duration::hours(LOOKAHEAD_HOURS);
         let (period_start, period_end) = format_period(now, end);
 
-        let series = self
+        match self
             .entsoe_client
             .get_renewable_surplus_series(zone_code, &period_start, &period_end)
             .await
-            .map_err(|e| {
-                tracing::error!("ENTSO-E API error: {}", e);
-                StatusCode::INTERNAL_SERVER_ERROR
-            })?;
+        {
+            Ok(series) => {
+                let now = Instant::now();
+                self.series_cache.lock().unwrap().insert(
+                    zone_code.to_string(),
+                    CacheEntry {
+                        fetched_at: now,
+                        last_attempt: now,
+                        data: series.clone(),
+                    },
+                );
+                Ok(series)
+            }
+            // Upstream failed (e.g. ENTSO-E maintenance). Serve the last-known-good
+            // series if we have one — the dashboard and SSR pages then show
+            // slightly stale but useful data rather than an error.
+            Err(e) => {
+                let mut cache = self.series_cache.lock().unwrap();
+                if let Some(entry) = cache.get_mut(zone_code) {
+                    entry.last_attempt = Instant::now();
+                    tracing::warn!(
+                        "ENTSO-E fetch for {zone_code} failed ({e}); serving cached series \
+                         from {:.0?} ago",
+                        entry.fetched_at.elapsed()
+                    );
+                    return Ok(entry.data.clone());
+                }
+                tracing::error!("ENTSO-E API error and no cached series for {zone_code}: {e}");
+                Err(StatusCode::INTERNAL_SERVER_ERROR)
+            }
+        }
+    }
 
-        self.series_cache
-            .lock()
-            .unwrap()
-            .insert(zone_code.to_string(), (Instant::now(), series.clone()));
-        Ok(series)
+    /// The modelled (MaStR × weather) German wind+solar series, calibrated to the
+    /// supplied ENTSO-E series. Cached for `CACHE_TTL`. Returns `None` when the
+    /// capacity grid is empty (no ingest yet) or the weather fetch fails — the
+    /// page then simply renders without the overlay.
+    async fn modelled_de(&self, entsoe: &[RenewableSurplus]) -> Option<Vec<ModelledPoint>> {
+        {
+            let cache = self.modelled_cache.lock().unwrap();
+            if let Some((fetched_at, data)) = cache.as_ref() {
+                if fetched_at.elapsed() < CACHE_TTL {
+                    return Some(data.clone());
+                }
+            }
+        } // drop the guard before awaiting
+
+        match proxy::modelled_de_series(&self.weather_client, entsoe).await {
+            Ok(Some(series)) => {
+                *self.modelled_cache.lock().unwrap() = Some((Instant::now(), series.clone()));
+                Some(series)
+            }
+            Ok(None) => None, // empty capacity grid
+            Err(e) => {
+                tracing::warn!("modelled DE series failed: {e:?}");
+                None
+            }
+        }
     }
 }
 
@@ -180,19 +258,8 @@ async fn get_night_surplus(
 ) -> Result<Json<ApiResponse<MaxSurplusResponse>>, StatusCode> {
     let zone = get_primary_zone(&country_code).ok_or(StatusCode::BAD_REQUEST)?;
 
-    let now = Utc::now();
-    let end = now + Duration::hours(48); // Look ahead 48 hours to ensure we have night hours
-    let (period_start, period_end) = format_period(now, end);
-
-    let series = state
-        .entsoe_client
-        .get_renewable_surplus_series(zone.code, &period_start, &period_end)
-        .await
-        .map_err(|e| {
-            tracing::error!("ENTSO-E API error: {}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })?;
-
+    // Cached, stale-on-error; degrades to an empty series when upstream is down.
+    let series = state.series_for_zone(zone.code).await.unwrap_or_default();
     let night_series = filter_night_hours(series);
 
     if let Some(max_surplus) = find_max(night_series) {
@@ -245,19 +312,8 @@ async fn get_next_hours_surplus(
 ) -> Result<Json<ApiResponse<MaxSurplusResponse>>, StatusCode> {
     let zone = get_primary_zone(&country_code).ok_or(StatusCode::BAD_REQUEST)?;
 
-    let now = Utc::now();
-    let end = now + Duration::hours((hours + 1) as i64); // Add 1 hour buffer
-    let (period_start, period_end) = format_period(now, end);
-
-    let series = state
-        .entsoe_client
-        .get_renewable_surplus_series(zone.code, &period_start, &period_end)
-        .await
-        .map_err(|e| {
-            tracing::error!("ENTSO-E API error: {}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })?;
-
+    // Cached, stale-on-error; degrades to an empty series when upstream is down.
+    let series = state.series_for_zone(zone.code).await.unwrap_or_default();
     let filtered_series = filter_next_hours(series, hours);
 
     if let Some(max_surplus) = find_max(filtered_series) {
@@ -328,8 +384,12 @@ struct PlotTemplate {
     plot_layout: String,
 }
 
-/// Generate Plotly plot data from surplus series
-fn generate_plot_data(surplus_series: &[RenewableSurplus]) -> (String, String) {
+/// Generate Plotly plot data from a surplus series, optionally overlaying the
+/// modelled (MaStR × weather) wind+solar series as an extra trace.
+fn generate_plot_data(
+    surplus_series: &[RenewableSurplus],
+    modelled: Option<&[ModelledPoint]>,
+) -> (String, String) {
     // Extract data
     let timestamps: Vec<String> = surplus_series
         .iter()
@@ -341,8 +401,8 @@ fn generate_plot_data(surplus_series: &[RenewableSurplus]) -> (String, String) {
     let surplus: Vec<f64> = surplus_series.iter().map(|s| s.surplus).collect();
 
     // Create traces
-    let traces = json!([
-        {
+    let mut traces = vec![
+        json!({
             "x": timestamps,
             "y": generation,
             "name": "Wind + Solar Generation",
@@ -355,8 +415,8 @@ fn generate_plot_data(surplus_series: &[RenewableSurplus]) -> (String, String) {
             "marker": {
                 "size": 4
             }
-        },
-        {
+        }),
+        json!({
             "x": timestamps,
             "y": load,
             "name": "Total Load",
@@ -369,8 +429,8 @@ fn generate_plot_data(surplus_series: &[RenewableSurplus]) -> (String, String) {
             "marker": {
                 "size": 4
             }
-        },
-        {
+        }),
+        json!({
             "x": timestamps,
             "y": surplus,
             "name": "Surplus (Generation - Load)",
@@ -383,8 +443,31 @@ fn generate_plot_data(surplus_series: &[RenewableSurplus]) -> (String, String) {
             "marker": {
                 "size": 4
             }
-        }
-    ]);
+        }),
+    ];
+
+    // Optional cross-check: bottom-up estimate from plant locations × weather.
+    if let Some(modelled) = modelled {
+        let m_timestamps: Vec<String> = modelled
+            .iter()
+            .map(|m| m.timestamp.format("%Y-%m-%d %H:%M").to_string())
+            .collect();
+        let m_total: Vec<f64> = modelled.iter().map(|m| m.total_mw).collect();
+        traces.push(json!({
+            "x": m_timestamps,
+            "y": m_total,
+            "name": "Modelled wind + solar (MaStR × weather)",
+            "type": "scatter",
+            "mode": "lines",
+            "line": {
+                "color": "rgb(148, 0, 211)",
+                "width": 2,
+                "dash": "dot"
+            }
+        }));
+    }
+
+    let traces = json!(traces);
 
     // Create layout
     let layout = json!({
@@ -425,29 +508,17 @@ fn generate_plot_data(surplus_series: &[RenewableSurplus]) -> (String, String) {
 async fn get_plot(
     State(state): State<AppState>,
     Path(country_code): Path<String>,
-    Query(query): Query<TimeQuery>,
 ) -> Result<impl IntoResponse, StatusCode> {
     let zone = get_primary_zone(&country_code).ok_or(StatusCode::BAD_REQUEST)?;
 
-    let hours = query.hours.unwrap_or(24);
-    let now = Utc::now();
-    let end = now + Duration::hours((hours + 1) as i64);
-    let (period_start, period_end) = format_period(now, end);
-
-    let series = state
-        .entsoe_client
-        .get_renewable_surplus_series(zone.code, &period_start, &period_end)
-        .await
-        .map_err(|e| {
-            tracing::error!("ENTSO-E API error: {}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })?;
+    // Cached, stale-on-error; the plot still 404s if we have nothing to draw.
+    let series = state.series_for_zone(zone.code).await.unwrap_or_default();
 
     if series.is_empty() {
         return Err(StatusCode::NOT_FOUND);
     }
 
-    let (plot_data, plot_layout) = generate_plot_data(&series);
+    let (plot_data, plot_layout) = generate_plot_data(&series, None);
 
     let template = PlotTemplate {
         country_code: country_code.clone(),
@@ -482,26 +553,18 @@ async fn get_plot(
 async fn get_plot_json(
     State(state): State<AppState>,
     Path(country_code): Path<String>,
-    Query(query): Query<TimeQuery>,
 ) -> Result<Json<ApiResponse<PlotData>>, StatusCode> {
     let zone = get_primary_zone(&country_code).ok_or(StatusCode::BAD_REQUEST)?;
 
-    let hours = query.hours.unwrap_or(24);
-    let now = Utc::now();
-    let end = now + Duration::hours((hours + 1) as i64);
-    let (period_start, period_end) = format_period(now, end);
-
-    let series = state
-        .entsoe_client
-        .get_renewable_surplus_series(zone.code, &period_start, &period_end)
-        .await
-        .map_err(|e| {
-            tracing::error!("ENTSO-E API error: {}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })?;
+    // Cached, stale-on-error. When upstream is down and we have no cached series,
+    // this degrades to a clean `success: false` body (HTTP 200) the dashboard
+    // surfaces as an error — instead of a 500 that reads as a request timeout.
+    let series = state.series_for_zone(zone.code).await.unwrap_or_default();
 
     if series.is_empty() {
-        return Ok(Json(ApiResponse::error("No data available".to_string())));
+        return Ok(Json(ApiResponse::error(
+            "Forecast data is temporarily unavailable. Please try again shortly.".to_string(),
+        )));
     }
 
     let plot_data = PlotData {
@@ -585,9 +648,16 @@ async fn get_country_page(
     let now = Utc::now();
     let series = state.series_for_zone(zone.code).await.unwrap_or_default();
 
+    // Germany gets the bottom-up MaStR × weather cross-check overlaid on the chart.
+    let modelled = if zone.country_code == "DE" {
+        state.modelled_de(&series).await
+    } else {
+        None
+    };
+
     let summary = summarize_forecast(&series, &country_name);
     let rows = forecast_rows(&series);
-    let (plot_data, plot_layout) = generate_plot_data(&series);
+    let (plot_data, plot_layout) = generate_plot_data(&series, modelled.as_deref());
 
     let title = format!(
         "When is electricity greenest in {country_name}? Renewable energy forecast | educk"
@@ -711,9 +781,15 @@ async fn get_landing(
     // Forecast for the selected country (cached; landing degrades gracefully).
     let now = Utc::now();
     let series = state.series_for_zone(selected.code).await.unwrap_or_default();
+    // Germany gets the bottom-up MaStR × weather cross-check overlaid on the chart.
+    let modelled = if selected_code == "DE" {
+        state.modelled_de(&series).await
+    } else {
+        None
+    };
     let summary = summarize_forecast(&series, &selected_name);
     let rows = forecast_rows(&series);
-    let (plot_data, plot_layout) = generate_plot_data(&series);
+    let (plot_data, plot_layout) = generate_plot_data(&series, modelled.as_deref());
     let updated_utc = now.format("%Y-%m-%d %H:%M UTC").to_string();
 
     // Cloud regions grouped by provider. `all_regions()` is sorted by
@@ -831,7 +907,7 @@ async fn get_cloud_page(
 
     let summary = summarize_forecast(&series, &country_name);
     let rows = forecast_rows(&series);
-    let (plot_data, plot_layout) = generate_plot_data(&series);
+    let (plot_data, plot_layout) = generate_plot_data(&series, None);
 
     let label = provider_label(cr.provider);
     let title = format!(
@@ -963,23 +1039,17 @@ async fn get_cloud_best_window(
 
     let zone = get_primary_zone(cr.country_code).ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
     let hours = query.hours.unwrap_or(24);
-    let now = Utc::now();
-    let end = now + Duration::hours((hours + 1) as i64);
-    let (period_start, period_end) = format_period(now, end);
 
-    let series = state
-        .entsoe_client
-        .get_renewable_surplus_series(zone.code, &period_start, &period_end)
-        .await
-        .map_err(|e| {
-            tracing::error!("ENTSO-E API error for {}/{}: {}", provider, region, e);
-            StatusCode::INTERNAL_SERVER_ERROR
-        })?;
+    // Cached, stale-on-error; degrades to an empty series when upstream is down.
+    let series = state.series_for_zone(zone.code).await.unwrap_or_default();
+    let series = filter_next_hours(series, hours);
 
-    let best = find_max(series).ok_or_else(|| {
+    let Some(best) = find_max(series) else {
         tracing::warn!("no surplus data for {provider}/{region}");
-        StatusCode::NOT_FOUND
-    })?;
+        return Ok(Json(ApiResponse::error(
+            "Forecast data is temporarily unavailable. Please try again shortly.".to_string(),
+        )));
+    };
 
     Ok(Json(ApiResponse::success(CloudBestWindowResponse {
         cloud_region: CloudRegionInfo {
@@ -1011,6 +1081,64 @@ async fn list_cloud_regions() -> Json<ApiResponse<Vec<CloudRegionInfo>>> {
         })
         .collect();
     Json(ApiResponse::success(regions))
+}
+
+// ── Modelled proxy debug endpoint ────────────────────────────────────────────
+
+#[derive(Serialize)]
+struct ModelledDebugResponse {
+    grid_generated: String,
+    grid_cells: usize,
+    solar_capture_frac: f64,
+    wind_capture_frac: f64,
+    points: Vec<ModelledDebugPoint>,
+}
+
+#[derive(Serialize)]
+struct ModelledDebugPoint {
+    timestamp: String,
+    entsoe_generation_mw: Option<f64>,
+    modelled_total_mw: f64,
+    modelled_solar_mw: f64,
+    modelled_wind_mw: f64,
+}
+
+/// GET /api/v1/de/modelled
+/// Debug view: the modelled (MaStR × weather) German series next to the ENTSO-E
+/// wind+solar forecast, for eyeballing the fit and inspecting grid coverage.
+async fn get_de_modelled(
+    State(state): State<AppState>,
+) -> Result<Json<ApiResponse<ModelledDebugResponse>>, StatusCode> {
+    let zone = get_primary_zone("DE").ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+    let series = state.series_for_zone(zone.code).await.unwrap_or_default();
+
+    let Some(modelled) = state.modelled_de(&series).await else {
+        return Ok(Json(ApiResponse::error(
+            "No modelled series — empty capacity grid (run mastr_ingest) or weather fetch failed."
+                .to_string(),
+        )));
+    };
+
+    let truth: HashMap<_, _> = series.iter().map(|s| (s.timestamp, s.generation)).collect();
+    let grid = &*crate::grid::DE_CAPACITY_GRID;
+    let points = modelled
+        .iter()
+        .map(|m| ModelledDebugPoint {
+            timestamp: m.timestamp.to_rfc3339(),
+            entsoe_generation_mw: truth.get(&m.timestamp).copied(),
+            modelled_total_mw: m.total_mw,
+            modelled_solar_mw: m.solar_mw,
+            modelled_wind_mw: m.wind_mw,
+        })
+        .collect();
+
+    Ok(Json(ApiResponse::success(ModelledDebugResponse {
+        grid_generated: grid.generated.clone(),
+        grid_cells: grid.cells.len(),
+        solar_capture_frac: grid.solar_capture_frac,
+        wind_capture_frac: grid.wind_capture_frac,
+        points,
+    })))
 }
 
 /// GET /health
@@ -1105,8 +1233,10 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
 
     let state = AppState {
         entsoe_client: Arc::new(EntsoeClient::new(config.entsoe_api_key)),
+        weather_client: Arc::new(WeatherClient::new()),
         base_url: Arc::from(config.public_base_url.trim_end_matches('/')),
         series_cache: Arc::new(Mutex::new(HashMap::new())),
+        modelled_cache: Arc::new(Mutex::new(None)),
     };
 
     // Proactively warm the DE cache so the landing page is always fast.
@@ -1161,6 +1291,7 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
             "/api/v1/renewable-surplus/{country}/plot-json",
             get(get_plot_json),
         )
+        .route("/api/v1/de/modelled", get(get_de_modelled))
         .route("/api/v1/cloud/regions", get(list_cloud_regions))
         .route(
             "/api/v1/cloud/{provider}/{region}/next",
