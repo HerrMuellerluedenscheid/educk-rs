@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="/static/logo_bw.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+
+    <title>educk — renewable energy dashboard</title>
+    <meta name="description" content="Live and day-ahead renewable electricity share across European grids. See the greenest hours to use power.">
+    <meta name="robots" content="noindex">
+
+    <link rel="stylesheet" href="/app/app.css">
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+    <div class="mx-auto max-w-3xl px-4 pb-16">
+
+        <!-- Header -->
+        <header class="flex flex-wrap items-center gap-3 py-4">
+            <a href="/" class="flex items-center gap-2 font-bold text-emerald-700 text-lg shrink-0">
+                <img src="/static/logo_bw.svg" alt="" width="26" height="26">
+                educk
+            </a>
+            <div class="ml-auto flex items-center gap-2">
+                <select id="country"
+                        class="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm font-medium shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                </select>
+                <select id="hours"
+                        class="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm font-medium shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                    <option value="6">6 h</option>
+                    <option value="12">12 h</option>
+                    <option value="24" selected>24 h</option>
+                    <option value="48">48 h</option>
+                </select>
+                <button id="refresh" title="Refresh"
+                        class="rounded-lg border border-slate-300 bg-white p-1.5 text-slate-600 shadow-sm hover:bg-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                    <svg id="refresh-icon" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 4 21 9 16 9"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Loading state -->
+        <div id="loading" class="flex flex-col items-center justify-center gap-3 py-24 text-slate-400">
+            <svg class="h-8 w-8 animate-spin text-emerald-600" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.4 0 0 5.4 0 12h4z"/>
+            </svg>
+            <span class="text-sm">Loading…</span>
+        </div>
+
+        <!-- Error state -->
+        <div id="error" class="hidden flex-col items-center justify-center gap-4 py-24 text-center">
+            <svg class="h-12 w-12 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><line x1="12" y1="2" x2="12" y2="2"/>
+            </svg>
+            <div>
+                <p class="font-semibold text-slate-700">Could not load data</p>
+                <p id="error-msg" class="mt-1 text-sm text-slate-500"></p>
+            </div>
+            <button id="retry" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Retry</button>
+        </div>
+
+        <!-- Dashboard -->
+        <main id="dashboard" class="hidden">
+
+            <!-- Gauge -->
+            <section class="mt-2 flex flex-col items-center">
+                <div id="gauge" class="w-full max-w-xs"></div>
+            </section>
+
+            <!-- Summary cards -->
+            <section id="cards" class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <!-- current -->
+                <div class="rounded-xl border p-3" id="card-current">
+                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                        <span id="current-icon"></span>
+                        <span id="current-title">Surplus now</span>
+                    </div>
+                    <div id="current-value" class="mt-1 text-xl font-bold">—</div>
+                    <div class="mt-0.5 flex items-center justify-between gap-2">
+                        <span id="current-sub" class="text-[11px] text-slate-500"></span>
+                        <span id="current-trend" class="text-[11px] font-semibold"></span>
+                    </div>
+                </div>
+                <!-- peak -->
+                <div class="rounded-xl border border-amber-200 bg-amber-50 p-3">
+                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                        <svg class="h-3.5 w-3.5 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                        Peak surplus
+                    </div>
+                    <div id="peak-value" class="mt-1 text-xl font-bold text-amber-700">—</div>
+                    <div id="peak-sub" class="mt-0.5 text-[11px] text-slate-500"></div>
+                </div>
+                <!-- coverage -->
+                <div class="rounded-xl border p-3" id="card-coverage">
+                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                        <svg class="h-3.5 w-3.5" id="coverage-icon-color" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg>
+                        Green coverage
+                    </div>
+                    <div id="coverage-value" class="mt-1 text-xl font-bold">—</div>
+                    <div class="mt-0.5 text-[11px] text-slate-500">of current load</div>
+                </div>
+            </section>
+
+            <!-- Time range -->
+            <p id="range" class="mt-4 px-1 text-[11px] text-slate-500"></p>
+
+            <!-- Chart -->
+            <section class="relative mt-1">
+                <div id="chart" class="w-full"></div>
+                <div id="tooltip" class="pointer-events-none absolute z-10 hidden rounded-lg bg-slate-900/95 px-2.5 py-1.5 font-mono text-[11px] leading-snug text-white shadow-lg"></div>
+            </section>
+
+            <!-- Legend -->
+            <div class="mt-3 flex flex-wrap gap-x-5 gap-y-2 px-1 text-[11px] text-slate-600">
+                <span class="flex items-center gap-1.5"><span class="inline-block h-0.5 w-5 rounded" style="background:#2E7D32"></span>Wind + Solar</span>
+                <span class="flex items-center gap-1.5"><span class="inline-block h-0.5 w-5 rounded" style="background:#1565C0"></span>Total load</span>
+                <span class="flex items-center gap-1.5"><span class="inline-block h-0.5 w-5 rounded" style="background:#F57C00"></span>Surplus</span>
+                <span class="flex items-center gap-1.5"><span class="inline-block h-3 w-3 rounded-sm border" style="background:rgba(129,199,132,.3);border-color:#2E7D32"></span>Positive surplus</span>
+                <span class="flex items-center gap-1.5"><span class="inline-block h-3 w-3 rounded-sm border" style="background:rgba(239,154,154,.28);border-color:#C62828"></span>Deficit</span>
+            </div>
+
+            <!-- Interpretation hint -->
+            <div id="hint" class="mt-5 flex items-start gap-2.5 rounded-xl border p-3.5 text-sm leading-relaxed">
+                <span id="hint-icon" class="mt-0.5 shrink-0"></span>
+                <span id="hint-text" class="text-slate-700"></span>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-12 border-t border-slate-200 pt-4 text-xs text-slate-500">
+            <p>Renewable electricity share across European bidding zones. Data: <a class="text-emerald-700 hover:underline" href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>.</p>
+            <p class="mt-1"><a class="text-emerald-700 hover:underline" href="/impressum">Impressum</a> · <a class="text-emerald-700 hover:underline" href="/privacy">Privacy</a> · © Vector &amp; Veneer UG (haftungsbeschränkt)</p>
+        </footer>
+    </div>
+
+    <script src="/app/app.js"></script>
+</body>
+</html>

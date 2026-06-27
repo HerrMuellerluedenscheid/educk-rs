@@ -6,7 +6,11 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: renewable-energy-api
+    # Front door: the Rust service now serves the SSR site, the /app dashboard and
+    # the API directly (with built-in gzip/brotli), so it is exposed on :80. The
+    # former nginx + Flutter `dashboard` container is gone.
     ports:
+      - "80:3044"
       - "3044:3044"
     environment:
       - ENTSOE_API_KEY=${ENTSOE_API_KEY}
@@ -20,23 +24,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  dashboard:
-    image: ghcr.io/herrmuellerluedenscheid/educk-rs-dashboard:latest
-    build:
-      context: flutter
-      dockerfile: Dockerfile
-      args:
-        # URL the *browser* uses to reach the API — must be publicly accessible
-        - API_URL=${API_URL:-https://api.educk.io}
-        # Git commit baked into the footer (set by `just up`; falls back to unknown)
-        - GIT_COMMIT=${GIT_COMMIT:-unknown}
-    container_name: energy-dashboard
-    ports:
-      - "80:80"
-    # nginx is the apex front door and proxies / , /electricity/*, /robots.txt,
-    # /sitemap.xml to the Rust service, so start it only once the API is healthy.
-    depends_on:
-      renewable-api:
-        condition: service_healthy
-    restart: unless-stopped

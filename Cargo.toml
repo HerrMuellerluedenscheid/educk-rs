@@ -14,7 +14,7 @@ chrono = "0.4"
 plotly = "0.13.5"
 axum = "0.8.8"
 http = "1.4.0"
-tower-http = { version = "0.6.8", features = ["cors", "trace"] }
+tower-http = { version = "0.6.8", features = ["cors", "trace", "compression-br", "compression-gzip"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 once_cell = "1.21.3"

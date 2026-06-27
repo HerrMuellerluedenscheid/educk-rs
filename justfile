@@ -27,7 +27,36 @@ build-api:
 test-api:
     cargo test
 
-# ── Flutter frontend ──────────────────────────────────────────────────────────
+# ── Dashboard (lightweight /app: vanilla HTML/JS/SVG + Tailwind) ────────────────
+# The dashboard lives in static/app/ and is embedded into the Rust binary, served
+# at /app. Run it with `just api` and open http://localhost:3044/app.
+
+# Tailwind standalone version + platform (override tw_platform on non-mac-arm64,
+# e.g. `just tw_platform=linux-x64 build-css`).
+tw_version := "v4.3.1"
+tw_platform := "macos-arm64"
+
+# Regenerate the committed dashboard CSS (static/app/app.css). Downloads the
+# Tailwind standalone CLI into bin/ on first run — no Node toolchain needed.
+build-css:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    bin="bin/tailwindcss"
+    if [ ! -x "$bin" ]; then
+      mkdir -p bin
+      url="https://github.com/tailwindlabs/tailwindcss/releases/download/{{tw_version}}/tailwindcss-{{tw_platform}}"
+      echo "downloading tailwindcss {{tw_version}}"
+      curl -sSL -o "$bin" "$url"
+      chmod +x "$bin"
+    fi
+    "$bin" -i static/app/input.css -o static/app/app.css --minify
+    echo "wrote static/app/app.css"
+
+# Rebuild the dashboard CSS on change while editing static/app/
+watch-css:
+    bin/tailwindcss -i static/app/input.css -o static/app/app.css --watch
+
+# ── Flutter frontend (mobile; web dashboard now lives in the Rust /app) ─────────
 
 # Install Flutter dependencies
 deps:
@@ -59,6 +88,6 @@ down:
 logs:
     docker compose logs -f
 
-# Rebuild and restart a single service: just restart api | dashboard
+# Rebuild and restart a single service: just restart renewable-api
 restart service:
     GIT_COMMIT=$(git rev-parse --short HEAD) docker compose up --build -d {{service}}
