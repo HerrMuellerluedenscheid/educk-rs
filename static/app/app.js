@@ -6,6 +6,21 @@
 const API_BASE = new URLSearchParams(location.search).get("api") || "";
 const DEFAULT_COUNTRY = "DE";
 
+// Map ISO country codes to full names (matches the names in src/entsoe/areas.rs).
+// Used for the country dropdown so it reads "Germany" instead of "DE".
+const COUNTRY_NAMES = {
+  BE: "Belgium", BA: "Bosnia and Herzegovina", BG: "Bulgaria", BY: "Belarus",
+  CH: "Switzerland", CY: "Cyprus", CZ: "Czech Republic", DE: "Germany",
+  DK: "Denmark", EE: "Estonia", ES: "Spain", FI: "Finland", FR: "France",
+  GR: "Greece", HR: "Croatia", HU: "Hungary",
+  IE: "Ireland", IS: "Iceland", IT: "Italy", LT: "Lithuania", LU: "Luxembourg",
+  LV: "Latvia", MD: "Moldova", ME: "Montenegro", MK: "North Macedonia",
+  MT: "Malta", NL: "Netherlands", NO: "Norway", PL: "Poland", PT: "Portugal",
+  RO: "Romania", RS: "Serbia", RU: "Kaliningrad", SE: "Sweden",
+  SI: "Slovenia", SK: "Slovakia", TR: "Turkey", UA: "Ukraine",
+};
+const countryName = (code) => COUNTRY_NAMES[code] || code;
+
 // Line colours (match the previous Flutter chart)
 const C_GEN = "#2E7D32";
 const C_LOAD = "#1565C0";
@@ -169,11 +184,12 @@ async function loadCountries() {
   try {
     const r = await fetch(`${API_BASE}/api/v1/countries`);
     const j = await r.json();
-    const list = (j.data || []).slice().sort();
+    const list = (j.data || []).slice().sort((a, b) =>
+      countryName(a).localeCompare(countryName(b)));
     if (!list.length) return;
     if (!list.includes(country)) country = list[0];
     els.country.innerHTML = list
-      .map((c) => `<option value="${c}"${c === country ? " selected" : ""}>${c}</option>`)
+      .map((c) => `<option value="${c}"${c === country ? " selected" : ""}>${countryName(c)}</option>`)
       .join("");
   } catch (_) { /* country list is optional */ }
 }

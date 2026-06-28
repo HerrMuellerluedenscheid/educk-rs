@@ -57,7 +57,6 @@ pub static BIDDING_ZONES: Lazy<HashMap<CountryCode, Vec<BiddingZone>>> = Lazy::n
         BiddingZone::new("10YHU-MAVIR----U", "HU", "Hungary", None),
         BiddingZone::new("IS", "IS", "Iceland", None),
         BiddingZone::new("10YIE-1001A00010", "IE", "Ireland", None),
-        BiddingZone::new("10Y1001A1001A016", "GB", "Northern Ireland", None),
         BiddingZone::new("10YIT-GRTN-----B", "IT", "Italy", None),
         BiddingZone::new("10Y1001A1001A885", "IT", "Italy", Some("Saco AC")),
         BiddingZone::new("10Y1001A1001A893", "IT", "Italy", Some("Saco DC")),

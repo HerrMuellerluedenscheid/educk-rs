@@ -130,7 +130,6 @@ pub fn de_country_name(en_name: &str) -> Option<&'static str> {
         "Hungary" => "Ungarn",
         "Iceland" => "Island",
         "Ireland" => "Irland",
-        "Northern Ireland" => "Nordirland",
         "Italy" => "Italien",
         "Kaliningrad" => "Kaliningrad",
         "Latvia" => "Lettland",
