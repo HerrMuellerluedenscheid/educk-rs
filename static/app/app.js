@@ -9,6 +9,7 @@ const DEFAULT_COUNTRY = "DE";
 // Map ISO country codes to full names (matches the names in src/entsoe/areas.rs).
 // Used for the country dropdown so it reads "Germany" instead of "DE".
 const COUNTRY_NAMES = {
+  AL: "Albania", AT: "Austria",
   BE: "Belgium", BA: "Bosnia and Herzegovina", BG: "Bulgaria", BY: "Belarus",
   CH: "Switzerland", CY: "Cyprus", CZ: "Czech Republic", DE: "Germany",
   DK: "Denmark", EE: "Estonia", ES: "Spain", FI: "Finland", FR: "France",
@@ -27,11 +28,15 @@ const C_LOAD = "#1565C0";
 const C_SURPLUS = "#F57C00";
 const FILL_POS = "rgba(129,199,132,0.30)";
 const FILL_NEG = "rgba(239,154,154,0.28)";
+// Overview "educk curve" (renewable coverage %)
+const C_CURVE = "#059669"; // emerald-600
 
 // ── State ───────────────────────────────────────────────────────────────────
 let country = DEFAULT_COUNTRY;
 const HOURS = 24; // fixed plot window
 let series = []; // [{t: Date, gen, load, surplus}]
+// "overview" (educk curve) | "details" (gen/load/surplus). Deep-linkable via ?view=.
+let chartMode = new URLSearchParams(location.search).get("view") === "details" ? "details" : "overview";
 
 // ── DOM ─────────────────────────────────────────────────────────────────────
 const $ = (id) => document.getElementById(id);
@@ -68,6 +73,9 @@ const I18N = {
     gen: "Gen", load: "Load", surplus: "Surplus", deficit: "Deficit",
     legGen: "Wind + Solar", legLoad: "Total load", legSurplus: "Surplus",
     legPos: "Positive surplus", legDeficit: "Deficit",
+    tabOverview: "Overview", tabDetails: "Details",
+    legCurve: "Renewable share = (wind + solar) ÷ load. Above 100 % means surplus.",
+    renShare: "Renewable",
     navImpressum: "Impressum", navPrivacy: "Privacy",
     footerData: 'Renewable electricity share across European bidding zones. Data: <a class="text-emerald-700 hover:underline" href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>.',
     hintGood: (t) => `Best time to charge an EV or run high-energy appliances: ${t} — that's when renewables exceed demand by the most.`,
@@ -86,6 +94,9 @@ const I18N = {
     gen: "Erz.", load: "Last", surplus: "Überschuss", deficit: "Defizit",
     legGen: "Wind + Solar", legLoad: "Gesamtlast", legSurplus: "Überschuss",
     legPos: "Positiver Überschuss", legDeficit: "Defizit",
+    tabOverview: "Übersicht", tabDetails: "Details",
+    legCurve: "Erneuerbaren-Anteil = (Wind + Solar) ÷ Last. Über 100 % bedeutet Überschuss.",
+    renShare: "Erneuerbar",
     navImpressum: "Impressum", navPrivacy: "Datenschutz",
     footerData: 'Anteil erneuerbaren Stroms in europäischen Gebotszonen. Daten: <a class="text-emerald-700 hover:underline" href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>.',
     hintGood: (t) => `Beste Zeit zum Laden eines E-Autos oder Betreiben energieintensiver Geräte: ${t} — dann übersteigen die Erneuerbaren den Bedarf am stärksten.`,
@@ -148,6 +159,8 @@ function peakSurplusPoint() {
 }
 function coveragePct(p) { return p.load > 0 ? Math.min(p.gen / p.load, 1) * 100 : 0; }
 function surplusPct(p) { return p.gen > 0 ? (p.surplus / p.gen) * 100 : 0; }
+// Renewable coverage as a % of load — the "educk curve". Uncapped: can exceed 100%.
+function coverageRaw(p) { return p.load > 0 ? (p.gen / p.load) * 100 : 0; }
 
 // 0 = worst surplus of the window, 1 = best — drives the gauge needle.
 function normalizedCurrentSurplus() {
@@ -239,6 +252,7 @@ function render() {
   renderGauge();
   renderCards();
   renderRange();
+  updateTabs();
   renderChart();
   renderHint();
 }
@@ -349,6 +363,96 @@ let chartGeom = null; // saved for hover hit-testing
 
 function renderChart() {
   if (!series.length) return;
+  if (chartMode === "details") renderDetailChart();
+  else renderOverviewChart();
+  attachHover();
+}
+
+// "Now" x-position, interpolated between bracketing points (null if off-window).
+function nowXAt(xAt) {
+  const now = Date.now(), n = series.length;
+  if (series[0].t > now) return xAt(0);
+  if (series[n - 1].t < now) return xAt(n - 1);
+  for (let i = 1; i < n; i++) {
+    if (series[i].t >= now) {
+      const f = (now - series[i - 1].t) / (series[i].t - series[i - 1].t);
+      return xAt(i - 1 + f);
+    }
+  }
+  return null;
+}
+
+// X axis time labels, ~8 across.
+function xTickLabels(xAt, n) {
+  const { h, padB } = CH;
+  let out = "";
+  const every = Math.max(1, Math.ceil(n / 8));
+  for (let i = 0; i < n; i += every) {
+    out += `<text x="${xAt(i).toFixed(1)}" y="${h - padB + 16}" text-anchor="middle" font-size="10" fill="#94a3b8">${fmtTime(series[i].t)}</text>`;
+  }
+  return out;
+}
+
+function nowMarkerSvg(nowX) {
+  const { h, padT, padB } = CH;
+  if (nowX == null) return "";
+  return `
+    <line x1="${nowX.toFixed(1)}" y1="${padT}" x2="${nowX.toFixed(1)}" y2="${h - padB}" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="6 3"/>
+    <text x="${nowX.toFixed(1)}" y="${padT + 9}" text-anchor="middle" font-size="10" font-weight="600" fill="#c2410c">${T.now}</text>`;
+}
+
+// Default view: the "educk curve" — renewable coverage (gen ÷ load, %) over time.
+function renderOverviewChart() {
+  const W = els.chart.clientWidth || 600;
+  const { h, padT, padR, padB, padL } = CH;
+  const plotW = W - padL - padR;
+  const plotH = h - padT - padB;
+  const n = series.length;
+
+  const cov = series.map(coverageRaw);
+  let maxC = 0;
+  for (const c of cov) maxC = Math.max(maxC, c);
+  const minY = 0;
+  const maxY = Math.max(100, maxC) * 1.08; // headroom; keep the 100% line in view
+
+  const xAt = (i) => padL + (n === 1 ? plotW / 2 : (i / (n - 1)) * plotW);
+  const yAt = (v) => padT + (1 - (v - minY) / (maxY - minY)) * plotH;
+  const baseY = yAt(0);
+
+  const linePts = cov.map((c, i) => `${xAt(i).toFixed(1)},${yAt(c).toFixed(1)}`).join(" ");
+  const areaPts = `${xAt(0).toFixed(1)},${baseY.toFixed(1)} ${linePts} ${xAt(n - 1).toFixed(1)},${baseY.toFixed(1)}`;
+
+  // Y grid every 25%, the 100% ("fully renewable") line emphasised.
+  let yTicks = "";
+  for (let v = 0; v <= maxY; v += 25) {
+    const y = yAt(v);
+    const is100 = v === 100;
+    yTicks += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="${is100 ? "#94a3b8" : "#e2e8f0"}" stroke-width="1"${is100 ? ' stroke-dasharray="4 3"' : ""}/>
+      <text x="${padL - 6}" y="${(y + 3).toFixed(1)}" text-anchor="end" font-size="10" fill="#94a3b8">${v}%</text>`;
+  }
+
+  els.chart.innerHTML = `
+    <svg viewBox="0 0 ${W} ${h}" width="${W}" height="${h}" id="chart-svg" style="touch-action:none">
+      <defs>
+        <linearGradient id="curve-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${C_CURVE}" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="${C_CURVE}" stop-opacity="0.04"/>
+        </linearGradient>
+      </defs>
+      ${yTicks}
+      <polygon points="${areaPts}" fill="url(#curve-fill)"/>
+      <polyline points="${linePts}" fill="none" stroke="${C_CURVE}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      ${nowMarkerSvg(nowXAt(xAt))}
+      <line id="hover-line" x1="0" y1="${padT}" x2="0" y2="${h - padB}" stroke="#64748b" stroke-width="1" stroke-dasharray="3 3" visibility="hidden"/>
+      <rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" fill="transparent" id="hover-zone"/>
+      ${xTickLabels(xAt, n)}
+    </svg>`;
+
+  chartGeom = { W, padL, padR, plotW, n, xAt, yAt };
+}
+
+// Details view: generation, load and surplus in MW — for the interested viewer.
+function renderDetailChart() {
   const W = els.chart.clientWidth || 600;
   const { h, padT, padR, padB, padL } = CH;
   const plotW = W - padL - padR;
@@ -363,18 +467,6 @@ function renderChart() {
   const xAt = (i) => padL + (n === 1 ? plotW / 2 : (i / (n - 1)) * plotW);
   const yAt = (v) => padT + (1 - (v - minY) / (maxY - minY)) * plotH;
   const zeroY = yAt(0);
-
-  // "Now" — fractional position between bracketing points
-  const now = Date.now();
-  let nowX = null;
-  if (series[0].t > now) nowX = xAt(0);
-  else if (series[n - 1].t < now) nowX = xAt(n - 1);
-  else for (let i = 1; i < n; i++) {
-    if (series[i].t >= now) {
-      const f = (now - series[i - 1].t) / (series[i].t - series[i - 1].t);
-      nowX = xAt(i - 1 + f); break;
-    }
-  }
 
   const line = (key) => series.map((p, i) => `${xAt(i).toFixed(1)},${yAt(p[key]).toFixed(1)}`).join(" ");
   // Surplus area down to the zero baseline (clipped above/below for green/red).
@@ -392,18 +484,6 @@ function renderChart() {
       <text x="${padL - 6}" y="${(y + 3).toFixed(1)}" text-anchor="end" font-size="10" fill="#94a3b8">${fmtMW(v)}</text>`;
   }
 
-  // X axis labels (~8 across)
-  let xTicks = "";
-  const every = Math.max(1, Math.ceil(n / 8));
-  for (let i = 0; i < n; i += every) {
-    const x = xAt(i);
-    xTicks += `<text x="${x.toFixed(1)}" y="${h - padB + 16}" text-anchor="middle" font-size="10" fill="#94a3b8">${fmtTime(series[i].t)}</text>`;
-  }
-
-  const nowMarker = nowX != null ? `
-    <line x1="${nowX.toFixed(1)}" y1="${padT}" x2="${nowX.toFixed(1)}" y2="${h - padB}" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="6 3"/>
-    <text x="${nowX.toFixed(1)}" y="${padT + 9}" text-anchor="middle" font-size="10" font-weight="600" fill="#c2410c">${T.now}</text>` : "";
-
   els.chart.innerHTML = `
     <svg viewBox="0 0 ${W} ${h}" width="${W}" height="${h}" id="chart-svg" style="touch-action:none">
       <defs>
@@ -417,14 +497,38 @@ function renderChart() {
       <polyline points="${line("gen")}" fill="none" stroke="${C_GEN}" stroke-width="2.5" stroke-linejoin="round"/>
       <polyline points="${line("load")}" fill="none" stroke="${C_LOAD}" stroke-width="2.5" stroke-linejoin="round"/>
       <polyline points="${line("surplus")}" fill="none" stroke="${C_SURPLUS}" stroke-width="2" stroke-linejoin="round"/>
-      ${nowMarker}
+      ${nowMarkerSvg(nowXAt(xAt))}
       <line id="hover-line" x1="0" y1="${padT}" x2="0" y2="${h - padB}" stroke="#64748b" stroke-width="1" stroke-dasharray="3 3" visibility="hidden"/>
       <rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" fill="transparent" id="hover-zone"/>
-      ${xTicks}
+      ${xTickLabels(xAt, n)}
     </svg>`;
 
   chartGeom = { W, padL, padR, plotW, n, xAt, yAt };
-  attachHover();
+}
+
+// Toggle button styling + legend visibility for the current chart mode.
+function updateTabs() {
+  const details = chartMode === "details";
+  const setTab = (id, active) => {
+    const el = $(id);
+    if (!el) return;
+    el.classList.toggle("bg-emerald-600", active);
+    el.classList.toggle("text-white", active);
+    el.classList.toggle("text-slate-600", !active);
+    el.classList.toggle("hover:bg-slate-100", !active);
+  };
+  setTab("tab-overview", !details);
+  setTab("tab-details", details);
+  const ld = $("legend-details"), lo = $("legend-overview");
+  if (ld) { ld.classList.toggle("hidden", !details); ld.classList.toggle("flex", details); }
+  if (lo) lo.classList.toggle("hidden", details);
+}
+
+function setChartMode(mode) {
+  if (mode === chartMode) return;
+  chartMode = mode;
+  updateTabs();
+  renderChart();
 }
 
 function attachHover() {
@@ -442,12 +546,18 @@ function attachHover() {
     const x = chartGeom.xAt(i);
     hline.setAttribute("x1", x); hline.setAttribute("x2", x);
     hline.setAttribute("visibility", "visible");
-    const surplus = p.surplus >= 0;
-    els.tooltip.innerHTML =
-      `${fmtTime(p.t)}\n` +
-      `<span style="color:#81C784">● ${T.gen}:  ${fmtMW(p.gen)}</span>\n` +
-      `<span style="color:#64B5F6">● ${T.load}: ${fmtMW(p.load)}</span>\n` +
-      `<span style="color:${surplus ? "#81C784" : "#EF9A9A"}">● ${surplus ? T.surplus : T.deficit}: ${fmtMW(Math.abs(p.surplus))}</span>`;
+    if (chartMode === "details") {
+      const surplus = p.surplus >= 0;
+      els.tooltip.innerHTML =
+        `${fmtTime(p.t)}\n` +
+        `<span style="color:#81C784">● ${T.gen}:  ${fmtMW(p.gen)}</span>\n` +
+        `<span style="color:#64B5F6">● ${T.load}: ${fmtMW(p.load)}</span>\n` +
+        `<span style="color:${surplus ? "#81C784" : "#EF9A9A"}">● ${surplus ? T.surplus : T.deficit}: ${fmtMW(Math.abs(p.surplus))}</span>`;
+    } else {
+      els.tooltip.innerHTML =
+        `${fmtTime(p.t)}\n` +
+        `<span style="color:#34d399">● ${T.renShare}: ${coverageRaw(p).toFixed(0)}%</span>`;
+    }
     els.tooltip.style.whiteSpace = "pre";
     els.tooltip.classList.remove("hidden");
     // Position within the chart section (tooltip is absolutely placed)
@@ -481,6 +591,8 @@ function renderHint() {
 els.country.addEventListener("change", (e) => { country = e.target.value; loadData(); });
 els.refresh.addEventListener("click", () => loadData());
 els.retry.addEventListener("click", () => loadData());
+$("tab-overview").addEventListener("click", () => setChartMode("overview"));
+$("tab-details").addEventListener("click", () => setChartMode("details"));
 
 let resizeTimer;
 window.addEventListener("resize", () => {
