@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ t.code }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,6 +12,9 @@
     <title>{{ title }}</title>
     <meta name="description" content="{{ meta_description }}">
     <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="alternate" hreflang="en" href="{{ alt_en }}">
+    <link rel="alternate" hreflang="de" href="{{ alt_de }}">
+    <link rel="alternate" hreflang="x-default" href="{{ alt_en }}">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -65,22 +68,19 @@
         thead th { border-bottom: 2px solid #bbb; }
         caption { text-align: left; font-weight: 600; margin-bottom: .5rem; }
         nav a { font-weight: 700; color: #15803d; text-decoration: none; }
+        nav .langswitch { float: right; font-weight: 400; font-size: .9rem; color: #666; }
+        nav .langswitch a { color: #15803d; }
         footer { margin-top: 3rem; color: #666; font-size: .85rem; }
         a { color: #15803d; }
     </style>
 </head>
 <body>
 <main class="container">
-    <nav><a href="/" style="display:inline-flex;align-items:center;gap:.4rem"><img src="/static/logo_bw.svg" alt="" width="26" height="26" style="vertical-align:middle">educk</a> · <a href="/">All countries</a></nav>
-    <h1>When is electricity greenest in {{ country_name }}?</h1>
-    <p class="updated">Renewable energy forecast · updated {{ updated_utc }}</p>
+    <nav><a href="{{ home_url }}" style="display:inline-flex;align-items:center;gap:.4rem"><img src="/static/logo_bw.svg" alt="" width="26" height="26" style="vertical-align:middle">educk</a> · <a href="{{ home_url }}">{{ t.nav_all_countries }}</a><span class="langswitch">{% if t.code == "de" %}<a href="{{ alt_en }}">EN</a> · <strong>DE</strong>{% else %}<strong>EN</strong> · <a href="{{ alt_de }}">DE</a>{% endif %}</span></nav>
+    <h1>{{ h1 }}</h1>
+    <p class="updated">{{ t.label_renewable_forecast }} · {{ t.label_updated }} {{ updated_utc }}</p>
 
-    <p class="lead">
-        educk tracks how much of {{ country_name }}'s electricity demand is met by
-        wind and solar generation, using day-ahead forecasts from the ENTSO-E
-        transparency platform. Use it to plan flexible energy use — charging an EV,
-        running appliances or batteries — for when the grid is cleanest.
-    </p>
+    <p class="lead">{{ lead }}</p>
 
     <div id="chart"></div>
     <script>
@@ -93,16 +93,16 @@
         {% endfor %}
     </ul>
 
-    <h2>Hourly forecast for {{ country_name }}</h2>
+    <h2>{{ hourly_h2 }}</h2>
     <table>
-        <caption>Wind + solar generation vs. total demand (MW), next hours · times in UTC</caption>
+        <caption>{{ table_caption }}</caption>
         <thead>
             <tr>
-                <th>Time (UTC)</th>
-                <th>Renewable (MW)</th>
-                <th>Demand (MW)</th>
-                <th>Surplus (MW)</th>
-                <th>Share</th>
+                <th>{{ t.th_time }}</th>
+                <th>{{ t.th_renewable }}</th>
+                <th>{{ t.th_demand }}</th>
+                <th>{{ t.th_surplus }}</th>
+                <th>{{ t.th_share }}</th>
             </tr>
         </thead>
         <tbody>
@@ -119,14 +119,9 @@
     </table>
 
     <footer>
+        <p>{{ t.footer_blurb|safe }}</p>
         <p>
-            <strong>educk</strong> is a renewable energy monitor. It shows real-time
-            and forecast renewable electricity share across European bidding zones so
-            you can shift consumption to greener, lower-carbon hours. Data source:
-            <a href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>.
-        </p>
-        <p>
-            <a href="/impressum">Impressum</a> · <a href="/privacy">Privacy</a> ·
+            <a href="{{ impressum_url }}">{{ t.nav_impressum }}</a> · <a href="{{ privacy_url }}">{{ t.nav_privacy }}</a> ·
             © Vector &amp; Veneer UG (haftungsbeschränkt)
         </p>
     </footer>

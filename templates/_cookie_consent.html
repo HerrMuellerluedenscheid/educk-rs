@@ -9,19 +9,16 @@
   in /privacy.
 
   Included by the server-rendered pages (index, country, cloud, impressum, privacy).
-  This partial is pure HTML/CSS/JS and contains no Askama template syntax.
+  The visible copy is localized via the t.cookie_* strings — every including
+  template exposes a t (i18n::Strings) field, which Askama's include reads from the
+  parent context. The JS/GA wiring below is language-agnostic.
 -->
 <div id="cookie-banner" class="cookie-banner" role="dialog" aria-live="polite"
      aria-label="Cookie consent" hidden>
-    <div class="cookie-banner__text">
-        educk uses Google Analytics to understand how the site is used. Analytics
-        cookies are only set if you agree. See our
-        <a href="/privacy">privacy&nbsp;policy</a> for details — you can change your
-        choice anytime by clearing the <code>educk_consent</code> cookie.
-    </div>
+    <div class="cookie-banner__text">{{ t.cookie_text|safe }}</div>
     <div class="cookie-banner__actions">
-        <button type="button" id="cookie-decline" class="cookie-btn cookie-btn--ghost">Decline</button>
-        <button type="button" id="cookie-accept" class="cookie-btn cookie-btn--primary">Accept</button>
+        <button type="button" id="cookie-decline" class="cookie-btn cookie-btn--ghost">{{ t.cookie_decline }}</button>
+        <button type="button" id="cookie-accept" class="cookie-btn cookie-btn--primary">{{ t.cookie_accept }}</button>
     </div>
 </div>
 

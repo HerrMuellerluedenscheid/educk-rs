@@ -2,6 +2,7 @@ pub mod cloud;
 pub mod config;
 pub mod entsoe;
 pub mod grid;
+pub mod i18n;
 pub mod proxy;
 pub mod server;
 pub mod weather;

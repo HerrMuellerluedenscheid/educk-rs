@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ t.code }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,9 +10,17 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
     <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
     <meta name="robots" content="noindex, follow">
+    {% if t.code == "de" %}
+    <title>Impressum | educk</title>
+    <meta name="description" content="Impressum (Anbieterkennzeichnung) für educk, betrieben von der Vector & Veneer UG (haftungsbeschränkt), Berlin.">
+    {% else %}
     <title>Impressum (Legal notice) | educk</title>
     <meta name="description" content="Legal notice (Impressum) for educk, operated by Vector & Veneer UG (haftungsbeschränkt), Berlin.">
+    {% endif %}
     <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="alternate" hreflang="en" href="{{ alt_en }}">
+    <link rel="alternate" hreflang="de" href="{{ alt_de }}">
+    <link rel="alternate" hreflang="x-default" href="{{ alt_en }}">
 
     <style>
         :root { color-scheme: light dark; }
@@ -22,6 +30,8 @@
         }
         .container { max-width: 760px; margin: 0 auto; padding: 24px 20px 64px; }
         nav a { font-weight: 700; color: #15803d; text-decoration: none; }
+        nav .langswitch { float: right; font-weight: 400; font-size: .9rem; color: #666; }
+        nav .langswitch a { color: #15803d; }
         h1 { font-size: 1.9rem; margin: 1rem 0 .25rem; }
         h2 { margin-top: 2rem; font-size: 1.15rem; }
         .updated { color: #666; font-size: .85rem; }
@@ -32,9 +42,43 @@
 </head>
 <body>
 <main class="container">
-    <nav><a href="/" style="display:inline-flex;align-items:center;gap:.4rem"><img src="/static/logo_bw.svg" alt="" width="26" height="26" style="vertical-align:middle">educk</a></nav>
+    <nav><a href="{{ home_url }}" style="display:inline-flex;align-items:center;gap:.4rem"><img src="/static/logo_bw.svg" alt="" width="26" height="26" style="vertical-align:middle">educk</a><span class="langswitch">{% if t.code == "de" %}<a href="{{ alt_en }}">EN</a> · <strong>DE</strong>{% else %}<strong>EN</strong> · <a href="{{ alt_de }}">DE</a>{% endif %}</span></nav>
 
     <h1>Impressum</h1>
+    {% if t.code == "de" %}
+    <p class="updated">Angaben gemäß § 5 DDG (Digitale-Dienste-Gesetz).</p>
+
+    <h2>Diensteanbieter</h2>
+    <p>
+        Vector &amp; Veneer UG (haftungsbeschränkt)<br>
+        Rubensstr. 108<br>
+        12157 Berlin<br>
+        Deutschland
+    </p>
+
+    <h2>Vertretungsberechtigt</h2>
+    <p>Geschäftsführer: Marius Kriegerowski</p>
+
+    <h2>Kontakt</h2>
+    <p>
+        E-Mail: <a href="mailto:info@vectorandveneer.com">info@vectorandveneer.com</a><br>
+        Website: <a href="https://vectorandveneer.com" rel="noopener">https://vectorandveneer.com</a>
+    </p>
+
+    <h2>Handelsregister</h2>
+    <p>
+        Registergericht: Amtsgericht Charlottenburg (Berlin)<br>
+        Registernummer: HRB 286900 B
+    </p>
+
+    <h2>Online-Streitbeilegung</h2>
+    <p>
+        Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:
+        <a href="https://ec.europa.eu/consumers/odr/" rel="noopener">https://ec.europa.eu/consumers/odr/</a>.
+        Wir sind weder verpflichtet noch bereit, an einem Streitbeilegungsverfahren vor
+        einer Verbraucherschlichtungsstelle teilzunehmen.
+    </p>
+    {% else %}
     <p class="updated">Legal notice and disclosure pursuant to § 5 DDG (Digitale-Dienste-Gesetz).</p>
 
     <h2>Service provider (Diensteanbieter)</h2>
@@ -67,12 +111,13 @@
         We are neither obliged nor willing to participate in dispute resolution
         proceedings before a consumer arbitration board.
     </p>
+    {% endif %}
 
     <footer>
         <p>
-            <a href="/">← Back to educk</a> ·
-            <a href="/impressum">Impressum</a> ·
-            <a href="/privacy">Privacy</a>
+            <a href="{{ home_url }}">{{ t.back_to_educk }}</a> ·
+            <a href="{{ impressum_url }}">{{ t.nav_impressum }}</a> ·
+            <a href="{{ privacy_url }}">{{ t.nav_privacy }}</a>
         </p>
         <p>© Vector &amp; Veneer UG (haftungsbeschränkt)</p>
     </footer>

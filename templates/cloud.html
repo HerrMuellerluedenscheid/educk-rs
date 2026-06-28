@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ t.code }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,6 +12,9 @@
     <title>{{ title }}</title>
     <meta name="description" content="{{ meta_description }}">
     <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="alternate" hreflang="en" href="{{ alt_en }}">
+    <link rel="alternate" hreflang="de" href="{{ alt_de }}">
+    <link rel="alternate" hreflang="x-default" href="{{ alt_en }}">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -45,6 +48,8 @@
             padding: 24px 20px 64px;
         }
         nav a { font-weight: 700; color: #15803d; text-decoration: none; }
+        nav .langswitch { float: right; font-weight: 400; font-size: .9rem; color: #666; }
+        nav .langswitch a { color: #15803d; }
         h1 { font-size: 1.9rem; margin: 1rem 0 .25rem; }
         .updated { color: #666; font-size: .85rem; margin-bottom: 1.5rem; }
         .lead { font-size: 1.1rem; }
@@ -71,17 +76,11 @@
 </head>
 <body>
 <main class="container">
-    <nav><a href="/" style="display:inline-flex;align-items:center;gap:.4rem"><img src="/static/logo_bw.svg" alt="" width="26" height="26" style="vertical-align:middle">educk</a> · <a href="/">All regions</a></nav>
-    <h1>When is {{ provider_label }} {{ region }} greenest?</h1>
-    <p class="updated">Carbon-aware scheduling · updated {{ updated_utc }}</p>
+    <nav><a href="{{ home_url }}" style="display:inline-flex;align-items:center;gap:.4rem"><img src="/static/logo_bw.svg" alt="" width="26" height="26" style="vertical-align:middle">educk</a> · <a href="{{ home_url }}">{{ t.nav_all_regions }}</a><span class="langswitch">{% if t.code == "de" %}<a href="{{ alt_en }}">EN</a> · <strong>DE</strong>{% else %}<strong>EN</strong> · <a href="{{ alt_de }}">DE</a>{% endif %}</span></nav>
+    <h1>{{ h1 }}</h1>
+    <p class="updated">{{ t.label_carbon_aware }} · {{ t.label_updated }} {{ updated_utc }}</p>
 
-    <p class="lead">
-        The {{ provider_label }} <code>{{ region }}</code> region runs in
-        {{ location }}, on the {{ country_name }} electricity grid. educk forecasts
-        when that grid is greenest — using day-ahead wind &amp; solar and demand
-        data from ENTSO-E — so you can schedule carbon-aware workloads (batch jobs,
-        CI, model training, backups, data pipelines) for the cleanest hours.
-    </p>
+    <p class="lead">{{ lead|safe }}</p>
 
     <div id="chart"></div>
     <script>
@@ -94,18 +93,18 @@
         {% endfor %}
     </ul>
 
-    <a class="cta" href="{{ country_url }}">Full {{ country_name }} forecast</a>
+    <a class="cta" href="{{ country_url }}">{{ cta_label }}</a>
 
-    <h2>Hourly grid forecast for {{ provider_label }} {{ region }}</h2>
+    <h2>{{ hourly_h2 }}</h2>
     <table>
-        <caption>Wind + solar generation vs. total demand (MW) on the {{ country_name }} grid, next hours · times in UTC</caption>
+        <caption>{{ table_caption }}</caption>
         <thead>
             <tr>
-                <th>Time (UTC)</th>
-                <th>Renewable (MW)</th>
-                <th>Demand (MW)</th>
-                <th>Surplus (MW)</th>
-                <th>Share</th>
+                <th>{{ t.th_time }}</th>
+                <th>{{ t.th_renewable }}</th>
+                <th>{{ t.th_demand }}</th>
+                <th>{{ t.th_surplus }}</th>
+                <th>{{ t.th_share }}</th>
             </tr>
         </thead>
         <tbody>
@@ -122,14 +121,9 @@
     </table>
 
     <footer>
+        <p>{{ t.footer_blurb|safe }}</p>
         <p>
-            <strong>educk</strong> is a renewable energy monitor. It shows real-time
-            and forecast renewable electricity share across European grids and cloud
-            regions so you can shift compute to greener, lower-carbon hours. Data
-            source: <a href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>.
-        </p>
-        <p>
-            <a href="/impressum">Impressum</a> · <a href="/privacy">Privacy</a> ·
+            <a href="{{ impressum_url }}">{{ t.nav_impressum }}</a> · <a href="{{ privacy_url }}">{{ t.nav_privacy }}</a> ·
             © Vector &amp; Veneer UG (haftungsbeschränkt)
         </p>
     </footer>

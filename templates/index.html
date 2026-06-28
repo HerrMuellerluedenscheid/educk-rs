@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ t.code }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,6 +12,9 @@
     <title>{{ title }}</title>
     <meta name="description" content="{{ meta_description }}">
     <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="alternate" hreflang="en" href="{{ alt_en }}">
+    <link rel="alternate" hreflang="de" href="{{ alt_de }}">
+    <link rel="alternate" hreflang="x-default" href="{{ alt_en }}">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -44,6 +47,8 @@
             padding: 24px 20px 64px;
         }
         nav a { font-weight: 700; color: #15803d; text-decoration: none; }
+        nav .langswitch { float: right; font-weight: 400; font-size: .9rem; color: #666; }
+        nav .langswitch a { color: #15803d; }
         h1 { font-size: 2rem; margin: 1.2rem 0 .25rem; }
         .lead { font-size: 1.15rem; }
         h2 { margin-top: 2.2rem; }
@@ -92,29 +97,25 @@
 </head>
 <body>
 <main class="container">
-    <nav><a href="/" style="display:inline-flex;align-items:center;gap:.4rem"><img src="/static/logo_bw.svg" alt="" width="26" height="26" style="vertical-align:middle">educk</a></nav>
+    <nav><a href="{{ home_url }}" style="display:inline-flex;align-items:center;gap:.4rem"><img src="/static/logo_bw.svg" alt="" width="26" height="26" style="vertical-align:middle">educk</a><span class="langswitch">{% if t.code == "de" %}<a href="{{ alt_en }}">EN</a> · <strong>DE</strong>{% else %}<strong>EN</strong> · <a href="{{ alt_de }}">DE</a>{% endif %}</span></nav>
 
-    <h1>When is electricity greenest across Europe?</h1>
-    <p class="lead">
-        educk is a renewable energy monitor. It tracks how much of each European
-        country's electricity demand is met by wind and solar generation — live and
-        as a day-ahead forecast — so you can shift flexible energy use to the
-        cleanest, lowest-carbon hours of the day.
-    </p>
+    <h1>{{ t.index_h1 }}</h1>
+    <p class="lead">{{ t.index_lead }}</p>
 
-    <p class="cta"><a class="cta-button" href="/app">Go to Dashboard →</a></p>
+    <p class="cta"><a class="cta-button" href="{{ app_url }}">{{ t.cta_dashboard }}</a></p>
 
     <form class="picker" method="get" action="/">
-        <label>Show forecast for
+        {% if t.code == "de" %}<input type="hidden" name="lang" value="de">{% endif %}
+        <label>{{ t.picker_label }}
             <select name="country" onchange="this.form.submit()">
                 {% for country in countries %}
                 <option value="{{ country.code }}"{% if country.selected %} selected{% endif %}>{{ country.name }}</option>
                 {% endfor %}
             </select>
         </label>
-        <noscript><button type="submit">Show</button></noscript>
+        <noscript><button type="submit">{{ t.show }}</button></noscript>
     </form>
-    <p class="updated">Forecast for {{ selected_name }} · updated {{ updated_utc }}</p>
+    <p class="updated">{{ t.label_forecast_for }} {{ selected_name }} · {{ t.label_updated }} {{ updated_utc }}</p>
 
     <div id="chart"></div>
     <script>
@@ -128,16 +129,16 @@
     </ul>
 
     <details>
-        <summary class="toggle">Show hourly data table</summary>
+        <summary class="toggle">{{ t.show_table }}</summary>
         <table>
-            <caption>Wind + solar generation vs. total demand (MW) — {{ selected_name }}, next hours · times in UTC</caption>
+            <caption>{{ table_caption }}</caption>
             <thead>
                 <tr>
-                    <th>Time (UTC)</th>
-                    <th>Renewable (MW)</th>
-                    <th>Demand (MW)</th>
-                    <th>Surplus (MW)</th>
-                    <th>Share</th>
+                    <th>{{ t.th_time }}</th>
+                    <th>{{ t.th_renewable }}</th>
+                    <th>{{ t.th_demand }}</th>
+                    <th>{{ t.th_surplus }}</th>
+                    <th>{{ t.th_share }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -154,23 +155,23 @@
         </table>
     </details>
 
-    <h2>How it works</h2>
+    <h2>{{ t.how_h2 }}</h2>
     <ol class="how">
-        <li>We pull day-ahead wind &amp; solar generation and total demand forecasts from the <a href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a> transparency platform.</li>
-        <li>For each country we work out the renewable share of demand hour by hour, and when it peaks.</li>
-        <li>You move flexible loads — EV charging, laundry, heating, batteries, compute — into the greenest windows.</li>
+        <li>{{ t.how_1|safe }}</li>
+        <li>{{ t.how_2 }}</li>
+        <li>{{ t.how_3 }}</li>
     </ol>
 
-    <h2>Renewable electricity by country</h2>
-    <p>Pick a country to see its renewable energy forecast and the greenest time to use electricity today:</p>
+    <h2>{{ t.by_country_h2 }}</h2>
+    <p>{{ t.by_country_intro }}</p>
     <ul class="countries">
         {% for country in countries %}
         <li><a href="{{ country.url }}">{{ country.name }}</a></li>
         {% endfor %}
     </ul>
 
-    <h2>Renewable electricity by cloud region</h2>
-    <p>Scheduling compute? See when each European cloud region's grid is greenest and run carbon-aware workloads then:</p>
+    <h2>{{ t.by_cloud_h2 }}</h2>
+    <p>{{ t.by_cloud_intro }}</p>
     {% for group in cloud_providers %}
     <h3>{{ group.provider_label }}</h3>
     <ul class="countries">
@@ -181,14 +182,9 @@
     {% endfor %}
 
     <footer>
+        <p>{{ t.footer_blurb|safe }}</p>
         <p>
-            <strong>educk</strong> shows real-time and forecast renewable electricity
-            share across European bidding zones so you can shift consumption to
-            greener, lower-carbon hours. Data source:
-            <a href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>.
-        </p>
-        <p>
-            <a href="/impressum">Impressum</a> · <a href="/privacy">Privacy</a> ·
+            <a href="{{ impressum_url }}">{{ t.nav_impressum }}</a> · <a href="{{ privacy_url }}">{{ t.nav_privacy }}</a> ·
             © Vector &amp; Veneer UG (haftungsbeschränkt)
         </p>
     </footer>

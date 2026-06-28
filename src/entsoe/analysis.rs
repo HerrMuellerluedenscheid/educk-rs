@@ -1,4 +1,5 @@
 use crate::entsoe::{EntsoeClient, EntsoeError};
+use crate::i18n::Lang;
 use chrono::{DateTime, Utc};
 use std::collections::HashMap;
 
@@ -146,24 +147,33 @@ pub struct ForecastSummary {
 impl ForecastSummary {
     /// A single sentence suitable for a `<meta name="description">`, truncated to
     /// a search-engine-friendly length.
-    pub fn meta_description(&self, country_name: &str) -> String {
-        let body = self
-            .sentences
-            .first()
-            .cloned()
-            .unwrap_or_else(|| format!("Renewable electricity forecast for {country_name}."));
+    pub fn meta_description(&self, country_name: &str, lang: Lang) -> String {
+        let body = self.sentences.first().cloned().unwrap_or_else(|| match lang {
+            Lang::En => format!("Renewable electricity forecast for {country_name}."),
+            Lang::De => format!("Erneuerbare-Energien-Prognose für {country_name}."),
+        });
         truncate_on_word_boundary(&body, 155)
     }
 }
 
-/// Build a descriptive summary from a forecast series. `country_name` is used in
-/// the generated prose, e.g. "Belgium".
-pub fn summarize_forecast(series: &[RenewableSurplus], country_name: &str) -> ForecastSummary {
+/// Build a descriptive summary from a forecast series. `country_name` is the
+/// (already localized) country name used in the generated prose, e.g. "Belgium" /
+/// "Belgien"; `lang` selects the language of the sentences.
+pub fn summarize_forecast(
+    series: &[RenewableSurplus],
+    country_name: &str,
+    lang: Lang,
+) -> ForecastSummary {
     if series.is_empty() {
         return ForecastSummary {
-            sentences: vec![format!(
-                "No renewable energy forecast is currently available for {country_name}."
-            )],
+            sentences: vec![match lang {
+                Lang::En => format!(
+                    "No renewable energy forecast is currently available for {country_name}."
+                ),
+                Lang::De => {
+                    format!("Für {country_name} ist derzeit keine Erneuerbare-Energien-Prognose verfügbar.")
+                }
+            }],
         };
     }
 
@@ -194,33 +204,53 @@ pub fn summarize_forecast(series: &[RenewableSurplus], country_name: &str) -> Fo
     let hm = |s: &RenewableSurplus| s.timestamp.format("%H:%M").to_string();
 
     if let Some(n) = &now {
-        sentences.push(format!(
-            "Wind and solar are forecast to cover about {:.0}% of {}'s electricity demand around {} UTC.",
-            n.renewable_share(),
-            country_name,
-            hm(n),
-        ));
+        sentences.push(match lang {
+            Lang::En => format!(
+                "Wind and solar are forecast to cover about {:.0}% of {}'s electricity demand around {} UTC.",
+                n.renewable_share(), country_name, hm(n),
+            ),
+            Lang::De => format!(
+                "Wind und Sonne decken gegen {} UTC voraussichtlich rund {:.0}% des Strombedarfs von {}.",
+                hm(n), n.renewable_share(), country_name,
+            ),
+        });
     }
     if let Some(p) = &peak {
-        sentences.push(format!(
-            "Renewable output peaks around {} UTC at roughly {:.0}% of demand — the greenest time to use electricity today.",
-            hm(p),
-            p.renewable_share(),
-        ));
+        sentences.push(match lang {
+            Lang::En => format!(
+                "Renewable output peaks around {} UTC at roughly {:.0}% of demand — the greenest time to use electricity today.",
+                hm(p), p.renewable_share(),
+            ),
+            Lang::De => format!(
+                "Die Erneuerbaren-Erzeugung erreicht gegen {} UTC ihren Höchstwert von etwa {:.0}% des Bedarfs — die grünste Zeit, um heute Strom zu nutzen.",
+                hm(p), p.renewable_share(),
+            ),
+        });
     }
     if let Some(t) = &trough {
-        sentences.push(format!(
-            "The renewable share dips to about {:.0}% around {} UTC, when grid electricity is at its most carbon-intensive.",
-            t.renewable_share(),
-            hm(t),
-        ));
+        sentences.push(match lang {
+            Lang::En => format!(
+                "The renewable share dips to about {:.0}% around {} UTC, when grid electricity is at its most carbon-intensive.",
+                t.renewable_share(), hm(t),
+            ),
+            Lang::De => format!(
+                "Der Erneuerbaren-Anteil sinkt gegen {} UTC auf etwa {:.0}%, wenn der Netzstrom am CO₂-intensivsten ist.",
+                hm(t), t.renewable_share(),
+            ),
+        });
     }
     if let Some(b) = &best_window {
         if b.has_excess() {
-            sentences.push(format!(
-                "There is forecast surplus renewable generation around {} UTC — an ideal low-carbon window for flexible loads such as EV charging, laundry or heating.",
-                hm(b),
-            ));
+            sentences.push(match lang {
+                Lang::En => format!(
+                    "There is forecast surplus renewable generation around {} UTC — an ideal low-carbon window for flexible loads such as EV charging, laundry or heating.",
+                    hm(b),
+                ),
+                Lang::De => format!(
+                    "Gegen {} UTC wird ein Überschuss an erneuerbarer Erzeugung erwartet — ein ideales CO₂-armes Zeitfenster für flexible Lasten wie E-Auto-Laden, Wäsche oder Heizen.",
+                    hm(b),
+                ),
+            });
         }
     }
 

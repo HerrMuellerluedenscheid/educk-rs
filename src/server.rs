@@ -1,8 +1,8 @@
 use axum::{
     Router,
-    extract::{Path, Query, State},
-    http::{StatusCode, header},
-    response::{IntoResponse, Json},
+    extract::{OriginalUri, Path, Query, State},
+    http::{HeaderMap, HeaderValue, StatusCode, header},
+    response::{Html, IntoResponse, Json, Response},
     routing::get,
 };
 use chrono::{DateTime, Duration, Timelike, Utc};
@@ -17,6 +17,7 @@ use tower_http::trace::TraceLayer;
 use crate::cloud;
 use crate::config::Config;
 use crate::entsoe::analysis::{RenewableSurplus, summarize_forecast};
+use crate::i18n::{self, Lang};
 use crate::entsoe::areas::get_primary_zone;
 use crate::entsoe::{EntsoeClient, areas};
 use crate::proxy::{self, ModelledPoint};
@@ -586,6 +587,92 @@ struct PlotData {
     surplus: Vec<f64>,
 }
 
+// ── Language negotiation (?lang=de + soft redirect) ──────────────────────────
+// English lives at the bare paths; German is the same path with `?lang=de`. We
+// never render German at a bare URL by header (that would hide it from crawlers);
+// instead a German-preferring human on a bare URL is 302'd to the `?lang=de`
+// variant, and the choice is remembered in an `educk_lang` cookie.
+
+/// Name of the cookie that remembers an explicit language choice.
+const LANG_COOKIE: &str = "educk_lang";
+
+/// The outcome of negotiating a language for a bare (no `?lang`) or explicit request.
+enum LangChoice {
+    /// Render in `lang`; when `persist`, set the `educk_lang` cookie.
+    Render { lang: Lang, persist: bool },
+    /// 302 the visitor to the German `?lang=de` variant of the current URL.
+    RedirectDe,
+}
+
+/// Read a cookie value out of the `Cookie` request header.
+fn cookie_value<'a>(headers: &'a HeaderMap, name: &str) -> Option<&'a str> {
+    let cookies = headers.get(header::COOKIE)?.to_str().ok()?;
+    cookies.split(';').find_map(|kv| {
+        let kv = kv.trim();
+        kv.strip_prefix(name).and_then(|rest| rest.strip_prefix('='))
+    })
+}
+
+/// Decide the page language. Precedence: explicit `?lang` → `educk_lang` cookie →
+/// `Accept-Language`. Crawlers (Accept-Language: en / none) always resolve to
+/// English, so the bare URLs stay indexable.
+fn negotiate_lang(headers: &HeaderMap, query_lang: Option<&str>) -> LangChoice {
+    if let Some(lang) = Lang::from_query(query_lang) {
+        // An explicit choice (from the switcher or a shared link) is remembered.
+        return LangChoice::Render { lang, persist: true };
+    }
+    match cookie_value(headers, LANG_COOKIE) {
+        Some("de") => return LangChoice::RedirectDe,
+        Some("en") => return LangChoice::Render { lang: Lang::En, persist: false },
+        _ => {}
+    }
+    let accept = headers
+        .get(header::ACCEPT_LANGUAGE)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+    match i18n::preferred_from_accept_language(accept) {
+        Lang::De => LangChoice::RedirectDe,
+        Lang::En => LangChoice::Render {
+            lang: Lang::En,
+            persist: false,
+        },
+    }
+}
+
+/// Resolve the language for an SSR handler, short-circuiting to a 302 when the
+/// visitor should be sent to the German variant. Returns `(lang, persist)`.
+fn resolve_lang(
+    headers: &HeaderMap,
+    uri: &OriginalUri,
+    query_lang: Option<&str>,
+) -> Result<(Lang, bool), Response> {
+    match negotiate_lang(headers, query_lang) {
+        LangChoice::Render { lang, persist } => Ok((lang, persist)),
+        LangChoice::RedirectDe => {
+            let path_q = uri.path_and_query().map(|p| p.as_str()).unwrap_or("/");
+            let target = i18n::add_lang_param(path_q, "de");
+            // 302 Found: a *temporary* content-negotiation redirect, so the bare
+            // English URL stays the indexable canonical (a 301/308 would hand the
+            // ranking signals to the German variant).
+            Err((StatusCode::FOUND, [(header::LOCATION, target)]).into_response())
+        }
+    }
+}
+
+/// Attach the `educk_lang` cookie to a response when an explicit choice was made.
+fn with_lang_cookie(mut resp: Response, lang: Lang, persist: bool) -> Response {
+    if persist {
+        let v = format!(
+            "{LANG_COOKIE}={}; Path=/; Max-Age=31536000; SameSite=Lax",
+            lang.code()
+        );
+        if let Ok(hv) = HeaderValue::from_str(&v) {
+            resp.headers_mut().append(header::SET_COOKIE, hv);
+        }
+    }
+    resp
+}
+
 // ── SEO content pages (server-rendered) ──────────────────────────────────────
 
 struct ForecastRow {
@@ -620,14 +707,29 @@ fn provider_label(provider: &str) -> &'static str {
     }
 }
 
+/// Query params for the bilingual SSR pages (the `?lang=` selector).
+#[derive(Deserialize)]
+struct LangQuery {
+    lang: Option<String>,
+}
+
 #[derive(Template)]
 #[template(path = "country.html")]
 struct CountryPageTemplate {
+    t: &'static i18n::Strings,
     title: String,
     meta_description: String,
     canonical_url: String,
+    alt_en: String,
+    alt_de: String,
     json_ld: String,
-    country_name: String,
+    home_url: String,
+    impressum_url: String,
+    privacy_url: String,
+    h1: String,
+    lead: String,
+    hourly_h2: String,
+    table_caption: String,
     updated_utc: String,
     sentences: Vec<String>,
     rows: Vec<ForecastRow>,
@@ -640,11 +742,19 @@ struct CountryPageTemplate {
 /// auto-generated descriptive text, an hourly data table, and meta/JSON-LD.
 async fn get_country_page(
     State(state): State<AppState>,
+    headers: HeaderMap,
+    uri: OriginalUri,
     Path(country_code): Path<String>,
-) -> Result<impl IntoResponse, StatusCode> {
+    Query(q): Query<LangQuery>,
+) -> Result<Response, StatusCode> {
     let zone = get_primary_zone(&country_code).ok_or(StatusCode::NOT_FOUND)?;
+    let (lang, persist) = match resolve_lang(&headers, &uri, q.lang.as_deref()) {
+        Ok(v) => v,
+        Err(redirect) => return Ok(redirect),
+    };
+    let t = i18n::strings(lang);
     let code_lower = country_code.to_lowercase();
-    let country_name = zone.name.to_string();
+    let country_name = i18n::country_name(zone.name, lang);
 
     let now = Utc::now();
     let series = state.series_for_zone(zone.code).await.unwrap_or_default();
@@ -656,15 +766,14 @@ async fn get_country_page(
         None
     };
 
-    let summary = summarize_forecast(&series, &country_name);
+    let summary = summarize_forecast(&series, &country_name, lang);
     let rows = forecast_rows(&series);
     let (plot_data, plot_layout) = generate_plot_data(&series, modelled.as_deref());
 
-    let title = format!(
-        "When is electricity greenest in {country_name}? Renewable energy forecast | educk"
-    );
-    let meta_description = summary.meta_description(&country_name);
-    let canonical_url = format!("{}/electricity/{}", state.base_url, code_lower);
+    let path = format!("/electricity/{code_lower}");
+    let (canonical_url, alt_en, alt_de) = i18n::page_urls(&state.base_url, &path, lang);
+    let title = i18n::country_title(lang, &country_name);
+    let meta_description = summary.meta_description(&country_name, lang);
     let updated_utc = now.format("%Y-%m-%d %H:%M UTC").to_string();
 
     let json_ld = json!({
@@ -673,7 +782,7 @@ async fn get_country_page(
         "name": title,
         "description": meta_description,
         "url": canonical_url,
-        "inLanguage": "en",
+        "inLanguage": lang.code(),
         "dateModified": now.to_rfc3339(),
         "isPartOf": {
             "@type": "WebSite",
@@ -682,17 +791,26 @@ async fn get_country_page(
         },
         "about": {
             "@type": "Thing",
-            "name": format!("Renewable electricity in {country_name}"),
+            "name": i18n::country_about(lang, &country_name),
         },
     })
     .to_string();
 
     let template = CountryPageTemplate {
+        t,
         title,
         meta_description,
         canonical_url,
+        alt_en,
+        alt_de,
         json_ld,
-        country_name,
+        home_url: i18n::localize_url("/", lang),
+        impressum_url: i18n::localize_url("/impressum", lang),
+        privacy_url: i18n::localize_url("/privacy", lang),
+        h1: i18n::country_h1(lang, &country_name),
+        lead: i18n::country_lead(lang, &country_name),
+        hourly_h2: i18n::country_hourly_h2(lang, &country_name),
+        table_caption: i18n::caption_country(lang).to_string(),
         updated_utc,
         sentences: summary.sentences,
         rows,
@@ -705,7 +823,7 @@ async fn get_country_page(
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
 
-    Ok(axum::response::Html(html))
+    Ok(with_lang_cookie(Html(html).into_response(), lang, persist))
 }
 
 struct CountryLink {
@@ -729,12 +847,20 @@ struct CloudProviderGroup {
 #[derive(Template)]
 #[template(path = "index.html")]
 struct LandingTemplate {
+    t: &'static i18n::Strings,
     title: String,
     meta_description: String,
     canonical_url: String,
+    alt_en: String,
+    alt_de: String,
     json_ld: String,
+    home_url: String,
+    impressum_url: String,
+    privacy_url: String,
+    app_url: String,
     selected_name: String,
     updated_utc: String,
+    table_caption: String,
     sentences: Vec<String>,
     rows: Vec<ForecastRow>,
     plot_data: String,
@@ -746,6 +872,7 @@ struct LandingTemplate {
 #[derive(Deserialize)]
 struct LandingQuery {
     country: Option<String>,
+    lang: Option<String>,
 }
 
 /// GET /?country=XX
@@ -754,8 +881,16 @@ struct LandingQuery {
 /// country/cloud index below. Forecast data is served from a short-lived cache.
 async fn get_landing(
     State(state): State<AppState>,
+    headers: HeaderMap,
+    uri: OriginalUri,
     Query(query): Query<LandingQuery>,
-) -> Result<impl IntoResponse, StatusCode> {
+) -> Result<Response, StatusCode> {
+    let (lang, persist) = match resolve_lang(&headers, &uri, query.lang.as_deref()) {
+        Ok(v) => v,
+        Err(redirect) => return Ok(redirect),
+    };
+    let t = i18n::strings(lang);
+
     // Resolve the selected country, falling back to the default if unknown.
     let selected = query
         .country
@@ -764,15 +899,15 @@ async fn get_landing(
         .or_else(|| get_primary_zone("DE"))
         .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
     let selected_code = selected.country_code;
-    let selected_name = selected.name.to_string();
+    let selected_name = i18n::country_name(selected.name, lang);
 
     let mut countries: Vec<CountryLink> = areas::list_countries()
         .into_iter()
         .filter_map(|code| {
             get_primary_zone(code).map(|zone| CountryLink {
                 code: code.to_string(),
-                name: zone.name.to_string(),
-                url: format!("/electricity/{}", code.to_lowercase()),
+                name: i18n::country_name(zone.name, lang),
+                url: i18n::localize_url(&format!("/electricity/{}", code.to_lowercase()), lang),
                 selected: code == selected_code,
             })
         })
@@ -788,7 +923,7 @@ async fn get_landing(
     } else {
         None
     };
-    let summary = summarize_forecast(&series, &selected_name);
+    let summary = summarize_forecast(&series, &selected_name, lang);
     let rows = forecast_rows(&series);
     let (plot_data, plot_layout) = generate_plot_data(&series, modelled.as_deref());
     let updated_utc = now.format("%Y-%m-%d %H:%M UTC").to_string();
@@ -801,7 +936,7 @@ async fn get_landing(
         let link = CloudLink {
             region: cr.region.to_string(),
             location: cr.location.to_string(),
-            url: format!("/cloud/{}/{}", cr.provider, cr.region),
+            url: i18n::localize_url(&format!("/cloud/{}/{}", cr.provider, cr.region), lang),
         };
         match cloud_providers.last_mut() {
             Some(group) if group.provider_label == label => group.regions.push(link),
@@ -812,11 +947,10 @@ async fn get_landing(
         }
     }
 
-    let title = "educk — when is electricity greenest across Europe?".to_string();
-    let meta_description = "educk shows live and day-ahead renewable electricity share across \
-         European grids, so you can shift energy use to cleaner, lower-carbon hours."
-        .to_string();
-    let canonical_url = format!("{}/", state.base_url);
+    let title = i18n::index_title(lang).to_string();
+    let meta_description = i18n::index_meta(lang).to_string();
+    let (canonical_url, alt_en, alt_de) = i18n::page_urls(&state.base_url, "/", lang);
+    let table_caption = i18n::caption_landing(lang, &selected_name);
 
     let list_items: Vec<_> = countries
         .iter()
@@ -825,7 +959,7 @@ async fn get_landing(
             json!({
                 "@type": "ListItem",
                 "position": i + 1,
-                "name": format!("Renewable electricity in {}", c.name),
+                "name": i18n::country_about(lang, &c.name),
                 "url": format!("{}{}", state.base_url, c.url),
             })
         })
@@ -839,11 +973,11 @@ async fn get_landing(
                 "name": "educk",
                 "url": state.base_url.to_string(),
                 "description": meta_description,
-                "inLanguage": "en",
+                "inLanguage": lang.code(),
             },
             {
                 "@type": "ItemList",
-                "name": "Renewable electricity forecast by country",
+                "name": i18n::itemlist_name(lang),
                 "itemListElement": list_items,
             }
         ],
@@ -851,12 +985,20 @@ async fn get_landing(
     .to_string();
 
     let template = LandingTemplate {
+        t,
         title,
         meta_description,
         canonical_url,
+        alt_en,
+        alt_de,
         json_ld,
+        home_url: i18n::localize_url("/", lang),
+        impressum_url: i18n::localize_url("/impressum", lang),
+        privacy_url: i18n::localize_url("/privacy", lang),
+        app_url: "/app".to_string(),
         selected_name,
         updated_utc,
+        table_caption,
         sentences: summary.sentences,
         rows,
         plot_data,
@@ -870,26 +1012,33 @@ async fn get_landing(
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
 
-    Ok(axum::response::Html(html))
+    Ok(with_lang_cookie(Html(html).into_response(), lang, persist))
 }
 
 #[derive(Template)]
 #[template(path = "cloud.html")]
 struct CloudPageTemplate {
+    t: &'static i18n::Strings,
     title: String,
     meta_description: String,
     canonical_url: String,
+    alt_en: String,
+    alt_de: String,
     json_ld: String,
-    provider_label: String,
-    region: String,
-    location: String,
-    country_name: String,
+    home_url: String,
+    impressum_url: String,
+    privacy_url: String,
+    h1: String,
+    lead: String,
+    hourly_h2: String,
+    cta_label: String,
+    table_caption: String,
+    country_url: String,
     updated_utc: String,
     sentences: Vec<String>,
     rows: Vec<ForecastRow>,
     plot_data: String,
     plot_layout: String,
-    country_url: String,
 }
 
 /// GET /cloud/{provider}/{region}
@@ -897,26 +1046,32 @@ struct CloudPageTemplate {
 /// carbon-aware workload scheduling. Uses the region's underlying national grid.
 async fn get_cloud_page(
     State(state): State<AppState>,
+    headers: HeaderMap,
+    uri: OriginalUri,
     Path((provider, region)): Path<(String, String)>,
-) -> Result<impl IntoResponse, StatusCode> {
+    Query(q): Query<LangQuery>,
+) -> Result<Response, StatusCode> {
     let cr = cloud::lookup(&provider, &region).ok_or(StatusCode::NOT_FOUND)?;
+    let (lang, persist) = match resolve_lang(&headers, &uri, q.lang.as_deref()) {
+        Ok(v) => v,
+        Err(redirect) => return Ok(redirect),
+    };
+    let t = i18n::strings(lang);
     let zone = get_primary_zone(cr.country_code).ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
-    let country_name = zone.name.to_string();
+    let country_name = i18n::country_name(zone.name, lang);
 
     let now = Utc::now();
     let series = state.series_for_zone(zone.code).await.unwrap_or_default();
 
-    let summary = summarize_forecast(&series, &country_name);
+    let summary = summarize_forecast(&series, &country_name, lang);
     let rows = forecast_rows(&series);
     let (plot_data, plot_layout) = generate_plot_data(&series, None);
 
     let label = provider_label(cr.provider);
-    let title = format!(
-        "Greenest time to run workloads in {}/{} ({}) | educk",
-        cr.provider, cr.region, cr.location
-    );
-    let meta_description = summary.meta_description(&country_name);
-    let canonical_url = format!("{}/cloud/{}/{}", state.base_url, cr.provider, cr.region);
+    let title = i18n::cloud_title(lang, cr.provider, cr.region, cr.location);
+    let meta_description = summary.meta_description(&country_name, lang);
+    let path = format!("/cloud/{}/{}", cr.provider, cr.region);
+    let (canonical_url, alt_en, alt_de) = i18n::page_urls(&state.base_url, &path, lang);
     let updated_utc = now.format("%Y-%m-%d %H:%M UTC").to_string();
 
     let json_ld = json!({
@@ -925,7 +1080,7 @@ async fn get_cloud_page(
         "name": title,
         "description": meta_description,
         "url": canonical_url,
-        "inLanguage": "en",
+        "inLanguage": lang.code(),
         "dateModified": now.to_rfc3339(),
         "isPartOf": {
             "@type": "WebSite",
@@ -934,26 +1089,36 @@ async fn get_cloud_page(
         },
         "about": {
             "@type": "Thing",
-            "name": format!("Carbon-aware scheduling for {} {}", label, cr.region),
+            "name": i18n::cloud_about(lang, label, cr.region),
         },
     })
     .to_string();
 
     let template = CloudPageTemplate {
+        t,
         title,
         meta_description,
         canonical_url,
+        alt_en,
+        alt_de,
         json_ld,
-        provider_label: label.to_string(),
-        region: cr.region.to_string(),
-        location: cr.location.to_string(),
-        country_name,
+        home_url: i18n::localize_url("/", lang),
+        impressum_url: i18n::localize_url("/impressum", lang),
+        privacy_url: i18n::localize_url("/privacy", lang),
+        h1: i18n::cloud_h1(lang, label, cr.region),
+        lead: i18n::cloud_lead(lang, label, cr.region, cr.location, &country_name),
+        hourly_h2: i18n::cloud_hourly_h2(lang, label, cr.region),
+        cta_label: i18n::cloud_cta(lang, &country_name),
+        table_caption: i18n::caption_cloud(lang, &country_name),
+        country_url: i18n::localize_url(
+            &format!("/electricity/{}", cr.country_code.to_lowercase()),
+            lang,
+        ),
         updated_utc,
         sentences: summary.sentences,
         rows,
         plot_data,
         plot_layout,
-        country_url: format!("/electricity/{}", cr.country_code.to_lowercase()),
     };
 
     let html = template.render().map_err(|e| {
@@ -961,7 +1126,7 @@ async fn get_cloud_page(
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
 
-    Ok(axum::response::Html(html))
+    Ok(with_lang_cookie(Html(html).into_response(), lang, persist))
 }
 
 // ── Legal pages (Impressum / privacy policy) ─────────────────────────────────
@@ -969,39 +1134,83 @@ async fn get_cloud_page(
 #[derive(Template)]
 #[template(path = "impressum.html")]
 struct ImpressumTemplate {
+    t: &'static i18n::Strings,
     canonical_url: String,
+    alt_en: String,
+    alt_de: String,
+    home_url: String,
+    impressum_url: String,
+    privacy_url: String,
 }
 
 /// GET /impressum
 /// Static legal notice (Impressum) required of a German operator under § 5 DDG.
-async fn get_impressum(State(state): State<AppState>) -> Result<impl IntoResponse, StatusCode> {
+async fn get_impressum(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    uri: OriginalUri,
+    Query(q): Query<LangQuery>,
+) -> Result<Response, StatusCode> {
+    let (lang, persist) = match resolve_lang(&headers, &uri, q.lang.as_deref()) {
+        Ok(v) => v,
+        Err(redirect) => return Ok(redirect),
+    };
+    let (canonical_url, alt_en, alt_de) = i18n::page_urls(&state.base_url, "/impressum", lang);
     let template = ImpressumTemplate {
-        canonical_url: format!("{}/impressum", state.base_url),
+        t: i18n::strings(lang),
+        canonical_url,
+        alt_en,
+        alt_de,
+        home_url: i18n::localize_url("/", lang),
+        impressum_url: i18n::localize_url("/impressum", lang),
+        privacy_url: i18n::localize_url("/privacy", lang),
     };
     let html = template.render().map_err(|e| {
         tracing::error!("Template rendering error: {}", e);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
-    Ok(axum::response::Html(html))
+    Ok(with_lang_cookie(Html(html).into_response(), lang, persist))
 }
 
 #[derive(Template)]
 #[template(path = "privacy.html")]
 struct PrivacyTemplate {
+    t: &'static i18n::Strings,
     canonical_url: String,
+    alt_en: String,
+    alt_de: String,
+    home_url: String,
+    impressum_url: String,
+    privacy_url: String,
 }
 
 /// GET /privacy
 /// Static GDPR privacy policy (Datenschutzerklärung); discloses Google Analytics.
-async fn get_privacy(State(state): State<AppState>) -> Result<impl IntoResponse, StatusCode> {
+async fn get_privacy(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    uri: OriginalUri,
+    Query(q): Query<LangQuery>,
+) -> Result<Response, StatusCode> {
+    let (lang, persist) = match resolve_lang(&headers, &uri, q.lang.as_deref()) {
+        Ok(v) => v,
+        Err(redirect) => return Ok(redirect),
+    };
+    let (canonical_url, alt_en, alt_de) = i18n::page_urls(&state.base_url, "/privacy", lang);
     let template = PrivacyTemplate {
-        canonical_url: format!("{}/privacy", state.base_url),
+        t: i18n::strings(lang),
+        canonical_url,
+        alt_en,
+        alt_de,
+        home_url: i18n::localize_url("/", lang),
+        impressum_url: i18n::localize_url("/impressum", lang),
+        privacy_url: i18n::localize_url("/privacy", lang),
     };
     let html = template.render().map_err(|e| {
         tracing::error!("Template rendering error: {}", e);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
-    Ok(axum::response::Html(html))
+    Ok(with_lang_cookie(Html(html).into_response(), lang, persist))
 }
 
 // ── Cloud provider endpoints ─────────────────────────────────────────────────
@@ -1228,24 +1437,33 @@ async fn robots_txt(State(state): State<AppState>) -> impl IntoResponse {
 
 /// GET /sitemap.xml
 /// Lists the landing page and every per-country and per-cloud-region content page.
+/// Each page exists in English (the bare path, also `x-default`) and German
+/// (`?lang=de`); both are emitted as separate `<url>`s carrying the reciprocal
+/// `hreflang` alternates so search engines surface the right language version.
 async fn sitemap_xml(State(state): State<AppState>) -> impl IntoResponse {
-    let mut urls = format!("  <url><loc>{}/</loc></url>\n", state.base_url);
+    let base = state.base_url.as_ref();
+    let entry = |path: &str| -> String {
+        let en = format!("{base}{path}");
+        let de = format!("{base}{}", i18n::add_lang_param(path, "de"));
+        let alts = format!(
+            "    <xhtml:link rel=\"alternate\" hreflang=\"en\" href=\"{en}\"/>\n\
+             \x20   <xhtml:link rel=\"alternate\" hreflang=\"de\" href=\"{de}\"/>\n\
+             \x20   <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"{en}\"/>\n"
+        );
+        format!("  <url><loc>{en}</loc>\n{alts}  </url>\n  <url><loc>{de}</loc>\n{alts}  </url>\n")
+    };
+
+    let mut urls = entry("/");
     for code in areas::list_countries() {
-        urls.push_str(&format!(
-            "  <url><loc>{}/electricity/{}</loc></url>\n",
-            state.base_url,
-            code.to_lowercase()
-        ));
+        urls.push_str(&entry(&format!("/electricity/{}", code.to_lowercase())));
     }
     for cr in cloud::all_regions() {
-        urls.push_str(&format!(
-            "  <url><loc>{}/cloud/{}/{}</loc></url>\n",
-            state.base_url, cr.provider, cr.region
-        ));
+        urls.push_str(&entry(&format!("/cloud/{}/{}", cr.provider, cr.region)));
     }
     let body = format!(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-         <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n\
+         <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" \
+         xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">\n\
          {urls}</urlset>\n"
     );
     (
@@ -1345,4 +1563,122 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
     axum::serve(listener, app).await?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use askama::Template;
+
+    fn headers(pairs: &[(header::HeaderName, &str)]) -> HeaderMap {
+        let mut h = HeaderMap::new();
+        for (k, v) in pairs {
+            h.insert(k.clone(), HeaderValue::from_str(v).unwrap());
+        }
+        h
+    }
+
+    #[test]
+    fn negotiate_explicit_query_wins_and_persists() {
+        // An explicit ?lang= beats everything and is remembered, regardless of the
+        // Accept-Language header.
+        let h = headers(&[(header::ACCEPT_LANGUAGE, "en-US,en;q=0.9")]);
+        assert!(matches!(
+            negotiate_lang(&h, Some("de")),
+            LangChoice::Render {
+                lang: Lang::De,
+                persist: true
+            }
+        ));
+        assert!(matches!(
+            negotiate_lang(&h, Some("en")),
+            LangChoice::Render {
+                lang: Lang::En,
+                persist: true
+            }
+        ));
+    }
+
+    #[test]
+    fn negotiate_cookie_then_accept_language() {
+        // Remembered German choice -> redirect to the ?lang=de variant.
+        let de_cookie = headers(&[(header::COOKIE, "educk_lang=de; other=1")]);
+        assert!(matches!(
+            negotiate_lang(&de_cookie, None),
+            LangChoice::RedirectDe
+        ));
+        // Remembered English choice -> stay English even if the browser prefers de.
+        let en_cookie = headers(&[
+            (header::COOKIE, "educk_lang=en"),
+            (header::ACCEPT_LANGUAGE, "de-DE,de;q=0.9"),
+        ]);
+        assert!(matches!(
+            negotiate_lang(&en_cookie, None),
+            LangChoice::Render {
+                lang: Lang::En,
+                persist: false
+            }
+        ));
+        // No cookie, German browser -> soft redirect.
+        let de_browser = headers(&[(header::ACCEPT_LANGUAGE, "de-DE,de;q=0.9,en;q=0.8")]);
+        assert!(matches!(
+            negotiate_lang(&de_browser, None),
+            LangChoice::RedirectDe
+        ));
+        // No cookie, English browser (the crawler path) -> English, no redirect.
+        let en_browser = headers(&[(header::ACCEPT_LANGUAGE, "en-US,en;q=0.9")]);
+        assert!(matches!(
+            negotiate_lang(&en_browser, None),
+            LangChoice::Render {
+                lang: Lang::En,
+                persist: false
+            }
+        ));
+        // No headers at all (e.g. a bare bot) -> English.
+        assert!(matches!(
+            negotiate_lang(&HeaderMap::new(), None),
+            LangChoice::Render {
+                lang: Lang::En,
+                persist: false
+            }
+        ));
+    }
+
+    /// Build a minimal Impressum template in the given language. The Impressum page
+    /// exercises the bilingual body switch, the hreflang block, the language
+    /// switcher and the localized cookie-consent include.
+    fn impressum(lang: Lang) -> ImpressumTemplate {
+        let (canonical_url, alt_en, alt_de) = i18n::page_urls("https://educk.io", "/impressum", lang);
+        ImpressumTemplate {
+            t: i18n::strings(lang),
+            canonical_url,
+            alt_en,
+            alt_de,
+            home_url: i18n::localize_url("/", lang),
+            impressum_url: i18n::localize_url("/impressum", lang),
+            privacy_url: i18n::localize_url("/privacy", lang),
+        }
+    }
+
+    #[test]
+    fn renders_german_page_with_hreflang() {
+        let html = impressum(Lang::De).render().unwrap();
+        assert!(html.contains("<html lang=\"de\">"));
+        assert!(html.contains("Diensteanbieter")); // German body
+        assert!(html.contains("Ablehnen")); // localized cookie button
+        // Reciprocal hreflang alternates + self-canonical at the ?lang=de URL.
+        assert!(html.contains("hreflang=\"de\" href=\"https://educk.io/impressum?lang=de\""));
+        assert!(html.contains("hreflang=\"en\" href=\"https://educk.io/impressum\""));
+        assert!(html.contains("hreflang=\"x-default\" href=\"https://educk.io/impressum\""));
+        assert!(html.contains("<link rel=\"canonical\" href=\"https://educk.io/impressum?lang=de\">"));
+    }
+
+    #[test]
+    fn renders_english_page_by_default() {
+        let html = impressum(Lang::En).render().unwrap();
+        assert!(html.contains("<html lang=\"en\">"));
+        assert!(html.contains("Service provider")); // English body
+        assert!(html.contains("Decline"));
+        assert!(html.contains("<link rel=\"canonical\" href=\"https://educk.io/impressum\">"));
+    }
 }
