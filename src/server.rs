@@ -995,7 +995,7 @@ async fn get_landing(
         home_url: i18n::localize_url("/", lang),
         impressum_url: i18n::localize_url("/impressum", lang),
         privacy_url: i18n::localize_url("/privacy", lang),
-        app_url: "/app".to_string(),
+        app_url: i18n::localize_url("/app", lang),
         selected_name,
         updated_utc,
         table_caption,

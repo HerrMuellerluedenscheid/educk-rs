@@ -28,6 +28,85 @@ const els = {
   gauge: $("gauge"), chart: $("chart"), tooltip: $("tooltip"), range: $("range"),
 };
 
+// ── i18n ──────────────────────────────────────────────────────────────────────
+// Mirrors the server's language negotiation: explicit ?lang -> the educk_lang
+// cookie (set when the visitor chose a language on the SSR site) -> browser.
+function pickLang() {
+  const q = new URLSearchParams(location.search).get("lang");
+  if (q === "de" || q === "en") return q;
+  const m = document.cookie.match(/(?:^|;\s*)educk_lang=(de|en)/);
+  if (m) return m[1];
+  return (navigator.language || "en").toLowerCase().startsWith("de") ? "de" : "en";
+}
+
+const I18N = {
+  en: {
+    title: "educk — renewable energy dashboard",
+    refreshTitle: "Refresh",
+    loading: "Loading…", errorTitle: "Could not load data", retry: "Retry",
+    surplusNow: "Surplus now", deficitNow: "Deficit now",
+    peakSurplus: "Peak surplus", greenCoverage: "Green coverage",
+    ofCurrentLoad: "of current load", ofGeneration: "of generation",
+    renewableNow: "renewable now",
+    rising: "Rising", falling: "Falling", steady: "Steady",
+    dataPoints: "data points", now: "Now",
+    gen: "Gen", load: "Load", surplus: "Surplus", deficit: "Deficit",
+    legGen: "Wind + Solar", legLoad: "Total load", legSurplus: "Surplus",
+    legPos: "Positive surplus", legDeficit: "Deficit",
+    navImpressum: "Impressum", navPrivacy: "Privacy",
+    footerData: 'Renewable electricity share across European bidding zones. Data: <a class="text-emerald-700 hover:underline" href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>.',
+    hintGood: (t) => `Best time to charge an EV or run high-energy appliances: ${t} — that's when renewables exceed demand by the most.`,
+    hintBad: (t) => `Renewables don't cover full demand in this window. Highest renewable share is around ${t}.`,
+  },
+  de: {
+    title: "educk — Dashboard für erneuerbare Energien",
+    refreshTitle: "Aktualisieren",
+    loading: "Lädt…", errorTitle: "Daten konnten nicht geladen werden", retry: "Erneut versuchen",
+    surplusNow: "Überschuss jetzt", deficitNow: "Defizit jetzt",
+    peakSurplus: "Spitzenüberschuss", greenCoverage: "Grüne Deckung",
+    ofCurrentLoad: "des aktuellen Bedarfs", ofGeneration: "der Erzeugung",
+    renewableNow: "erneuerbar jetzt",
+    rising: "Steigend", falling: "Fallend", steady: "Stabil",
+    dataPoints: "Datenpunkte", now: "Jetzt",
+    gen: "Erz.", load: "Last", surplus: "Überschuss", deficit: "Defizit",
+    legGen: "Wind + Solar", legLoad: "Gesamtlast", legSurplus: "Überschuss",
+    legPos: "Positiver Überschuss", legDeficit: "Defizit",
+    navImpressum: "Impressum", navPrivacy: "Datenschutz",
+    footerData: 'Anteil erneuerbaren Stroms in europäischen Gebotszonen. Daten: <a class="text-emerald-700 hover:underline" href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>.',
+    hintGood: (t) => `Beste Zeit zum Laden eines E-Autos oder Betreiben energieintensiver Geräte: ${t} — dann übersteigen die Erneuerbaren den Bedarf am stärksten.`,
+    hintBad: (t) => `Die Erneuerbaren decken in diesem Zeitfenster nicht den gesamten Bedarf. Der höchste Erneuerbaren-Anteil liegt gegen ${t}.`,
+  },
+};
+
+const LANG = pickLang();
+const T = I18N[LANG] || I18N.en;
+
+// Apply the static chrome translations + language-aware links once, on load.
+function applyI18n() {
+  document.documentElement.lang = LANG;
+  document.title = T.title;
+  if (els.refresh) els.refresh.setAttribute("title", T.refreshTitle);
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const k = el.getAttribute("data-i18n");
+    if (T[k]) el.textContent = T[k];
+  });
+  const fd = document.getElementById("footer-data");
+  if (fd) fd.innerHTML = T.footerData;
+  const suffix = LANG === "de" ? "?lang=de" : "";
+  const setHref = (id, path) => {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute("href", path + suffix);
+  };
+  setHref("home-link", "/");
+  const fi = document.getElementById("footer-impressum");
+  if (fi) fi.textContent = T.navImpressum;
+  const fp = document.getElementById("footer-privacy");
+  if (fp) fp.textContent = T.navPrivacy;
+  setHref("footer-impressum", "/impressum");
+  setHref("footer-privacy", "/privacy");
+}
+applyI18n();
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function fmtMW(v) {
   const a = Math.abs(v), s = v < 0 ? "-" : "";
@@ -37,7 +116,7 @@ function fmtTime(d) {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 function fmtDay(d) {
-  return d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+  return d.toLocaleDateString(LANG, { weekday: "short", day: "numeric", month: "short" });
 }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 function lerp(a, b, t) { return a + (b - a) * t; }
@@ -179,7 +258,7 @@ function renderGauge() {
   const [tx, ty] = polar(cx, cy, r, GAUGE_START + GAUGE_SWEEP * value);
 
   els.gauge.innerHTML = `
-    <svg viewBox="0 0 200 150" class="w-full" role="img" aria-label="${pct.toFixed(0)}% renewable now">
+    <svg viewBox="0 0 200 150" class="w-full" role="img" aria-label="${pct.toFixed(0)}% ${T.renewableNow}">
       <path d="${arcPath(cx, cy, r, GAUGE_START, GAUGE_SWEEP)}" fill="none"
             stroke="#e2e8f0" stroke-width="${sw}" stroke-linecap="round"/>
       ${value > 0.01 ? `<path d="${arcPath(cx, cy, r, GAUGE_START, GAUGE_SWEEP * value)}" fill="none"
@@ -188,16 +267,16 @@ function renderGauge() {
       <text x="${cx}" y="${cy - 4}" text-anchor="middle" font-size="40" font-weight="700"
             fill="#0f172a" letter-spacing="-1.5">${pct.toFixed(0)}%</text>
       <text x="${cx}" y="${cy + 16}" text-anchor="middle" font-size="11" font-weight="500"
-            fill="#94a3b8" letter-spacing="0.4">renewable now</text>
+            fill="#94a3b8" letter-spacing="0.4">${T.renewableNow}</text>
     </svg>`;
 }
 
 // ── Summary cards ─────────────────────────────────────────────────────────────
 function trendBadge(trend) {
   const map = {
-    rising: ["#15803d", "Rising", "M3 17l6-6 4 4 7-7M14 8h5v5"],
-    falling: ["#b91c1c", "Falling", "M3 7l6 6 4-4 7 7M14 16h5v-5"],
-    flat: ["#475569", "Steady", "M3 12h18M16 7l5 5-5 5"],
+    rising: ["#15803d", T.rising, "M3 17l6-6 4 4 7-7M14 8h5v5"],
+    falling: ["#b91c1c", T.falling, "M3 7l6 6 4-4 7 7M14 16h5v-5"],
+    flat: ["#475569", T.steady, "M3 12h18M16 7l5 5-5 5"],
   };
   const [color, label, d] = map[trend];
   return `<span style="color:${color}" class="inline-flex items-center gap-1">
@@ -218,10 +297,10 @@ function renderCards() {
     const bolt = '<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
     const warn = '<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
     $("current-icon").innerHTML = `<span style="color:${color}">${surplus ? bolt : warn}</span>`;
-    $("current-title").textContent = surplus ? "Surplus now" : "Deficit now";
+    $("current-title").textContent = surplus ? T.surplusNow : T.deficitNow;
     const v = $("current-value");
     v.textContent = fmtMW(Math.abs(cur.surplus)); v.style.color = color;
-    $("current-sub").textContent = `${surplusPct(cur).toFixed(0)}% of generation`;
+    $("current-sub").textContent = `${surplusPct(cur).toFixed(0)}% ${T.ofGeneration}`;
     $("current-trend").innerHTML = trendBadge(renewableTrend());
   }
 
@@ -245,7 +324,7 @@ function renderCards() {
 function renderRange() {
   if (!series.length) { els.range.textContent = ""; return; }
   const a = series[0].t, b = series[series.length - 1].t;
-  els.range.textContent = `${fmtDay(a)}, ${fmtTime(a)} → ${fmtTime(b)} (${series.length} data points)`;
+  els.range.textContent = `${fmtDay(a)}, ${fmtTime(a)} → ${fmtTime(b)} (${series.length} ${T.dataPoints})`;
 }
 
 // ── Chart (SVG) ───────────────────────────────────────────────────────────────
@@ -307,7 +386,7 @@ function renderChart() {
 
   const nowMarker = nowX != null ? `
     <line x1="${nowX.toFixed(1)}" y1="${padT}" x2="${nowX.toFixed(1)}" y2="${h - padB}" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="6 3"/>
-    <text x="${nowX.toFixed(1)}" y="${padT + 9}" text-anchor="middle" font-size="10" font-weight="600" fill="#c2410c">Now</text>` : "";
+    <text x="${nowX.toFixed(1)}" y="${padT + 9}" text-anchor="middle" font-size="10" font-weight="600" fill="#c2410c">${T.now}</text>` : "";
 
   els.chart.innerHTML = `
     <svg viewBox="0 0 ${W} ${h}" width="${W}" height="${h}" id="chart-svg" style="touch-action:none">
@@ -350,9 +429,9 @@ function attachHover() {
     const surplus = p.surplus >= 0;
     els.tooltip.innerHTML =
       `${fmtTime(p.t)}\n` +
-      `<span style="color:#81C784">● Gen:  ${fmtMW(p.gen)}</span>\n` +
-      `<span style="color:#64B5F6">● Load: ${fmtMW(p.load)}</span>\n` +
-      `<span style="color:${surplus ? "#81C784" : "#EF9A9A"}">● ${surplus ? "Surplus" : "Deficit"}: ${fmtMW(Math.abs(p.surplus))}</span>`;
+      `<span style="color:#81C784">● ${T.gen}:  ${fmtMW(p.gen)}</span>\n` +
+      `<span style="color:#64B5F6">● ${T.load}: ${fmtMW(p.load)}</span>\n` +
+      `<span style="color:${surplus ? "#81C784" : "#EF9A9A"}">● ${surplus ? T.surplus : T.deficit}: ${fmtMW(Math.abs(p.surplus))}</span>`;
     els.tooltip.style.whiteSpace = "pre";
     els.tooltip.classList.remove("hidden");
     // Position within the chart section (tooltip is absolutely placed)
@@ -379,9 +458,7 @@ function renderHint() {
   const bulb = '<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg>';
   const info = '<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
   $("hint-icon").innerHTML = `<span style="color:${color}">${good ? bulb : info}</span>`;
-  $("hint-text").textContent = good
-    ? `Best time to charge an EV or run high-energy appliances: ${fmtTime(peak.t)} — that's when renewables exceed demand by the most.`
-    : `Renewables don't cover full demand in this window. Highest renewable share is around ${fmtTime(peak.t)}.`;
+  $("hint-text").textContent = good ? T.hintGood(fmtTime(peak.t)) : T.hintBad(fmtTime(peak.t));
 }
 
 // ── Events ────────────────────────────────────────────────────────────────────
