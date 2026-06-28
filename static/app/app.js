@@ -30,13 +30,13 @@ const FILL_NEG = "rgba(239,154,154,0.28)";
 
 // ── State ───────────────────────────────────────────────────────────────────
 let country = DEFAULT_COUNTRY;
-let hours = 24;
+const HOURS = 24; // fixed plot window
 let series = []; // [{t: Date, gen, load, surplus}]
 
 // ── DOM ─────────────────────────────────────────────────────────────────────
 const $ = (id) => document.getElementById(id);
 const els = {
-  country: $("country"), hours: $("hours"), refresh: $("refresh"),
+  country: $("country"), refresh: $("refresh"),
   refreshIcon: $("refresh-icon"), retry: $("retry"),
   loading: $("loading"), error: $("error"), errorMsg: $("error-msg"),
   dashboard: $("dashboard"),
@@ -198,7 +198,7 @@ async function loadData() {
   showLoading();
   els.refreshIcon.classList.add("animate-spin");
   try {
-    const url = `${API_BASE}/api/v1/renewable-surplus/${country}/plot-json?hours=${hours}`;
+    const url = `${API_BASE}/api/v1/renewable-surplus/${country}/plot-json?hours=${HOURS}`;
     const r = await fetch(url);
     if (!r.ok) throw new Error(`Server returned HTTP ${r.status}`);
     const j = await r.json();
@@ -479,7 +479,6 @@ function renderHint() {
 
 // ── Events ────────────────────────────────────────────────────────────────────
 els.country.addEventListener("change", (e) => { country = e.target.value; loadData(); });
-els.hours.addEventListener("change", (e) => { hours = +e.target.value; loadData(); });
 els.refresh.addEventListener("click", () => loadData());
 els.retry.addEventListener("click", () => loadData());
 
