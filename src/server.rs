@@ -844,6 +844,169 @@ struct CloudProviderGroup {
     regions: Vec<CloudLink>,
 }
 
+/// Server-rendered view model for the landing dashboard: a speedometer gauge
+/// plus the current / peak / coverage cards. This is the SSR port of the gauge
+/// and card logic in `static/app/app.js` (`renderGauge` / `renderCards`), so the
+/// numbers land in the initial HTML with no client-side fetch.
+struct DashboardView {
+    // gauge (inline SVG, viewBox "0 0 200 150")
+    gauge_pct: String,
+    gauge_track_path: String,
+    gauge_value_path: String,
+    gauge_color: String,
+    needle_x: String,
+    needle_y: String,
+    show_value: bool,
+    // current-status card
+    has_current: bool,
+    current_surplus: bool,
+    current_value: String,
+    current_sub: String,
+    trend: &'static str,
+    // peak card
+    peak_time: String,
+    peak_value: String,
+    // coverage card
+    coverage_pct: String,
+    coverage_color: String,
+}
+
+// Gauge geometry — matches static/app/app.js (clockwise sweep from `START`).
+const GAUGE_START: f64 = 150.0;
+const GAUGE_SWEEP: f64 = 240.0;
+const GAUGE_CX: f64 = 100.0;
+const GAUGE_CY: f64 = 92.0;
+const GAUGE_R: f64 = 76.0;
+
+fn gauge_polar(deg: f64) -> (f64, f64) {
+    let a = deg.to_radians();
+    (GAUGE_CX + GAUGE_R * a.cos(), GAUGE_CY + GAUGE_R * a.sin())
+}
+
+fn gauge_arc_path(sweep: f64) -> String {
+    let (x0, y0) = gauge_polar(GAUGE_START);
+    let (x1, y1) = gauge_polar(GAUGE_START + sweep);
+    let large = if sweep > 180.0 { 1 } else { 0 };
+    format!("M {x0:.2} {y0:.2} A {GAUGE_R} {GAUGE_R} 0 {large} 1 {x1:.2} {y1:.2}")
+}
+
+/// red → amber → green, interpolated by `t` in [0, 1].
+fn gauge_color(t: f64) -> String {
+    let stops = [[0xE5, 0x39, 0x35], [0xFB, 0x8C, 0x00], [0x2E, 0x7D, 0x32]];
+    let (a, b, k) = if t < 0.5 {
+        (stops[0], stops[1], t / 0.5)
+    } else {
+        (stops[1], stops[2], (t - 0.5) / 0.5)
+    };
+    let c: Vec<i64> = (0..3)
+        .map(|i| (a[i] as f64 + (b[i] as f64 - a[i] as f64) * k).round() as i64)
+        .collect();
+    format!("rgb({},{},{})", c[0], c[1], c[2])
+}
+
+/// Human-readable MW/GW, signed. Mirrors `fmtMW` in app.js.
+fn fmt_mw(v: f64) -> String {
+    let (a, s) = (v.abs(), if v < 0.0 { "-" } else { "" });
+    if a >= 1000.0 {
+        format!("{s}{:.1} GW", a / 1000.0)
+    } else {
+        format!("{s}{:.0} MW", a)
+    }
+}
+
+/// 3-hour generation trend around `now`, falling back to a first/second-half
+/// split when the window has no points on one side. Mirrors `renewableTrend`.
+fn renewable_trend(series: &[RenewableSurplus], now: DateTime<Utc>, t: &i18n::Strings) -> &'static str {
+    if series.len() < 4 {
+        return t.trend_steady;
+    }
+    let w = Duration::hours(3);
+    let avg = |xs: &[f64]| -> f64 { xs.iter().sum::<f64>() / xs.len() as f64 };
+    let past: Vec<f64> = series
+        .iter()
+        .filter(|p| p.timestamp < now && p.timestamp > now - w)
+        .map(|p| p.generation)
+        .collect();
+    let future: Vec<f64> = series
+        .iter()
+        .filter(|p| p.timestamp > now && p.timestamp < now + w)
+        .map(|p| p.generation)
+        .collect();
+    let (pa, fa) = if past.is_empty() || future.is_empty() {
+        let mid = series.len() / 2;
+        let first: Vec<f64> = series[..mid].iter().map(|p| p.generation).collect();
+        let second: Vec<f64> = series[mid..].iter().map(|p| p.generation).collect();
+        (avg(&first), avg(&second))
+    } else {
+        (avg(&past), avg(&future))
+    };
+    if pa <= 0.0 {
+        return if fa > 0.0 { t.trend_rising } else { t.trend_steady };
+    }
+    let ch = (fa - pa) / pa;
+    if ch > 0.05 {
+        t.trend_rising
+    } else if ch < -0.05 {
+        t.trend_falling
+    } else {
+        t.trend_steady
+    }
+}
+
+/// Build the SSR dashboard view from the cached forecast series. Returns `None`
+/// when the series is empty so the template can degrade gracefully.
+fn build_dashboard(
+    series: &[RenewableSurplus],
+    now: DateTime<Utc>,
+    t: &i18n::Strings,
+) -> Option<DashboardView> {
+    let cur = series
+        .iter()
+        .min_by_key(|p| (p.timestamp - now).num_seconds().abs())?;
+    let peak = series.iter().max_by(|a, b| a.surplus.total_cmp(&b.surplus))?;
+
+    // Gauge needle: 0 = worst surplus of the window, 1 = best.
+    let (lo, hi) = series.iter().fold((f64::MAX, f64::MIN), |(lo, hi), p| {
+        (lo.min(p.surplus), hi.max(p.surplus))
+    });
+    let value = if hi > lo {
+        ((cur.surplus - lo) / (hi - lo)).clamp(0.0, 1.0)
+    } else {
+        0.5
+    };
+    let coverage = cur.renewable_share().min(100.0); // capped, == app.js coveragePct
+    let (needle_x, needle_y) = gauge_polar(GAUGE_START + GAUGE_SWEEP * value);
+
+    let coverage_color = if coverage >= 80.0 {
+        "#15803d"
+    } else if coverage >= 50.0 {
+        "#4d7c0f"
+    } else if coverage >= 30.0 {
+        "#b45309"
+    } else {
+        "#b91c1c"
+    };
+
+    Some(DashboardView {
+        gauge_pct: format!("{:.0}%", coverage),
+        gauge_track_path: gauge_arc_path(GAUGE_SWEEP),
+        gauge_value_path: gauge_arc_path(GAUGE_SWEEP * value),
+        gauge_color: gauge_color(value),
+        needle_x: format!("{needle_x:.2}"),
+        needle_y: format!("{needle_y:.2}"),
+        show_value: value > 0.01,
+        has_current: true,
+        current_surplus: cur.surplus >= 0.0,
+        current_value: fmt_mw(cur.surplus.abs()),
+        current_sub: format!("{:.0}% {}", cur.surplus_percentage(), t.card_of_generation),
+        trend: renewable_trend(series, now, t),
+        peak_time: peak.timestamp.format("%H:%M").to_string(),
+        peak_value: fmt_mw(peak.surplus),
+        coverage_pct: format!("{:.0}%", coverage),
+        coverage_color: coverage_color.to_string(),
+    })
+}
+
 #[derive(Template)]
 #[template(path = "index.html")]
 struct LandingTemplate {
@@ -857,10 +1020,10 @@ struct LandingTemplate {
     home_url: String,
     impressum_url: String,
     privacy_url: String,
-    app_url: String,
     selected_name: String,
     updated_utc: String,
     table_caption: String,
+    dashboard: Option<DashboardView>,
     sentences: Vec<String>,
     rows: Vec<ForecastRow>,
     plot_data: String,
@@ -925,6 +1088,7 @@ async fn get_landing(
     };
     let summary = summarize_forecast(&series, &selected_name, lang);
     let rows = forecast_rows(&series);
+    let dashboard = build_dashboard(&series, now, t);
     let (plot_data, plot_layout) = generate_plot_data(&series, modelled.as_deref());
     let updated_utc = now.format("%Y-%m-%d %H:%M UTC").to_string();
 
@@ -995,10 +1159,10 @@ async fn get_landing(
         home_url: i18n::localize_url("/", lang),
         impressum_url: i18n::localize_url("/impressum", lang),
         privacy_url: i18n::localize_url("/privacy", lang),
-        app_url: i18n::localize_url("/app", lang),
         selected_name,
         updated_utc,
         table_caption,
+        dashboard,
         sentences: summary.sentences,
         rows,
         plot_data,

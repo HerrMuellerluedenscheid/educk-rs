@@ -79,20 +79,27 @@
         ul.countries a:hover { text-decoration: underline; }
         footer { margin-top: 3rem; color: #666; font-size: .85rem; }
         a { color: #15803d; }
-        .cta { margin: 1.4rem 0 .5rem; }
-        a.cta-button {
-            display: inline-block;
-            background: #15803d;
-            color: #fff;
-            font-size: 1.1rem;
-            font-weight: 700;
-            padding: .8rem 1.6rem;
-            border-radius: 8px;
-            text-decoration: none;
-            box-shadow: 0 2px 6px rgba(0,0,0,.15);
-            transition: background .15s ease;
+        .dash { margin: 1rem 0 .5rem; }
+        .gauge { max-width: 280px; margin: 0 auto; }
+        .gauge svg { display: block; width: 100%; height: auto; }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: .6rem;
+            margin-top: .6rem;
         }
-        a.cta-button:hover { background: #166534; }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: .6rem .8rem;
+            background: #fff;
+        }
+        .card-pos { background: #ecfdf5; border-color: #a7f3d0; }
+        .card-neg { background: #fef2f2; border-color: #fecaca; }
+        .card-peak { background: #fffbeb; border-color: #fde68a; }
+        .card-title { font-size: .8rem; font-weight: 500; color: #475569; }
+        .card-value { font-size: 1.4rem; font-weight: 700; margin-top: .15rem; }
+        .card-sub { font-size: .72rem; color: #64748b; margin-top: .1rem; }
     </style>
 </head>
 <body>
@@ -101,8 +108,6 @@
 
     <h1>{{ t.index_h1 }}</h1>
     <p class="lead">{{ t.index_lead }}</p>
-
-    <p class="cta"><a class="cta-button" href="{{ app_url }}">{{ t.cta_dashboard }}</a></p>
 
     <form class="picker" method="get" action="/">
         {% if t.code == "de" %}<input type="hidden" name="lang" value="de">{% endif %}
@@ -116,6 +121,41 @@
         <noscript><button type="submit">{{ t.show }}</button></noscript>
     </form>
     <p class="updated">{{ t.label_forecast_for }} {{ selected_name }} · {{ t.label_updated }} {{ updated_utc }}</p>
+
+    {% if let Some(d) = dashboard %}
+    <section class="dash">
+        <div class="gauge">
+            <svg viewBox="0 0 200 150" role="img" aria-label="{{ d.gauge_pct }} {{ t.gauge_renewable_now }}">
+                <path d="{{ d.gauge_track_path }}" fill="none" stroke="#e2e8f0" stroke-width="13" stroke-linecap="round"></path>
+                {% if d.show_value %}
+                <path d="{{ d.gauge_value_path }}" fill="none" stroke="{{ d.gauge_color }}" stroke-width="13" stroke-linecap="round"></path>
+                <circle cx="{{ d.needle_x }}" cy="{{ d.needle_y }}" r="5.5" fill="#fff" stroke="{{ d.gauge_color }}" stroke-width="2"></circle>
+                {% endif %}
+                <text x="100" y="88" text-anchor="middle" font-size="40" font-weight="700" fill="#0f172a" letter-spacing="-1.5">{{ d.gauge_pct }}</text>
+                <text x="100" y="108" text-anchor="middle" font-size="11" font-weight="500" fill="#94a3b8" letter-spacing="0.4">{{ t.gauge_renewable_now }}</text>
+            </svg>
+        </div>
+        <div class="cards">
+            {% if d.has_current %}
+            <div class="card {% if d.current_surplus %}card-pos{% else %}card-neg{% endif %}">
+                <div class="card-title">{% if d.current_surplus %}{{ t.card_surplus_now }}{% else %}{{ t.card_deficit_now }}{% endif %}</div>
+                <div class="card-value" style="color:{% if d.current_surplus %}#047857{% else %}#b91c1c{% endif %}">{{ d.current_value }}</div>
+                <div class="card-sub">{{ d.current_sub }} · {{ d.trend }}</div>
+            </div>
+            {% endif %}
+            <div class="card card-peak">
+                <div class="card-title">{{ t.card_peak_surplus }}</div>
+                <div class="card-value" style="color:#b45309">{{ d.peak_time }}</div>
+                <div class="card-sub">{{ d.peak_value }}</div>
+            </div>
+            <div class="card" style="border-color:{{ d.coverage_color }}40;background:{{ d.coverage_color }}14">
+                <div class="card-title">{{ t.card_green_coverage }}</div>
+                <div class="card-value" style="color:{{ d.coverage_color }}">{{ d.coverage_pct }}</div>
+                <div class="card-sub">{{ t.card_of_current_load }}</div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
 
     <div id="chart"></div>
     <script>
