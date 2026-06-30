@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
 
     <!-- Favicon / brand -->
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -29,207 +30,202 @@
     <meta name="twitter:description" content="{{ meta_description }}">
 
     <script type="application/ld+json">{{ json_ld|safe }}</script>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
+    <link rel="stylesheet" href="/app/app.css">
+    <!-- Scoped, unlayered styles for the server-rendered content below the
+         dashboard. Tailwind's preflight lives in a cascade layer, so these
+         unlayered rules win without touching the utility-classed dashboard. -->
     <style>
-        :root { color-scheme: light dark; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background: #f5f5f5;
-        }
-        .container {
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 24px 20px 64px;
-        }
-        nav a { font-weight: 700; color: #15803d; text-decoration: none; }
-        nav .langswitch { float: right; font-weight: 400; font-size: .9rem; color: #666; }
-        nav .langswitch a { color: #15803d; }
-        h1 { font-size: 2rem; margin: 1.2rem 0 .25rem; }
-        .lead { font-size: 1.15rem; }
-        h2 { margin-top: 2.2rem; }
-        ol.how { padding-left: 1.2rem; }
-        ol.how li { margin-bottom: .4rem; }
-        .picker { margin: 1.2rem 0 .5rem; font-size: 1rem; }
-        .picker select { font-size: 1rem; padding: .35rem .5rem; border-radius: 6px; }
-        .updated { color: #666; font-size: .85rem; }
-        #chart { width: 100%; height: 440px; margin: .5rem 0; }
-        ul.summary { padding-left: 1.2rem; }
-        ul.summary li { margin-bottom: .4rem; }
-        table { border-collapse: collapse; width: 100%; margin-top: 1rem; font-size: .9rem; }
-        th, td { padding: .45rem .6rem; text-align: right; border-bottom: 1px solid #ddd; }
-        th:first-child, td:first-child { text-align: left; }
-        thead th { border-bottom: 2px solid #bbb; }
-        caption { text-align: left; font-weight: 600; margin-bottom: .5rem; }
-        details { margin-top: 1rem; }
-        summary.toggle { cursor: pointer; font-weight: 600; color: #15803d; }
-        ul.countries {
-            list-style: none;
-            padding: 0;
-            margin: 1rem 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        .content { margin-top: 2.2rem; }
+        .content h1 { font-size: 2rem; font-weight: 700; line-height: 1.2; margin: 0 0 .5rem; }
+        .content .lead { font-size: 1.15rem; line-height: 1.6; color: #334155; margin: 0 0 1rem; }
+        .content h2 { font-size: 1.4rem; font-weight: 600; margin: 2.2rem 0 .4rem; }
+        .content h3 { font-size: 1.1rem; font-weight: 600; margin: 1.2rem 0 .3rem; }
+        .content p { line-height: 1.6; color: #334155; margin: .5rem 0; }
+        .content ol.how { padding-left: 1.2rem; list-style: decimal; line-height: 1.6; color: #334155; }
+        .content ol.how li { margin-bottom: .4rem; }
+        .content a { color: #15803d; text-decoration: none; }
+        .content a:hover { text-decoration: underline; }
+        .content ul.countries {
+            list-style: none; padding: 0; margin: 1rem 0;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: .35rem .75rem;
         }
-        ul.countries a { color: #15803d; text-decoration: none; }
-        ul.countries a:hover { text-decoration: underline; }
-        footer { margin-top: 3rem; color: #666; font-size: .85rem; }
-        a { color: #15803d; }
-        .dash { margin: 1rem 0 .5rem; }
-        .gauge { max-width: 280px; margin: 0 auto; }
-        .gauge svg { display: block; width: 100%; height: auto; }
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: .6rem;
-            margin-top: .6rem;
-        }
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: .6rem .8rem;
-            background: #fff;
-        }
-        .card-pos { background: #ecfdf5; border-color: #a7f3d0; }
-        .card-neg { background: #fef2f2; border-color: #fecaca; }
-        .card-peak { background: #fffbeb; border-color: #fde68a; }
-        .card-title { font-size: .8rem; font-weight: 500; color: #475569; }
-        .card-value { font-size: 1.4rem; font-weight: 700; margin-top: .15rem; }
-        .card-sub { font-size: .72rem; color: #64748b; margin-top: .1rem; }
+        .langswitch { font-size: .8rem; color: #64748b; }
+        .langswitch a { color: #15803d; text-decoration: none; }
+        .langswitch a:hover { text-decoration: underline; }
     </style>
 </head>
-<body>
-<main class="container">
-    <nav><a href="{{ home_url }}" style="display:inline-flex;align-items:center;gap:.4rem"><img src="/static/logo_bw.svg" alt="" width="26" height="26" style="vertical-align:middle">educk</a><span class="langswitch">{% if t.code == "de" %}<a href="{{ alt_en }}">EN</a> · <strong>DE</strong>{% else %}<strong>EN</strong> · <a href="{{ alt_de }}">DE</a>{% endif %}</span></nav>
+<body class="bg-slate-50 text-slate-900 antialiased">
+    <div class="mx-auto max-w-3xl px-4 pb-16">
 
-    <h1>{{ t.index_h1 }}</h1>
-    <p class="lead">{{ t.index_lead }}</p>
+        <!-- Header: brand left; country picker + refresh + language switch right -->
+        <header class="flex flex-wrap items-center gap-3 py-4">
+            <a id="home-link" href="{{ home_url }}" class="flex items-center gap-2 font-bold text-emerald-700 text-lg shrink-0">
+                <img src="/static/logo_bw.svg" alt="" width="26" height="26">
+                educk
+            </a>
+            <div class="ml-auto flex items-center gap-2">
+                <select id="country"
+                        class="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm font-medium shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                </select>
+                <button id="refresh" title="Refresh"
+                        class="rounded-lg border border-slate-300 bg-white p-1.5 text-slate-600 shadow-sm hover:bg-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                    <svg id="refresh-icon" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 4 21 9 16 9"/>
+                    </svg>
+                </button>
+                <span class="langswitch">{% if t.code == "de" %}<a href="{{ alt_en }}">EN</a> · <strong>DE</strong>{% else %}<strong>EN</strong> · <a href="{{ alt_de }}">DE</a>{% endif %}</span>
+            </div>
+        </header>
 
-    <form class="picker" method="get" action="/">
-        {% if t.code == "de" %}<input type="hidden" name="lang" value="de">{% endif %}
-        <label>{{ t.picker_label }}
-            <select name="country" onchange="this.form.submit()">
-                {% for country in countries %}
-                <option value="{{ country.code }}"{% if country.selected %} selected{% endif %}>{{ country.name }}</option>
-                {% endfor %}
-            </select>
-        </label>
-        <noscript><button type="submit">{{ t.show }}</button></noscript>
-    </form>
-    <p class="updated">{{ t.label_forecast_for }} {{ selected_name }} · {{ t.label_updated }} {{ updated_utc }}</p>
-
-    {% if let Some(d) = dashboard %}
-    <section class="dash">
-        <div class="gauge">
-            <svg viewBox="0 0 200 150" role="img" aria-label="{{ d.gauge_pct }} {{ t.gauge_renewable_now }}">
-                <path d="{{ d.gauge_track_path }}" fill="none" stroke="#e2e8f0" stroke-width="13" stroke-linecap="round"></path>
-                {% if d.show_value %}
-                <path d="{{ d.gauge_value_path }}" fill="none" stroke="{{ d.gauge_color }}" stroke-width="13" stroke-linecap="round"></path>
-                <circle cx="{{ d.needle_x }}" cy="{{ d.needle_y }}" r="5.5" fill="#fff" stroke="{{ d.gauge_color }}" stroke-width="2"></circle>
-                {% endif %}
-                <text x="100" y="88" text-anchor="middle" font-size="40" font-weight="700" fill="#0f172a" letter-spacing="-1.5">{{ d.gauge_pct }}</text>
-                <text x="100" y="108" text-anchor="middle" font-size="11" font-weight="500" fill="#94a3b8" letter-spacing="0.4">{{ t.gauge_renewable_now }}</text>
+        <!-- Loading state (hidden when the server already rendered a snapshot) -->
+        <div id="loading" class="flex flex-col items-center justify-center gap-3 py-24 text-slate-400{% if let Some(_d) = dashboard %} hidden{% endif %}">
+            <svg class="h-8 w-8 animate-spin text-emerald-600" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.4 0 0 5.4 0 12h4z"/>
             </svg>
+            <span class="text-sm" data-i18n="loading">Loading…</span>
         </div>
-        <div class="cards">
-            {% if d.has_current %}
-            <div class="card {% if d.current_surplus %}card-pos{% else %}card-neg{% endif %}">
-                <div class="card-title">{% if d.current_surplus %}{{ t.card_surplus_now }}{% else %}{{ t.card_deficit_now }}{% endif %}</div>
-                <div class="card-value" style="color:{% if d.current_surplus %}#047857{% else %}#b91c1c{% endif %}">{{ d.current_value }}</div>
-                <div class="card-sub">{{ d.current_sub }} · {{ d.trend }}</div>
+
+        <!-- Error state -->
+        <div id="error" class="hidden flex-col items-center justify-center gap-4 py-24 text-center">
+            <svg class="h-12 w-12 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><line x1="12" y1="2" x2="12" y2="2"/>
+            </svg>
+            <div>
+                <p class="font-semibold text-slate-700" data-i18n="errorTitle">Could not load data</p>
+                <p id="error-msg" class="mt-1 text-sm text-slate-500"></p>
             </div>
-            {% endif %}
-            <div class="card card-peak">
-                <div class="card-title">{{ t.card_peak_surplus }}</div>
-                <div class="card-value" style="color:#b45309">{{ d.peak_time }}</div>
-                <div class="card-sub">{{ d.peak_value }}</div>
-            </div>
-            <div class="card" style="border-color:{{ d.coverage_color }}40;background:{{ d.coverage_color }}14">
-                <div class="card-title">{{ t.card_green_coverage }}</div>
-                <div class="card-value" style="color:{{ d.coverage_color }}">{{ d.coverage_pct }}</div>
-                <div class="card-sub">{{ t.card_of_current_load }}</div>
-            </div>
+            <button id="retry" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700" data-i18n="retry">Retry</button>
         </div>
-    </section>
-    {% endif %}
 
-    <div id="chart"></div>
-    <script>
-      Plotly.newPlot('chart', {{ plot_data|safe }}, {{ plot_layout|safe }}, {responsive: true});
-    </script>
+        <!-- Dashboard (server-rendered first paint; app.js hydrates + makes it live) -->
+        <main id="dashboard"{% if let Some(_d) = dashboard %}{% else %} class="hidden"{% endif %}>
 
-    <ul class="summary">
-        {% for sentence in sentences %}
-        <li>{{ sentence }}</li>
-        {% endfor %}
-    </ul>
+            <!-- Gauge -->
+            <section class="mt-2 flex flex-col items-center">
+                <div id="gauge" class="w-full max-w-xs">{% if let Some(d) = dashboard %}{{ d.gauge_html|safe }}{% endif %}</div>
+            </section>
 
-    <details>
-        <summary class="toggle">{{ t.show_table }}</summary>
-        <table>
-            <caption>{{ table_caption }}</caption>
-            <thead>
-                <tr>
-                    <th>{{ t.th_time }}</th>
-                    <th>{{ t.th_renewable }}</th>
-                    <th>{{ t.th_demand }}</th>
-                    <th>{{ t.th_surplus }}</th>
-                    <th>{{ t.th_share }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in rows %}
-                <tr>
-                    <td>{{ row.time }}</td>
-                    <td>{{ row.generation }}</td>
-                    <td>{{ row.load }}</td>
-                    <td>{{ row.surplus }}</td>
-                    <td>{{ row.share }}</td>
-                </tr>
+            <!-- Summary cards -->
+            <section id="cards" class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <!-- current -->
+                <div class="rounded-xl border p-3" id="card-current"{% if let Some(d) = dashboard %} style="{{ d.current_card_style }}"{% endif %}>
+                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                        <span id="current-icon"></span>
+                        <span id="current-title" data-i18n="surplusNow">{% if let Some(d) = dashboard %}{{ d.current_title }}{% else %}Surplus now{% endif %}</span>
+                    </div>
+                    <div id="current-value" class="mt-1 text-xl font-bold"{% if let Some(d) = dashboard %} style="{{ d.current_value_style }}"{% endif %}>{% if let Some(d) = dashboard %}{{ d.current_value }}{% else %}—{% endif %}</div>
+                    <div class="mt-0.5 flex items-center justify-between gap-2">
+                        <span id="current-sub" class="text-[11px] text-slate-500">{% if let Some(d) = dashboard %}{{ d.current_sub }}{% endif %}</span>
+                        <span id="current-trend" class="text-[11px] font-semibold text-slate-600">{% if let Some(d) = dashboard %}{{ d.current_trend }}{% endif %}</span>
+                    </div>
+                </div>
+                <!-- peak -->
+                <div class="rounded-xl border border-amber-200 bg-amber-50 p-3">
+                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                        <svg class="h-3.5 w-3.5 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                        <span data-i18n="peakSurplus">Peak surplus</span>
+                    </div>
+                    <div id="peak-value" class="mt-1 text-xl font-bold text-amber-700">{% if let Some(d) = dashboard %}{{ d.peak_time }}{% else %}—{% endif %}</div>
+                    <div id="peak-sub" class="mt-0.5 text-[11px] text-slate-500">{% if let Some(d) = dashboard %}{{ d.peak_value }}{% endif %}</div>
+                </div>
+                <!-- coverage -->
+                <div class="rounded-xl border p-3" id="card-coverage"{% if let Some(d) = dashboard %} style="{{ d.coverage_card_style }}"{% endif %}>
+                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                        <svg class="h-3.5 w-3.5" id="coverage-icon-color" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg>
+                        <span data-i18n="greenCoverage">Green coverage</span>
+                    </div>
+                    <div id="coverage-value" class="mt-1 text-xl font-bold"{% if let Some(d) = dashboard %} style="{{ d.coverage_value_style }}"{% endif %}>{% if let Some(d) = dashboard %}{{ d.coverage_value }}{% else %}—{% endif %}</div>
+                    <div class="mt-0.5 text-[11px] text-slate-500" data-i18n="ofCurrentLoad">of current load</div>
+                </div>
+            </section>
+
+            <!-- Time range + view toggle -->
+            <div class="mt-4 flex items-center justify-between gap-2 px-1">
+                <p id="range" class="text-[11px] text-slate-500">{% if let Some(d) = dashboard %}{{ d.range_text }}{% endif %}</p>
+                <div class="inline-flex shrink-0 rounded-lg border border-slate-200 bg-white p-0.5 text-[11px] font-medium shadow-sm">
+                    <button id="tab-overview" class="rounded-md px-2.5 py-1{% if let Some(_d) = dashboard %} bg-emerald-600 text-white{% endif %}" data-i18n="tabOverview">Overview</button>
+                    <button id="tab-details" class="rounded-md px-2.5 py-1 text-slate-600 hover:bg-slate-100" data-i18n="tabDetails">Details</button>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <section class="relative mt-1">
+                <div id="chart" class="w-full" style="min-height:260px">{% if let Some(d) = dashboard %}{{ d.chart_svg|safe }}{% endif %}</div>
+                <div id="tooltip" class="pointer-events-none absolute z-10 hidden rounded-lg bg-slate-900/95 px-2.5 py-1.5 font-mono text-[11px] leading-snug text-white shadow-lg"></div>
+            </section>
+
+            <!-- Legend: overview (educk curve) -->
+            <p id="legend-overview" class="mt-3 px-1 text-[11px] text-slate-500" data-i18n="legCurve">Renewable share = (wind + solar) ÷ load. Above 100 % means surplus.</p>
+
+            <!-- Legend: details -->
+            <div id="legend-details" class="mt-3 hidden flex-wrap gap-x-5 gap-y-2 px-1 text-[11px] text-slate-600">
+                <span class="flex items-center gap-1.5"><span class="inline-block h-0.5 w-5 rounded" style="background:#2E7D32"></span><span data-i18n="legGen">Wind + Solar</span></span>
+                <span class="flex items-center gap-1.5"><span class="inline-block h-0.5 w-5 rounded" style="background:#1565C0"></span><span data-i18n="legLoad">Total load</span></span>
+                <span class="flex items-center gap-1.5"><span class="inline-block h-0.5 w-5 rounded" style="background:#F57C00"></span><span data-i18n="legSurplus">Surplus</span></span>
+                <span class="flex items-center gap-1.5"><span class="inline-block h-3 w-3 rounded-sm border" style="background:rgba(129,199,132,.3);border-color:#2E7D32"></span><span data-i18n="legPos">Positive surplus</span></span>
+                <span class="flex items-center gap-1.5"><span class="inline-block h-3 w-3 rounded-sm border" style="background:rgba(239,154,154,.28);border-color:#C62828"></span><span data-i18n="legDeficit">Deficit</span></span>
+            </div>
+
+            <!-- Interpretation hint -->
+            <div id="hint" class="mt-5 flex items-start gap-2.5 rounded-xl border p-3.5 text-sm leading-relaxed"{% if let Some(d) = dashboard %} style="{{ d.hint_style }}"{% endif %}>
+                <span id="hint-icon" class="mt-0.5 shrink-0"></span>
+                <span id="hint-text" class="text-slate-700">{% if let Some(d) = dashboard %}{{ d.hint_text }}{% endif %}</span>
+            </div>
+        </main>
+
+        {% if let Some(d) = dashboard %}
+        <!-- First-paint data: app.js hydrates from this instead of re-fetching. -->
+        <script type="application/json" id="ssr-data">{{ d.data_json|safe }}</script>
+        {% endif %}
+
+        <!-- Server-rendered content: the crawlable surface (intro, how-it-works,
+             and the country/cloud index linking every page). -->
+        <section class="content">
+            <h1>{{ t.index_h1 }}</h1>
+            <p class="lead">{{ t.index_lead }}</p>
+
+            <h2>{{ t.how_h2 }}</h2>
+            <ol class="how">
+                <li>{{ t.how_1|safe }}</li>
+                <li>{{ t.how_2 }}</li>
+                <li>{{ t.how_3 }}</li>
+            </ol>
+
+            <h2>{{ t.by_country_h2 }}</h2>
+            <p>{{ t.by_country_intro }}</p>
+            <ul class="countries">
+                {% for country in countries %}
+                <li><a href="{{ country.url }}">{{ country.name }}</a></li>
                 {% endfor %}
-            </tbody>
-        </table>
-    </details>
+            </ul>
 
-    <h2>{{ t.how_h2 }}</h2>
-    <ol class="how">
-        <li>{{ t.how_1|safe }}</li>
-        <li>{{ t.how_2 }}</li>
-        <li>{{ t.how_3 }}</li>
-    </ol>
+            <h2>{{ t.by_cloud_h2 }}</h2>
+            <p>{{ t.by_cloud_intro }}</p>
+            {% for group in cloud_providers %}
+            <h3>{{ group.provider_label }}</h3>
+            <ul class="countries">
+                {% for region in group.regions %}
+                <li><a href="{{ region.url }}">{{ region.region }} — {{ region.location }}</a></li>
+                {% endfor %}
+            </ul>
+            {% endfor %}
+        </section>
 
-    <h2>{{ t.by_country_h2 }}</h2>
-    <p>{{ t.by_country_intro }}</p>
-    <ul class="countries">
-        {% for country in countries %}
-        <li><a href="{{ country.url }}">{{ country.name }}</a></li>
-        {% endfor %}
-    </ul>
+        <!-- Footer -->
+        <footer class="mt-12 border-t border-slate-200 pt-4 text-xs text-slate-500">
+            <p>{{ t.footer_blurb|safe }}</p>
+            <p class="mt-1">
+                <a class="text-emerald-700 hover:underline" href="{{ impressum_url }}">{{ t.nav_impressum }}</a> ·
+                <a class="text-emerald-700 hover:underline" href="{{ privacy_url }}">{{ t.nav_privacy }}</a> ·
+                © Vector &amp; Veneer UG (haftungsbeschränkt)
+            </p>
+        </footer>
+    </div>
 
-    <h2>{{ t.by_cloud_h2 }}</h2>
-    <p>{{ t.by_cloud_intro }}</p>
-    {% for group in cloud_providers %}
-    <h3>{{ group.provider_label }}</h3>
-    <ul class="countries">
-        {% for region in group.regions %}
-        <li><a href="{{ region.url }}">{{ region.region }} — {{ region.location }}</a></li>
-        {% endfor %}
-    </ul>
-    {% endfor %}
-
-    <footer>
-        <p>{{ t.footer_blurb|safe }}</p>
-        <p>
-            <a href="{{ impressum_url }}">{{ t.nav_impressum }}</a> · <a href="{{ privacy_url }}">{{ t.nav_privacy }}</a> ·
-            © Vector &amp; Veneer UG (haftungsbeschränkt)
-        </p>
-    </footer>
-</main>
-
-{% include "_cookie_consent.html" %}
+    {% include "_cookie_consent.html" %}
+    <script src="/app/app.js"></script>
 </body>
 </html>

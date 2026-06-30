@@ -110,7 +110,10 @@ const T = I18N[LANG] || I18N.en;
 // Apply the static chrome translations + language-aware links once, on load.
 function applyI18n() {
   document.documentElement.lang = LANG;
-  document.title = T.title;
+  // Only the standalone /app page owns its <title>. When this dashboard is
+  // embedded in the SSR landing (no data-app marker), the server-rendered SEO
+  // title must survive the client render.
+  if (document.documentElement.dataset.app !== undefined) document.title = T.title;
   if (els.refresh) els.refresh.setAttribute("title", T.refreshTitle);
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const k = el.getAttribute("data-i18n");
@@ -601,7 +604,28 @@ window.addEventListener("resize", () => {
 });
 
 // ── Boot ────────────────────────────────────────────────────────────────────
+// When the server embedded a first-paint snapshot (#ssr-data on the SSR
+// landing), hydrate from it: render over the server markup with no spinner and
+// no network round-trip, then populate the country dropdown in the background.
+// Country changes / refresh still fetch live as usual. The standalone /app page
+// has no #ssr-data, so it loads normally.
 (async () => {
+  const ssrEl = document.getElementById("ssr-data");
+  if (ssrEl) {
+    try {
+      const d = JSON.parse(ssrEl.textContent);
+      if (d.country) country = d.country;
+      series = d.timestamps.map((ts, i) => ({
+        t: new Date(ts), gen: +d.generation[i], load: +d.load[i], surplus: +d.surplus[i],
+      }));
+      if (series.length) {
+        render();
+        showDashboard();
+        loadCountries(); // fill the dropdown in the background; no spinner, no refetch
+        return;
+      }
+    } catch (_) { /* fall through to a normal load */ }
+  }
   await loadCountries();
   await loadData();
 })();

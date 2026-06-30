@@ -192,7 +192,7 @@ pub struct Strings {
     pub by_country_intro: &'static str,
     pub by_cloud_h2: &'static str,
     pub by_cloud_intro: &'static str,
-    // dashboard (SSR gauge + cards)
+    // dashboard (SSR first-paint snapshot; hydrated by static/app/app.js)
     pub gauge_renewable_now: &'static str,
     pub card_surplus_now: &'static str,
     pub card_deficit_now: &'static str,
@@ -203,6 +203,10 @@ pub struct Strings {
     pub trend_rising: &'static str,
     pub trend_falling: &'static str,
     pub trend_steady: &'static str,
+    pub chart_now: &'static str,
+    pub chart_data_points: &'static str,
+    pub hint_good: &'static str, // contains the "{time}" placeholder
+    pub hint_bad: &'static str,  // contains the "{time}" placeholder
     // shared table headers
     pub th_time: &'static str,
     pub th_renewable: &'static str,
@@ -262,6 +266,12 @@ pub const EN: Strings = Strings {
     trend_rising: "Rising",
     trend_falling: "Falling",
     trend_steady: "Steady",
+    chart_now: "Now",
+    chart_data_points: "data points",
+    hint_good: "Best time to charge an EV or run high-energy appliances: {time} — \
+        that's when renewables exceed demand by the most.",
+    hint_bad: "Renewables don't cover full demand in this window. Highest renewable \
+        share is around {time}.",
     th_time: "Time (UTC)",
     th_renewable: "Renewable (MW)",
     th_demand: "Demand (MW)",
@@ -324,6 +334,12 @@ pub const DE: Strings = Strings {
     trend_rising: "Steigend",
     trend_falling: "Fallend",
     trend_steady: "Stabil",
+    chart_now: "Jetzt",
+    chart_data_points: "Datenpunkte",
+    hint_good: "Beste Zeit zum Laden eines E-Autos oder Betreiben energieintensiver \
+        Geräte: {time} — dann übersteigen die Erneuerbaren den Bedarf am stärksten.",
+    hint_bad: "Die Erneuerbaren decken in diesem Zeitfenster nicht den gesamten \
+        Bedarf. Der höchste Erneuerbaren-Anteil liegt gegen {time}.",
     th_time: "Zeit (UTC)",
     th_renewable: "Erneuerbar (MW)",
     th_demand: "Bedarf (MW)",

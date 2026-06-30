@@ -121,6 +121,19 @@ impl AppState {
         }
     }
 
+    /// Cached series for a zone *without* triggering an upstream fetch. Used by
+    /// the landing page to server-render a first-paint dashboard only when data
+    /// is already warm — so `/` never blocks on ENTSO-E (cold cache → the client
+    /// dashboard fetches on its own). Returns the last-known-good series, even if
+    /// past its TTL (a day-ahead forecast stays useful well beyond 10 minutes).
+    fn cached_series(&self, zone_code: &str) -> Option<Vec<RenewableSurplus>> {
+        let cache = self.series_cache.lock().unwrap();
+        cache
+            .get(zone_code)
+            .filter(|e| !e.data.is_empty())
+            .map(|e| e.data.clone())
+    }
+
     /// The modelled (MaStR × weather) German wind+solar series, calibrated to the
     /// supplied ENTSO-E series. Cached for `CACHE_TTL`. Returns `None` when the
     /// capacity grid is empty (no ingest yet) or the weather fetch fails — the
@@ -827,10 +840,8 @@ async fn get_country_page(
 }
 
 struct CountryLink {
-    code: String,
     name: String,
     url: String,
-    selected: bool,
 }
 
 struct CloudLink {
@@ -844,50 +855,49 @@ struct CloudProviderGroup {
     regions: Vec<CloudLink>,
 }
 
-/// Server-rendered view model for the landing dashboard: a speedometer gauge
-/// plus the current / peak / coverage cards. This is the SSR port of the gauge
-/// and card logic in `static/app/app.js` (`renderGauge` / `renderCards`), so the
-/// numbers land in the initial HTML with no client-side fetch.
+/// Server-rendered first-paint snapshot of the dashboard. The same markup is
+/// then hydrated (and made interactive + live) by `static/app/app.js`, which
+/// reads the embedded `data_json` instead of re-fetching. Mirrors the gauge /
+/// cards / overview-chart / hint logic in app.js so first paint matches.
 struct DashboardView {
-    // gauge (inline SVG, viewBox "0 0 200 150")
-    gauge_pct: String,
-    gauge_track_path: String,
-    gauge_value_path: String,
-    gauge_color: String,
-    needle_x: String,
-    needle_y: String,
-    show_value: bool,
+    data_json: String, // {country, timestamps, generation, load, surplus} for app.js
+    // gauge (full inner SVG of #gauge)
+    gauge_html: String,
     // current-status card
-    has_current: bool,
-    current_surplus: bool,
+    current_title: &'static str,
     current_value: String,
     current_sub: String,
-    trend: &'static str,
+    current_trend: &'static str,
+    current_card_style: String,
+    current_value_style: String,
     // peak card
     peak_time: String,
     peak_value: String,
     // coverage card
-    coverage_pct: String,
-    coverage_color: String,
+    coverage_value: String,
+    coverage_value_style: String,
+    coverage_card_style: String,
+    // chart + range + hint
+    chart_svg: String,
+    range_text: String,
+    hint_text: String,
+    hint_style: String,
 }
 
 // Gauge geometry — matches static/app/app.js (clockwise sweep from `START`).
 const GAUGE_START: f64 = 150.0;
 const GAUGE_SWEEP: f64 = 240.0;
-const GAUGE_CX: f64 = 100.0;
-const GAUGE_CY: f64 = 92.0;
-const GAUGE_R: f64 = 76.0;
 
-fn gauge_polar(deg: f64) -> (f64, f64) {
+fn gauge_polar(cx: f64, cy: f64, r: f64, deg: f64) -> (f64, f64) {
     let a = deg.to_radians();
-    (GAUGE_CX + GAUGE_R * a.cos(), GAUGE_CY + GAUGE_R * a.sin())
+    (cx + r * a.cos(), cy + r * a.sin())
 }
 
-fn gauge_arc_path(sweep: f64) -> String {
-    let (x0, y0) = gauge_polar(GAUGE_START);
-    let (x1, y1) = gauge_polar(GAUGE_START + sweep);
+fn gauge_arc_path(cx: f64, cy: f64, r: f64, start: f64, sweep: f64) -> String {
+    let (x0, y0) = gauge_polar(cx, cy, r, start);
+    let (x1, y1) = gauge_polar(cx, cy, r, start + sweep);
     let large = if sweep > 180.0 { 1 } else { 0 };
-    format!("M {x0:.2} {y0:.2} A {GAUGE_R} {GAUGE_R} 0 {large} 1 {x1:.2} {y1:.2}")
+    format!("M {x0:.2} {y0:.2} A {r} {r} 0 {large} 1 {x1:.2} {y1:.2}")
 }
 
 /// red → amber → green, interpolated by `t` in [0, 1].
@@ -914,14 +924,30 @@ fn fmt_mw(v: f64) -> String {
     }
 }
 
-/// 3-hour generation trend around `now`, falling back to a first/second-half
-/// split when the window has no points on one side. Mirrors `renewableTrend`.
-fn renewable_trend(series: &[RenewableSurplus], now: DateTime<Utc>, t: &i18n::Strings) -> &'static str {
+fn fmt_hm(ts: DateTime<Utc>) -> String {
+    ts.format("%H:%M").to_string()
+}
+
+/// Renewable coverage (gen ÷ load, %), uncapped — the "educk curve".
+fn coverage_raw(p: &RenewableSurplus) -> f64 {
+    if p.load > 0.0 {
+        p.generation / p.load * 100.0
+    } else {
+        0.0
+    }
+}
+
+/// 3-hour generation trend around `now`, with a first/second-half fallback.
+fn renewable_trend(
+    series: &[RenewableSurplus],
+    now: DateTime<Utc>,
+    t: &i18n::Strings,
+) -> &'static str {
     if series.len() < 4 {
         return t.trend_steady;
     }
     let w = Duration::hours(3);
-    let avg = |xs: &[f64]| -> f64 { xs.iter().sum::<f64>() / xs.len() as f64 };
+    let avg = |xs: &[f64]| xs.iter().sum::<f64>() / xs.len() as f64;
     let past: Vec<f64> = series
         .iter()
         .filter(|p| p.timestamp < now && p.timestamp > now - w)
@@ -934,9 +960,10 @@ fn renewable_trend(series: &[RenewableSurplus], now: DateTime<Utc>, t: &i18n::St
         .collect();
     let (pa, fa) = if past.is_empty() || future.is_empty() {
         let mid = series.len() / 2;
-        let first: Vec<f64> = series[..mid].iter().map(|p| p.generation).collect();
-        let second: Vec<f64> = series[mid..].iter().map(|p| p.generation).collect();
-        (avg(&first), avg(&second))
+        (
+            avg(&series[..mid].iter().map(|p| p.generation).collect::<Vec<_>>()),
+            avg(&series[mid..].iter().map(|p| p.generation).collect::<Vec<_>>()),
+        )
     } else {
         (avg(&past), avg(&future))
     };
@@ -953,10 +980,148 @@ fn renewable_trend(series: &[RenewableSurplus], now: DateTime<Utc>, t: &i18n::St
     }
 }
 
-/// Build the SSR dashboard view from the cached forecast series. Returns `None`
-/// when the series is empty so the template can degrade gracefully.
+/// Build the inner SVG for #gauge (mirrors app.js `renderGauge`).
+fn gauge_svg(value: f64, coverage: f64, t: &i18n::Strings) -> String {
+    let (cx, cy, r, sw) = (100.0_f64, 92.0_f64, 76.0_f64, 13.0_f64);
+    let color = gauge_color(value);
+    let track = gauge_arc_path(cx, cy, r, GAUGE_START, GAUGE_SWEEP);
+    let (tx, ty) = gauge_polar(cx, cy, r, GAUGE_START + GAUGE_SWEEP * value);
+    let fill = if value > 0.01 {
+        format!(
+            "<path d=\"{}\" fill=\"none\" stroke=\"{color}\" stroke-width=\"{sw}\" stroke-linecap=\"round\"/>\
+             <circle cx=\"{tx:.2}\" cy=\"{ty:.2}\" r=\"{:.2}\" fill=\"#fff\" stroke=\"{color}\" stroke-width=\"2\"/>",
+            gauge_arc_path(cx, cy, r, GAUGE_START, GAUGE_SWEEP * value),
+            sw * 0.42,
+        )
+    } else {
+        String::new()
+    };
+    format!(
+        "<svg viewBox=\"0 0 200 150\" class=\"w-full\" role=\"img\" aria-label=\"{:.0}% {}\">\
+         <path d=\"{track}\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"{sw}\" stroke-linecap=\"round\"/>{fill}\
+         <text x=\"{cx}\" y=\"{:.0}\" text-anchor=\"middle\" font-size=\"40\" font-weight=\"700\" fill=\"#0f172a\" letter-spacing=\"-1.5\">{:.0}%</text>\
+         <text x=\"{cx}\" y=\"{:.0}\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"500\" fill=\"#94a3b8\" letter-spacing=\"0.4\">{}</text>\
+         </svg>",
+        coverage, t.gauge_renewable_now, cy - 4.0, coverage, cy + 16.0, t.gauge_renewable_now,
+    )
+}
+
+/// Build the inner SVG for #chart: the "educk curve" overview (renewable
+/// coverage % over time). Mirrors app.js `renderOverviewChart`; rendered at a
+/// fixed 700×260 coordinate space and stretched responsively, then replaced by
+/// the interactive version on hydrate. `preserveAspectRatio="none"` keeps the
+/// slot height constant (no layout shift) across viewport widths.
+fn overview_chart_svg(series: &[RenewableSurplus], now: DateTime<Utc>, t: &i18n::Strings) -> String {
+    let n = series.len();
+    if n == 0 {
+        return String::new();
+    }
+    let (w, h) = (700.0_f64, 260.0_f64);
+    let (pad_t, pad_r, pad_b, pad_l) = (10.0_f64, 8.0_f64, 26.0_f64, 54.0_f64);
+    let plot_w = w - pad_l - pad_r;
+    let plot_h = h - pad_t - pad_b;
+
+    let cov: Vec<f64> = series.iter().map(coverage_raw).collect();
+    let max_c = cov.iter().copied().fold(0.0_f64, f64::max);
+    let max_y = 100.0_f64.max(max_c) * 1.08;
+
+    let x_at = |i: f64| pad_l + if n == 1 { plot_w / 2.0 } else { (i / (n as f64 - 1.0)) * plot_w };
+    let y_at = |v: f64| pad_t + (1.0 - v / max_y) * plot_h;
+    let base_y = y_at(0.0);
+
+    let line_pts: Vec<String> = cov
+        .iter()
+        .enumerate()
+        .map(|(i, c)| format!("{:.1},{:.1}", x_at(i as f64), y_at(*c)))
+        .collect();
+    let line_pts = line_pts.join(" ");
+    let area_pts = format!(
+        "{:.1},{:.1} {line_pts} {:.1},{:.1}",
+        x_at(0.0),
+        base_y,
+        x_at(n as f64 - 1.0),
+        base_y
+    );
+
+    // Y grid every 25%, the 100% ("fully renewable") line emphasised.
+    let mut y_ticks = String::new();
+    let mut v = 0.0;
+    while v <= max_y {
+        let y = y_at(v);
+        let is100 = (v - 100.0).abs() < 0.01;
+        let (stroke, dash) = if is100 {
+            ("#94a3b8", " stroke-dasharray=\"4 3\"")
+        } else {
+            ("#e2e8f0", "")
+        };
+        y_ticks.push_str(&format!(
+            "<line x1=\"{pad_l}\" y1=\"{y:.1}\" x2=\"{:.1}\" y2=\"{y:.1}\" stroke=\"{stroke}\" stroke-width=\"1\"{dash}/>\
+             <text x=\"{:.1}\" y=\"{:.1}\" text-anchor=\"end\" font-size=\"10\" fill=\"#94a3b8\">{}%</text>",
+            w - pad_r, pad_l - 6.0, y + 3.0, v as i64
+        ));
+        v += 25.0;
+    }
+
+    // "Now" marker, interpolated between bracketing points.
+    let now_x: Option<f64> = if series[0].timestamp > now {
+        Some(x_at(0.0))
+    } else if series[n - 1].timestamp < now {
+        Some(x_at(n as f64 - 1.0))
+    } else {
+        let mut res = None;
+        for i in 1..n {
+            if series[i].timestamp >= now {
+                let span = (series[i].timestamp - series[i - 1].timestamp).num_seconds() as f64;
+                let f = if span > 0.0 {
+                    (now - series[i - 1].timestamp).num_seconds() as f64 / span
+                } else {
+                    0.0
+                };
+                res = Some(x_at(i as f64 - 1.0 + f));
+                break;
+            }
+        }
+        res
+    };
+    let now_marker = now_x
+        .map(|nx| {
+            format!(
+                "<line x1=\"{nx:.1}\" y1=\"{pad_t}\" x2=\"{nx:.1}\" y2=\"{:.1}\" stroke=\"#ea580c\" stroke-width=\"1.5\" stroke-dasharray=\"6 3\"/>\
+                 <text x=\"{nx:.1}\" y=\"{:.0}\" text-anchor=\"middle\" font-size=\"10\" font-weight=\"600\" fill=\"#c2410c\">{}</text>",
+                h - pad_b, pad_t + 9.0, t.chart_now
+            )
+        })
+        .unwrap_or_default();
+
+    // X axis time labels, ~8 across.
+    let mut x_labels = String::new();
+    let every = ((n as f64) / 8.0).ceil().max(1.0) as usize;
+    let mut i = 0;
+    while i < n {
+        x_labels.push_str(&format!(
+            "<text x=\"{:.1}\" y=\"{:.1}\" text-anchor=\"middle\" font-size=\"10\" fill=\"#94a3b8\">{}</text>",
+            x_at(i as f64),
+            h - pad_b + 16.0,
+            fmt_hm(series[i].timestamp)
+        ));
+        i += every;
+    }
+
+    format!(
+        "<svg viewBox=\"0 0 {w:.0} {h:.0}\" width=\"100%\" height=\"{h:.0}\" preserveAspectRatio=\"none\" style=\"display:block\">\
+         <defs><linearGradient id=\"curve-fill\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">\
+         <stop offset=\"0%\" stop-color=\"#059669\" stop-opacity=\"0.5\"/>\
+         <stop offset=\"100%\" stop-color=\"#059669\" stop-opacity=\"0.04\"/></linearGradient></defs>\
+         {y_ticks}<polygon points=\"{area_pts}\" fill=\"url(#curve-fill)\"/>\
+         <polyline points=\"{line_pts}\" fill=\"none\" stroke=\"#059669\" stroke-width=\"2.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\
+         {now_marker}{x_labels}</svg>"
+    )
+}
+
+/// Build the server-rendered dashboard snapshot from a cached series.
 fn build_dashboard(
     series: &[RenewableSurplus],
+    country_code: &str,
     now: DateTime<Utc>,
     t: &i18n::Strings,
 ) -> Option<DashboardView> {
@@ -974,10 +1139,16 @@ fn build_dashboard(
     } else {
         0.5
     };
-    let coverage = cur.renewable_share().min(100.0); // capped, == app.js coveragePct
-    let (needle_x, needle_y) = gauge_polar(GAUGE_START + GAUGE_SWEEP * value);
+    let coverage = cur.renewable_share().min(100.0);
 
-    let coverage_color = if coverage >= 80.0 {
+    let surplus = cur.surplus >= 0.0;
+    let (cur_bg, cur_border, cur_color) = if surplus {
+        ("#ecfdf5", "#a7f3d0", "#047857")
+    } else {
+        ("#fef2f2", "#fecaca", "#b91c1c")
+    };
+
+    let cov_color = if coverage >= 80.0 {
         "#15803d"
     } else if coverage >= 50.0 {
         "#4d7c0f"
@@ -987,23 +1158,51 @@ fn build_dashboard(
         "#b91c1c"
     };
 
+    let peak_good = peak.surplus > 0.0;
+    let (hint_bg, hint_border) = if peak_good {
+        ("#ecfdf5", "#a7f3d0")
+    } else {
+        ("#fffbeb", "#fde68a")
+    };
+    let hint_template = if peak_good { t.hint_good } else { t.hint_bad };
+    let hint_text = hint_template.replace("{time}", &fmt_hm(peak.timestamp));
+
+    let range_text = format!(
+        "{}, {} → {} ({} {})",
+        series[0].timestamp.format("%a %d %b"),
+        fmt_hm(series[0].timestamp),
+        fmt_hm(series[series.len() - 1].timestamp),
+        series.len(),
+        t.chart_data_points,
+    );
+
+    let data_json = json!({
+        "country": country_code,
+        "timestamps": series.iter().map(|s| s.timestamp.to_rfc3339()).collect::<Vec<_>>(),
+        "generation": series.iter().map(|s| s.generation).collect::<Vec<_>>(),
+        "load": series.iter().map(|s| s.load).collect::<Vec<_>>(),
+        "surplus": series.iter().map(|s| s.surplus).collect::<Vec<_>>(),
+    })
+    .to_string();
+
     Some(DashboardView {
-        gauge_pct: format!("{:.0}%", coverage),
-        gauge_track_path: gauge_arc_path(GAUGE_SWEEP),
-        gauge_value_path: gauge_arc_path(GAUGE_SWEEP * value),
-        gauge_color: gauge_color(value),
-        needle_x: format!("{needle_x:.2}"),
-        needle_y: format!("{needle_y:.2}"),
-        show_value: value > 0.01,
-        has_current: true,
-        current_surplus: cur.surplus >= 0.0,
+        data_json,
+        gauge_html: gauge_svg(value, coverage, t),
+        current_title: if surplus { t.card_surplus_now } else { t.card_deficit_now },
         current_value: fmt_mw(cur.surplus.abs()),
         current_sub: format!("{:.0}% {}", cur.surplus_percentage(), t.card_of_generation),
-        trend: renewable_trend(series, now, t),
-        peak_time: peak.timestamp.format("%H:%M").to_string(),
+        current_trend: renewable_trend(series, now, t),
+        current_card_style: format!("background:{cur_bg};border-color:{cur_border}"),
+        current_value_style: format!("color:{cur_color}"),
+        peak_time: fmt_hm(peak.timestamp),
         peak_value: fmt_mw(peak.surplus),
-        coverage_pct: format!("{:.0}%", coverage),
-        coverage_color: coverage_color.to_string(),
+        coverage_value: format!("{:.0}%", coverage),
+        coverage_value_style: format!("color:{cov_color}"),
+        coverage_card_style: format!("background:{cov_color}14;border-color:{cov_color}40"),
+        chart_svg: overview_chart_svg(series, now, t),
+        range_text,
+        hint_text,
+        hint_style: format!("background:{hint_bg};border-color:{hint_border}"),
     })
 }
 
@@ -1020,28 +1219,21 @@ struct LandingTemplate {
     home_url: String,
     impressum_url: String,
     privacy_url: String,
-    selected_name: String,
-    updated_utc: String,
-    table_caption: String,
     dashboard: Option<DashboardView>,
-    sentences: Vec<String>,
-    rows: Vec<ForecastRow>,
-    plot_data: String,
-    plot_layout: String,
     countries: Vec<CountryLink>,
     cloud_providers: Vec<CloudProviderGroup>,
 }
 
 #[derive(Deserialize)]
 struct LandingQuery {
-    country: Option<String>,
     lang: Option<String>,
 }
 
-/// GET /?country=XX
-/// The web frontend: an interactive chart + descriptive text + hourly table for
-/// the selected country (default DE), with a country picker and the full
-/// country/cloud index below. Forecast data is served from a short-lived cache.
+/// GET /
+/// The web frontend shell: the interactive dashboard (gauge + cards + chart) is
+/// rendered client-side by `/app/app.js` against the same-origin `/api/v1`, with
+/// the server-rendered country/cloud index below for crawlers. This handler makes
+/// no upstream ENTSO-E call — it only emits the static, crawlable surface.
 async fn get_landing(
     State(state): State<AppState>,
     headers: HeaderMap,
@@ -1054,43 +1246,25 @@ async fn get_landing(
     };
     let t = i18n::strings(lang);
 
-    // Resolve the selected country, falling back to the default if unknown.
-    let selected = query
-        .country
-        .as_deref()
-        .and_then(get_primary_zone)
-        .or_else(|| get_primary_zone("DE"))
-        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
-    let selected_code = selected.country_code;
-    let selected_name = i18n::country_name(selected.name, lang);
-
     let mut countries: Vec<CountryLink> = areas::list_countries()
         .into_iter()
         .filter_map(|code| {
             get_primary_zone(code).map(|zone| CountryLink {
-                code: code.to_string(),
                 name: i18n::country_name(zone.name, lang),
                 url: i18n::localize_url(&format!("/electricity/{}", code.to_lowercase()), lang),
-                selected: code == selected_code,
             })
         })
         .collect();
     countries.sort_by(|a, b| a.name.cmp(&b.name));
 
-    // Forecast for the selected country (cached; landing degrades gracefully).
-    let now = Utc::now();
-    let series = state.series_for_zone(selected.code).await.unwrap_or_default();
-    // Germany gets the bottom-up MaStR × weather cross-check overlaid on the chart.
-    let modelled = if selected_code == "DE" {
-        state.modelled_de(&series).await
-    } else {
-        None
-    };
-    let summary = summarize_forecast(&series, &selected_name, lang);
-    let rows = forecast_rows(&series);
-    let dashboard = build_dashboard(&series, now, t);
-    let (plot_data, plot_layout) = generate_plot_data(&series, modelled.as_deref());
-    let updated_utc = now.format("%Y-%m-%d %H:%M UTC").to_string();
+    // First-paint dashboard for the default country (DE), but only from already
+    // warm cache — `/` must never block on ENTSO-E. On a cold cache this is None
+    // and the client dashboard fetches on its own (spinner fallback).
+    let dashboard = get_primary_zone("DE").and_then(|z| {
+        state
+            .cached_series(z.code)
+            .and_then(|series| build_dashboard(&series, z.country_code, Utc::now(), t))
+    });
 
     // Cloud regions grouped by provider. `all_regions()` is sorted by
     // (provider, region), so consecutive grouping preserves that order.
@@ -1114,7 +1288,6 @@ async fn get_landing(
     let title = i18n::index_title(lang).to_string();
     let meta_description = i18n::index_meta(lang).to_string();
     let (canonical_url, alt_en, alt_de) = i18n::page_urls(&state.base_url, "/", lang);
-    let table_caption = i18n::caption_landing(lang, &selected_name);
 
     let list_items: Vec<_> = countries
         .iter()
@@ -1159,14 +1332,7 @@ async fn get_landing(
         home_url: i18n::localize_url("/", lang),
         impressum_url: i18n::localize_url("/impressum", lang),
         privacy_url: i18n::localize_url("/privacy", lang),
-        selected_name,
-        updated_utc,
-        table_caption,
         dashboard,
-        sentences: summary.sentences,
-        rows,
-        plot_data,
-        plot_layout,
         countries,
         cloud_providers,
     };
