@@ -1818,18 +1818,20 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
         modelled_cache: Arc::new(Mutex::new(None)),
     };
 
-    // Proactively warm the DE cache so the landing page is always fast.
+    // Proactively warm the caches so the landing page is always fast.
     let warmer = state.clone();
     tokio::spawn(async move {
-        if let Some(zone) = get_primary_zone("DE") {
-            loop {
-                if let Err(e) = warmer.series_for_zone(zone.code).await {
-                    tracing::warn!("DE cache warm-up failed: {:?}", e);
-                } else {
-                    tracing::debug!("DE cache refreshed");
+        loop {
+            for want_cache in ["DE", "PT"] {
+                if let Some(zone) = get_primary_zone(want_cache) {
+                    if let Err(e) = warmer.series_for_zone(zone.code).await {
+                        tracing::warn!("{} cache warm-up failed: {:?}", want_cache, e);
+                    } else {
+                        tracing::debug!("{} cache refreshed", want_cache);
+                    }
                 }
-                tokio::time::sleep(CACHE_TTL).await;
             }
+            tokio::time::sleep(CACHE_TTL).await;
         }
     });
 
