@@ -78,6 +78,33 @@ run-flutter:
 build-web:
     cd flutter && flutter build web --release
 
+# ── iOS TestFlight release ───────────────────────────────────────────────────
+# Ship a build to App Store Connect / TestFlight from the CLI (no Xcode
+# Organizer / Transporter). One-time prereqs (see flutter/ios/SIGNING.md):
+#   * Xcode signed into the "Vector & Veneer UG" Apple ID (automatic signing).
+#   * App Store Connect API key (.p8) at
+#     ~/.appstoreconnect/private_keys/AuthKey_<KEY_ID>.p8
+#   * export ASC_KEY_ID and ASC_ISSUER_ID in your shell.
+# Each release: bump `version: 1.0.0+N` in flutter/pubspec.yaml — N must be
+# unique per upload.
+
+asc_key_id := env_var_or_default("ASC_KEY_ID", "")
+asc_issuer_id := env_var_or_default("ASC_ISSUER_ID", "")
+
+# Build a signed App Store .ipa at flutter/build/ios/ipa/*.ipa
+build-ipa:
+    cd flutter && flutter pub get && flutter build ipa --export-method app-store \
+      --dart-define=GIT_COMMIT=$(git rev-parse --short HEAD)
+
+# Upload the most recently built .ipa to App Store Connect / TestFlight
+upload-testflight:
+    xcrun altool --upload-app --type ios \
+      --file "$(ls -t flutter/build/ios/ipa/*.ipa | head -n1)" \
+      --apiKey "{{ asc_key_id }}" --apiIssuer "{{ asc_issuer_id }}"
+
+# Build + upload in one shot
+testflight: build-ipa upload-testflight
+
 # ── Docker ────────────────────────────────────────────────────────────────────
 
 # Build and start all services (requires .env with ENTSOE_API_KEY)
