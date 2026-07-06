@@ -19,6 +19,10 @@ class EnergyPoint {
   double get renewableCoverage =>
       load > 0 ? min(generation / load, 1.0) * 100.0 : 0.0;
 
+  /// Renewable share of load in % — the "educk curve". Uncapped: values above
+  /// 100 % mean surplus.
+  double get renewableShare => load > 0 ? (generation / load) * 100.0 : 0.0;
+
   /// Surplus as % of generation.
   double get surplusPercent =>
       generation > 0 ? (surplus / generation) * 100.0 : 0.0;

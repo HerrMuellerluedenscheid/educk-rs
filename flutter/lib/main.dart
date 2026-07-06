@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
+import 'i18n.dart';
 import 'screens/home_screen.dart';
 
-void main() => runApp(const EnergyDashboardApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Language follows the device locale (EN/DE), like the web dashboard.
+  L10n.init();
+  Intl.defaultLocale = L10n.current.code;
+  await initializeDateFormatting(L10n.current.code);
+  runApp(const EnergyDashboardApp());
+}
 
 class EnergyDashboardApp extends StatelessWidget {
   const EnergyDashboardApp({super.key});
@@ -9,7 +19,7 @@ class EnergyDashboardApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Energy Dashboard',
+      title: 'educk',
       debugShowCheckedModeBanner: false,
       theme: _theme(Brightness.light),
       darkTheme: _theme(Brightness.dark),

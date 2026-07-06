@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../config.dart';
+import '../i18n.dart';
 import '../models/energy_data.dart';
 import '../services/api_service.dart';
+import '../widgets/energy_chart.dart';
+import '../widgets/overview_chart.dart';
+import '../widgets/summary_cards.dart';
 import '../widgets/surplus_gauge.dart';
-import '../widgets/mini_forecast.dart';
-import 'dashboard_screen.dart';
+
+/// "overview" (educk curve) or "details" (gen/load/surplus) — same two chart
+/// modes as the web dashboard.
+enum ChartMode { overview, details }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,23 +25,27 @@ class _HomeScreenState extends State<HomeScreen> {
   late final ApiService _api;
   String _country = kDefaultCountry;
   List<String> _countries = [kDefaultCountry];
+  ChartMode _mode = ChartMode.overview;
   late Future<EnergyData> _dataFuture;
 
   @override
   void initState() {
     super.initState();
-    _api = ApiService(baseUrl: kBaseUrl);
+    _api = const ApiService(baseUrl: kBaseUrl);
     _dataFuture = _fetch();
     _loadCountries();
   }
 
-  Future<EnergyData> _fetch() => _api.fetchEnergyData(_country, hours: 24);
+  Future<EnergyData> _fetch() =>
+      _api.fetchEnergyData(_country, hours: kDefaultHours);
 
   void _refresh() => setState(() => _dataFuture = _fetch());
 
   Future<void> _loadCountries() async {
     try {
       final list = await _api.fetchCountries();
+      // Sort by display name, like the web dropdown.
+      list.sort((a, b) => countryName(a).compareTo(countryName(b)));
       if (mounted) {
         setState(() {
           _countries = list;
@@ -45,44 +55,84 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         });
       }
-    } catch (_) {}
+    } catch (_) {
+      // Country list is optional — fall back to single default entry
+    }
   }
+
+  void _changeCountry(String c) => setState(() {
+        _country = c;
+        _dataFuture = _fetch();
+      });
 
   @override
   Widget build(BuildContext context) {
+    // Cap the content column to a phone-like width so tablets get the same
+    // proportions as phones (matches the web's max-w-3xl centering).
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async => _refresh(),
-          child: FutureBuilder<EnergyData>(
-            future: _dataFuture,
-            builder: (context, snap) {
-              if (snap.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snap.hasError) {
-                return _ErrorView(
-                  error: snap.error.toString(),
-                  onRetry: _refresh,
-                );
-              }
-              return _HomeBody(
-                data: snap.data!,
-                country: _country,
-                countries: _countries,
-                onCountryChanged: (c) => setState(() {
-                  _country = c;
-                  _dataFuture = _fetch();
-                }),
-                onViewDetails: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => DashboardScreen(initialCountry: _country),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Column(
+              children: [
+                // ── Header: brand left, country + refresh right ──────────────
+                // Kept outside the FutureBuilder so the country selector stays
+                // usable when a region has no data and the fetch errors out.
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Row(
+                    children: [
+                      Text(
+                        'educk',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.green.shade800,
+                        ),
+                      ),
+                      const Spacer(),
+                      _CountryDropdown(
+                        selected: _country,
+                        countries: _countries,
+                        onChanged: _changeCountry,
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.refresh, size: 20),
+                        tooltip: L10n.current.refresh,
+                        onPressed: _refresh,
+                      ),
+                    ],
                   ),
                 ),
-              );
-            },
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async => _refresh(),
+                    child: FutureBuilder<EnergyData>(
+                      future: _dataFuture,
+                      builder: (context, snap) {
+                        if (snap.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (snap.hasError) {
+                          return _ErrorView(
+                            error: snap.error.toString(),
+                            onRetry: _refresh,
+                          );
+                        }
+                        return _Dashboard(
+                          data: snap.data!,
+                          mode: _mode,
+                          onModeChanged: (m) => setState(() => _mode = m),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -90,241 +140,287 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ── Main body ──────────────────────────────────────────────────────────────────
+// ── Dashboard body (mirrors the web layout top to bottom) ─────────────────────
 
-class _HomeBody extends StatelessWidget {
+class _Dashboard extends StatelessWidget {
   final EnergyData data;
-  final String country;
-  final List<String> countries;
-  final ValueChanged<String> onCountryChanged;
-  final VoidCallback onViewDetails;
+  final ChartMode mode;
+  final ValueChanged<ChartMode> onModeChanged;
 
-  const _HomeBody({
+  const _Dashboard({
     required this.data,
-    required this.country,
-    required this.countries,
-    required this.onCountryChanged,
-    required this.onViewDetails,
+    required this.mode,
+    required this.onModeChanged,
   });
 
   @override
   Widget build(BuildContext context) {
+    final t = L10n.current;
     final norm = data.normalizedCurrentSurplus;
     final coverage = data.currentPoint?.renewableCoverage ?? 0;
-    final status = _statusInfo(norm);
-    final peak = data.upcomingPeakPoint;
-    final peakTime = DateFormat('HH:mm').format(peak.timestamp);
 
-    // Cap the content column to a phone-like width so wide browsers get the
-    // same proportions as mobile (the gauge scales with column width, so an
-    // unconstrained ListView would blow it up while body text stayed tiny).
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 480),
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      children: [
+        // ── Gauge ────────────────────────────────────────────────────────
+        Center(
+          child: FractionallySizedBox(
+            widthFactor: 0.55,
+            child: SurplusGauge(value: norm, coveragePct: coverage),
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // ── Summary cards ────────────────────────────────────────────────
+        SummaryCards(data: data),
+
+        const SizedBox(height: 16),
+
+        // ── Time range + view toggle ─────────────────────────────────────
+        Row(
           children: [
-            // ── Top bar ──────────────────────────────────────────────────────────
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _greeting(),
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    Text(
-                      DateFormat('EEEE, d MMMM').format(DateTime.now()),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey.withOpacity(0.6),
-                          ),
-                    ),
-                  ],
-                ),
-                _CountryChip(
-                  country: country,
-                  countries: countries,
-                  onChanged: onCountryChanged,
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 28),
-
-            // ── Gauge ─────────────────────────────────────────────────────────────
-            Center(
-              child: FractionallySizedBox(
-                widthFactor: 0.5,
-                child: SurplusGauge(value: norm, coveragePct: coverage),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // ── Status badge ──────────────────────────────────────────────────────
-            Center(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                  color: status.color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: status.color.withOpacity(0.35)),
-                ),
-                child: Text(
-                  status.label.toUpperCase(),
-                  style: TextStyle(
-                    color: status.color,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // ── Message ───────────────────────────────────────────────────────────
-            Text(
-              _message(coverage.round(), country, norm),
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    height: 1.5,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.75),
-                  ),
-            ),
-
-            const SizedBox(height: 8),
-
-            // ── Best upcoming time ─────────────────────────────────────────────────
-            if (peak.timestamp.isAfter(DateTime.now()))
-              Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.bolt, size: 14, color: Colors.amber.shade600),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Best upcoming window: $peakTime',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.amber.shade700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-            const SizedBox(height: 28),
-
-            // ── 24 h forecast card ────────────────────────────────────────────────
-            _ForecastCard(data: data),
-
-            const SizedBox(height: 28),
-
-            // ── Details link ──────────────────────────────────────────────────────
-            Center(
-              child: TextButton.icon(
-                onPressed: onViewDetails,
-                icon: const Icon(Icons.bar_chart_rounded, size: 16),
-                label: const Text('View full analysis'),
-                style: TextButton.styleFrom(
-                  foregroundColor:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.55),
-                ),
-              ),
-            ),
-
-            // ── Build footer ──────────────────────────────────────────────────────
-            const SizedBox(height: 16),
-            const _BuildFooter(),
+            Expanded(child: _RangeText(data: data)),
+            const SizedBox(width: 8),
+            _ModeTabs(mode: mode, onChanged: onModeChanged),
           ],
         ),
+
+        const SizedBox(height: 4),
+
+        // ── Chart ────────────────────────────────────────────────────────
+        SizedBox(
+          height: 280,
+          child: mode == ChartMode.overview
+              ? OverviewChart(data: data)
+              : EnergyChart(data: data),
+        ),
+
+        const SizedBox(height: 12),
+
+        // ── Legend ───────────────────────────────────────────────────────
+        if (mode == ChartMode.overview)
+          Text(
+            t.legCurve,
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+          )
+        else
+          const _DetailsLegend(),
+
+        const SizedBox(height: 20),
+
+        // ── Interpretation hint ──────────────────────────────────────────
+        _InterpretationHint(data: data),
+
+        const SizedBox(height: 24),
+        const _BuildFooter(),
+      ],
+    );
+  }
+}
+
+// ── Time range subtitle ────────────────────────────────────────────────────────
+
+class _RangeText extends StatelessWidget {
+  final EnergyData data;
+  const _RangeText({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = L10n.current;
+    if (data.points.isEmpty) return const SizedBox.shrink();
+    final first = data.points.first.timestamp;
+    final last = data.points.last.timestamp;
+    final day = DateFormat('EEE d MMM').format(first);
+    final hm = DateFormat('HH:mm');
+    return Text(
+      '$day, ${hm.format(first)} → ${hm.format(last)} '
+      '(${data.points.length} ${t.dataPoints})',
+      style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+    );
+  }
+}
+
+// ── Overview / Details toggle (styled like the web tab pill) ──────────────────
+
+class _ModeTabs extends StatelessWidget {
+  final ChartMode mode;
+  final ValueChanged<ChartMode> onChanged;
+
+  const _ModeTabs({required this.mode, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = L10n.current;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withOpacity(0.06) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isDark ? Colors.white.withOpacity(0.12) : Colors.grey.shade300,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _tab(context, t.tabOverview, ChartMode.overview),
+          _tab(context, t.tabDetails, ChartMode.details),
+        ],
       ),
     );
   }
 
-  // ── Helpers ─────────────────────────────────────────────────────────────────
-
-  static String _greeting() {
-    final h = DateTime.now().hour;
-    if (h < 12) return 'Good morning';
-    if (h < 18) return 'Good afternoon';
-    return 'Good evening';
-  }
-
-  static ({String label, Color color}) _statusInfo(double norm) {
-    if (norm > 0.66) {
-      return (label: 'Excellent', color: const Color(0xFF43A047));
-    }
-    if (norm > 0.33) {
-      return (label: 'Good', color: const Color(0xFFFB8C00));
-    }
-    return (label: 'Low', color: const Color(0xFFE53935));
-  }
-
-  static String _message(int pct, String country, double norm) {
-    if (norm > 0.66) {
-      return 'Renewables are covering $pct% of $country\'s electricity — a great time to charge your EV or run appliances.';
-    }
-    if (norm > 0.33) {
-      return 'Renewables cover $pct% of $country\'s electricity demand right now. Decent conditions.';
-    }
-    return 'Only $pct% of $country\'s electricity comes from renewables right now. Try shifting usage to a greener window.';
+  Widget _tab(BuildContext context, String label, ChartMode m) {
+    final active = m == mode;
+    return InkWell(
+      onTap: () => onChanged(m),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: active ? const Color(0xFF059669) : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: active
+                ? Colors.white
+                : Theme.of(context).colorScheme.onSurface.withOpacity(0.65),
+          ),
+        ),
+      ),
+    );
   }
 }
 
-// ── Forecast card ──────────────────────────────────────────────────────────────
+// ── Details chart legend ───────────────────────────────────────────────────────
 
-class _ForecastCard extends StatelessWidget {
-  final EnergyData data;
-
-  const _ForecastCard({required this.data});
+class _DetailsLegend extends StatelessWidget {
+  const _DetailsLegend();
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final t = L10n.current;
+    return Wrap(
+      spacing: 20,
+      runSpacing: 8,
+      children: [
+        _LegendItem(color: const Color(0xFF2E7D32), label: t.legGen),
+        _LegendItem(color: const Color(0xFF1565C0), label: t.legLoad),
+        _LegendItem(color: const Color(0xFFF57C00), label: t.legSurplus),
+        _LegendAreaItem(
+            fill: const Color(0x4D81C784),
+            border: const Color(0xFF2E7D32),
+            label: t.legPos),
+        _LegendAreaItem(
+            fill: const Color(0x47EF9A9A),
+            border: const Color(0xFFC62828),
+            label: t.legDeficit),
+      ],
+    );
+  }
+}
+
+class _LegendItem extends StatelessWidget {
+  final Color color;
+  final String label;
+  const _LegendItem({required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 22,
+          height: 3,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(label,
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade700)),
+      ],
+    );
+  }
+}
+
+class _LegendAreaItem extends StatelessWidget {
+  final Color fill;
+  final Color border;
+  final String label;
+  const _LegendAreaItem(
+      {required this.fill, required this.border, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 14,
+          height: 14,
+          decoration: BoxDecoration(
+            color: fill,
+            border: Border.all(color: border, width: 1.5),
+            borderRadius: BorderRadius.circular(3),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(label,
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade700)),
+      ],
+    );
+  }
+}
+
+// ── Interpretation hint ────────────────────────────────────────────────────────
+
+class _InterpretationHint extends StatelessWidget {
+  final EnergyData data;
+  const _InterpretationHint({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = L10n.current;
+    final peak = data.peakSurplusPoint;
+    final isGood = peak.surplus > 0;
+    final peakTime = DateFormat('HH:mm').format(peak.timestamp);
+
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(20),
+        color: isGood ? Colors.green.shade50 : Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: scheme.outlineVariant.withOpacity(0.4),
+          color: isGood ? Colors.green.shade200 : Colors.orange.shade200,
         ),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.timeline,
-                  size: 14, color: Colors.grey.withOpacity(0.6)),
-              const SizedBox(width: 6),
-              Text(
-                'Next 24 hours',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.withOpacity(0.7),
-                  letterSpacing: 0.3,
-                ),
-              ),
-            ],
+          Icon(
+            isGood ? Icons.lightbulb_outline : Icons.info_outline,
+            color: isGood ? Colors.green.shade700 : Colors.orange.shade700,
+            size: 20,
           ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 200,
-            child: MiniForecast(data: data),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              isGood ? t.hintGood(peakTime) : t.hintBad(peakTime),
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade800,
+                height: 1.4,
+              ),
+            ),
           ),
         ],
       ),
@@ -332,15 +428,15 @@ class _ForecastCard extends StatelessWidget {
   }
 }
 
-// ── Country chip ───────────────────────────────────────────────────────────────
+// ── Country dropdown (full names, like the web) ────────────────────────────────
 
-class _CountryChip extends StatelessWidget {
-  final String country;
+class _CountryDropdown extends StatelessWidget {
+  final String selected;
   final List<String> countries;
   final ValueChanged<String> onChanged;
 
-  const _CountryChip({
-    required this.country,
+  const _CountryDropdown({
+    required this.selected,
     required this.countries,
     required this.onChanged,
   });
@@ -349,9 +445,9 @@ class _CountryChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
       child: DropdownButton<String>(
-        value: countries.contains(country) ? country : countries.first,
+        value: countries.contains(selected) ? selected : countries.first,
         items: countries
-            .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+            .map((c) => DropdownMenuItem(value: c, child: Text(countryName(c))))
             .toList(),
         onChanged: (v) {
           if (v != null) onChanged(v);
@@ -411,6 +507,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = L10n.current;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -419,8 +516,7 @@ class _ErrorView extends StatelessWidget {
           children: [
             Icon(Icons.cloud_off, size: 56, color: Colors.grey.shade400),
             const SizedBox(height: 16),
-            Text('Could not load data',
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(t.errorTitle, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             Text(error,
                 textAlign: TextAlign.center,
@@ -429,7 +525,7 @@ class _ErrorView extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(t.retry),
             ),
           ],
         ),

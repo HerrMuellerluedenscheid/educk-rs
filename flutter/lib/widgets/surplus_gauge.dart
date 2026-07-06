@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 
 /// Speedometer-style arc gauge.
 ///
@@ -67,7 +68,7 @@ class SurplusGauge extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    'renewable now',
+                    L10n.current.renewableNow,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: w * 0.038,

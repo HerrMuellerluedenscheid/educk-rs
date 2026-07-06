@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../i18n.dart';
 import '../models/energy_data.dart';
 
 class SummaryCards extends StatelessWidget {
@@ -13,20 +14,17 @@ class SummaryCards extends StatelessWidget {
     final peak = data.peakSurplusPoint;
     final trend = data.renewableTrend;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Row(
-        children: [
-          if (current != null) ...[
-            Expanded(child: _CurrentStatusCard(point: current, trend: trend)),
-            const SizedBox(width: 10),
-          ],
-          Expanded(child: _PeakSurplusCard(point: peak)),
+    return Row(
+      children: [
+        if (current != null) ...[
+          Expanded(child: _CurrentStatusCard(point: current, trend: trend)),
           const SizedBox(width: 10),
-          if (current != null)
-            Expanded(child: _CoverageCard(point: current)),
         ],
-      ),
+        Expanded(child: _PeakSurplusCard(point: peak)),
+        const SizedBox(width: 10),
+        if (current != null)
+          Expanded(child: _CoverageCard(point: current)),
+      ],
     );
   }
 }
@@ -47,43 +45,41 @@ class RenewableTrendBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = L10n.current;
     final (icon, color, label) = switch (trend) {
       RenewableTrend.rising => (
           Icons.trending_up,
           Colors.green.shade700,
-          'Rising'
+          t.rising
         ),
       RenewableTrend.falling => (
           Icons.trending_down,
           Colors.red.shade700,
-          'Falling'
+          t.falling
         ),
       RenewableTrend.flat => (
           Icons.trending_flat,
           Colors.grey.shade600,
-          'Steady'
+          t.steady
         ),
     };
 
-    return Tooltip(
-      message: 'Renewable generation trend: $label',
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: iconSize, color: color),
-          if (showLabel) ...[
-            const SizedBox(width: 3),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: iconSize, color: color),
+        if (showLabel) ...[
+          const SizedBox(width: 3),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: color,
             ),
-          ],
+          ),
         ],
-      ),
+      ],
     );
   }
 }
@@ -97,8 +93,9 @@ class _CurrentStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = L10n.current;
     final isSurplus = point.surplus >= 0;
-    final label = isSurplus ? 'Surplus now' : 'Deficit now';
+    final label = isSurplus ? t.surplusNow : t.deficitNow;
     final color = isSurplus ? Colors.green.shade700 : Colors.red.shade700;
     final bgColor = isSurplus ? Colors.green.shade50 : Colors.red.shade50;
     final icon = isSurplus ? Icons.bolt_outlined : Icons.warning_amber_outlined;
@@ -110,7 +107,7 @@ class _CurrentStatusCard extends StatelessWidget {
       title: label,
       value: _fmtMW(point.surplus.abs()),
       valueColor: color,
-      subtitle: '${point.surplusPercent.toStringAsFixed(0)}% of generation',
+      subtitle: '${point.surplusPercent.toStringAsFixed(0)}% ${t.ofGeneration}',
       trailing: RenewableTrendBadge(trend: trend),
     );
   }
@@ -124,12 +121,13 @@ class _PeakSurplusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = L10n.current;
     final time = DateFormat('HH:mm').format(point.timestamp);
     return _Card(
       bgColor: Colors.orange.shade50,
       icon: Icons.wb_sunny_outlined,
       iconColor: Colors.orange.shade700,
-      title: 'Peak surplus',
+      title: t.peakSurplus,
       value: time,
       valueColor: Colors.orange.shade800,
       subtitle: _fmtMW(point.surplus),
@@ -145,16 +143,17 @@ class _CoverageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = L10n.current;
     final pct = point.renewableCoverage;
     final color = _coverageColor(pct);
     return _Card(
       bgColor: color.withOpacity(0.08),
       icon: Icons.eco_outlined,
       iconColor: color,
-      title: 'Green coverage',
+      title: t.greenCoverage,
       value: '${pct.toStringAsFixed(0)}%',
       valueColor: color,
-      subtitle: 'of current load',
+      subtitle: t.ofCurrentLoad,
     );
   }
 

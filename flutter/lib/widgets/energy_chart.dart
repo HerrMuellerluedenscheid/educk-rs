@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../i18n.dart';
 import '../models/energy_data.dart';
 
 class EnergyChart extends StatelessWidget {
@@ -158,6 +159,7 @@ class EnergyChart extends StatelessWidget {
             fitInsideHorizontally: true,
             fitInsideVertically: true,
             getTooltipItems: (spots) {
+              final t = L10n.current;
               return spots.map((spot) {
                 final idx =
                     spot.x.toInt().clamp(0, pts.length - 1);
@@ -167,7 +169,7 @@ class EnergyChart extends StatelessWidget {
                 switch (spot.barIndex) {
                   case 0:
                     return LineTooltipItem(
-                      '$time\n● Gen:  ${_fmtMW(spot.y)}',
+                      '$time\n● ${t.gen}:  ${_fmtMW(spot.y)}',
                       const TextStyle(
                           color: Color(0xFF81C784),
                           fontSize: 12,
@@ -175,7 +177,7 @@ class EnergyChart extends StatelessWidget {
                     );
                   case 1:
                     return LineTooltipItem(
-                      '● Load: ${_fmtMW(spot.y)}',
+                      '● ${t.load}: ${_fmtMW(spot.y)}',
                       const TextStyle(
                           color: Color(0xFF64B5F6),
                           fontSize: 12,
@@ -184,7 +186,7 @@ class EnergyChart extends StatelessWidget {
                   case 2:
                     final isPos = spot.y >= 0;
                     return LineTooltipItem(
-                      '● ${isPos ? "Surplus" : "Deficit"}: ${_fmtMW(spot.y.abs())}',
+                      '● ${isPos ? t.surplus : t.deficit}: ${_fmtMW(spot.y.abs())}',
                       TextStyle(
                           color: isPos
                               ? const Color(0xFF81C784)

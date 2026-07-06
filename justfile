@@ -10,7 +10,7 @@ dev:
     trap 'kill 0' EXIT
     [ -f flutter/.env ] || cp flutter/.env.example flutter/.env
     cargo run --bin educk-rs &
-    (cd flutter && flutter run -d chrome --dart-define-from-file=.env) &
+    (cd flutter && flutter run --dart-define-from-file=.env) &
     wait
 
 # ── Rust backend ─────────────────────────────────────────────────────────────
@@ -62,13 +62,17 @@ watch-css:
 deps:
     cd flutter && flutter pub get
 
+# start ios simulator
+start-simulator:
+    open -a Simulator
+
 # Run the Flutter app (development)
 run-flutter:
     #!/usr/bin/env bash
     set -euo pipefail
     cd flutter
     [ -f .env ] || cp .env.example .env
-    flutter run -d chrome --dart-define-from-file=.env
+    flutter run --dart-define-from-file=.env
 
 # Build Flutter web for deployment (output: flutter/build/web)
 build-web:
