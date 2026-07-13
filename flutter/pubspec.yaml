@@ -1,6 +1,6 @@
 name: energy_dashboard
 description: Renewable energy dashboard for educk API
-version: 1.0.0+1
+version: 1.1.0+0
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -16,6 +16,23 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
+
+# App launcher icons, generated from the source images (exported from icon.svg):
+#   icon.png            - full composited icon (iOS + legacy Android)
+#   icon_background.png  - gradient-only layer (Android adaptive background)
+#   icon_foreground.png  - duck-only, padded into the adaptive safe zone
+# Regenerate after changing the icon with: dart run flutter_launcher_icons
+# Web icons/favicon are maintained by hand in web/ and are intentionally excluded.
+flutter_launcher_icons:
+  image_path: "icon.png"
+  ios: true
+  remove_alpha_ios: true
+  android: true
+  min_sdk_android: 21
+  adaptive_icon_background: "icon_background.png"
+  adaptive_icon_foreground: "icon_foreground.png"
+  adaptive_icon_monochrome: "icon_foreground.png"
