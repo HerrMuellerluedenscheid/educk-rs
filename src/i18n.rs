@@ -174,6 +174,7 @@ pub struct Strings {
     pub nav_all_regions: &'static str,
     pub nav_impressum: &'static str,
     pub nav_privacy: &'static str,
+    pub nav_support: &'static str,
     pub back_to_educk: &'static str,
     // landing
     pub index_h1: &'static str,
@@ -230,6 +231,7 @@ pub const EN: Strings = Strings {
     nav_all_regions: "All regions",
     nav_impressum: "Impressum",
     nav_privacy: "Privacy",
+    nav_support: "Support",
     back_to_educk: "← Back to educk",
     index_h1: "When is electricity greenest across Europe?",
     index_lead: "educk is a renewable energy monitor. It tracks how much of each \
@@ -297,6 +299,7 @@ pub const DE: Strings = Strings {
     nav_all_regions: "Alle Regionen",
     nav_impressum: "Impressum",
     nav_privacy: "Datenschutz",
+    nav_support: "Support",
     back_to_educk: "← Zurück zu educk",
     index_h1: "Wann ist Strom in Europa am grünsten?",
     index_lead: "educk ist ein Monitor für erneuerbare Energien. Er zeigt, wie viel \

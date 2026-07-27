@@ -76,7 +76,7 @@ const I18N = {
     tabOverview: "Overview", tabDetails: "Details",
     legCurve: "Renewable share = (wind + solar) ÷ load. Above 100 % means surplus.",
     renShare: "Renewable",
-    navImpressum: "Impressum", navPrivacy: "Privacy",
+    navImpressum: "Impressum", navPrivacy: "Privacy", navSupport: "Support",
     footerData: 'Renewable electricity share across European bidding zones. Data: <a class="text-emerald-700 hover:underline" href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>.',
     hintGood: (t) => `Best time to charge an EV or run high-energy appliances: ${t} — that's when renewables exceed demand by the most.`,
     hintBad: (t) => `Renewables don't cover full demand in this window. Highest renewable share is around ${t}.`,
@@ -97,7 +97,7 @@ const I18N = {
     tabOverview: "Übersicht", tabDetails: "Details",
     legCurve: "Erneuerbaren-Anteil = (Wind + Solar) ÷ Last. Über 100 % bedeutet Überschuss.",
     renShare: "Erneuerbar",
-    navImpressum: "Impressum", navPrivacy: "Datenschutz",
+    navImpressum: "Impressum", navPrivacy: "Datenschutz", navSupport: "Support",
     footerData: 'Anteil erneuerbaren Stroms in europäischen Gebotszonen. Daten: <a class="text-emerald-700 hover:underline" href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>.',
     hintGood: (t) => `Beste Zeit zum Laden eines E-Autos oder Betreiben energieintensiver Geräte: ${t} — dann übersteigen die Erneuerbaren den Bedarf am stärksten.`,
     hintBad: (t) => `Die Erneuerbaren decken in diesem Zeitfenster nicht den gesamten Bedarf. Der höchste Erneuerbaren-Anteil liegt gegen ${t}.`,
@@ -131,8 +131,11 @@ function applyI18n() {
   if (fi) fi.textContent = T.navImpressum;
   const fp = document.getElementById("footer-privacy");
   if (fp) fp.textContent = T.navPrivacy;
+  const fs = document.getElementById("footer-support");
+  if (fs) fs.textContent = T.navSupport;
   setHref("footer-impressum", "/impressum");
   setHref("footer-privacy", "/privacy");
+  setHref("footer-support", "/support");
 }
 applyI18n();
 

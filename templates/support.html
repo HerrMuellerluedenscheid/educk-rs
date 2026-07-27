@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="{{ t.code }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon / brand -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="/static/logo_bw.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+    {% if t.code == "de" %}
+    <title>Support &amp; Feedback | educk</title>
+    <meta name="description" content="Problem melden, Fehler in den Daten gefunden oder eine Idee für educk? Schreiben Sie uns an info@vectorandveneer.com.">
+    {% else %}
+    <title>Support &amp; feedback | educk</title>
+    <meta name="description" content="Report a problem, flag an issue in the data, or send an idea for improving educk — email info@vectorandveneer.com.">
+    {% endif %}
+    <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="alternate" hreflang="en" href="{{ alt_en }}">
+    <link rel="alternate" hreflang="de" href="{{ alt_de }}">
+    <link rel="alternate" hreflang="x-default" href="{{ alt_en }}">
+
+    <style>
+        :root { color-scheme: light dark; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            margin: 0; padding: 0; line-height: 1.6; color: #1a1a1a; background: #f5f5f5;
+        }
+        .container { max-width: 760px; margin: 0 auto; padding: 24px 20px 64px; }
+        nav a { font-weight: 700; color: #15803d; text-decoration: none; }
+        nav .langswitch { float: right; font-weight: 400; font-size: .9rem; color: #666; }
+        nav .langswitch a { color: #15803d; }
+        h1 { font-size: 1.9rem; margin: 1rem 0 .25rem; }
+        h2 { margin-top: 2rem; font-size: 1.15rem; }
+        .updated { color: #666; font-size: .85rem; }
+        a { color: #15803d; }
+        .mailto {
+            display: inline-block; margin: .5rem 0 .25rem; padding: .55rem 1rem;
+            background: #15803d; color: #fff; border-radius: 6px; text-decoration: none;
+            font-weight: 600;
+        }
+        .hint { color: #666; font-size: .9rem; }
+        footer { margin-top: 3rem; color: #666; font-size: .85rem; }
+        footer a { color: #15803d; }
+    </style>
+</head>
+<body>
+<main class="container">
+    <nav><a href="{{ home_url }}" style="display:inline-flex;align-items:center;gap:.4rem"><img src="/static/logo_bw.svg" alt="" width="26" height="26" style="vertical-align:middle">educk</a><span class="langswitch">{% if t.code == "de" %}<a href="{{ alt_en }}">EN</a> · <strong>DE</strong>{% else %}<strong>EN</strong> · <a href="{{ alt_de }}">DE</a>{% endif %}</span></nav>
+
+    {% if t.code == "de" %}
+    <h1>Support &amp; Feedback</h1>
+    <p class="updated">Alles landet in einem Postfach: <a href="mailto:info@vectorandveneer.com">info@vectorandveneer.com</a>.</p>
+
+    <p>
+        educk ist ein kleines Projekt der Vector &amp; Veneer UG (haftungsbeschränkt).
+        Wir lesen jede Nachricht selbst — und freuen uns über jede davon.
+    </p>
+
+    <h2>Ein Problem melden</h2>
+    <p>
+        Seite lädt nicht, Diagramm bleibt leer, Zahlen wirken unplausibel oder die App
+        hängt? Sagen Sie uns Bescheid, dann schauen wir nach.
+    </p>
+    <p>
+        <a class="mailto" href="mailto:info@vectorandveneer.com?subject=educk%3A%20Problem%20melden">Problem melden</a>
+    </p>
+
+    <h2>Fehler in den Daten gefunden?</h2>
+    <p>
+        Unsere Prognosen stammen von der
+        <a href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>-Transparenzplattform
+        und werden für Deutschland zusätzlich mit einem eigenen Wetter- und Anlagenmodell
+        gegengerechnet. Da kann etwas danebenliegen. Wenn Ihnen ein falscher Wert, ein
+        fehlendes Land oder eine merkwürdige Zeitzone auffällt, schreiben Sie uns.
+    </p>
+    <p>
+        <a class="mailto" href="mailto:info@vectorandveneer.com?subject=educk%3A%20Fehler%20in%20den%20Daten">Fehler melden</a>
+    </p>
+
+    <h2>Ideen zur Verbesserung</h2>
+    <p>
+        Fehlt ein Land, eine Cloud-Region, eine Auswertung? Wünschen Sie sich eine
+        Benachrichtigung zur grünsten Stunde oder eine API für Ihren eigenen Anwendungsfall?
+        Erzählen Sie uns davon — Funktionswünsche bestimmen maßgeblich, woran wir als
+        Nächstes arbeiten.
+    </p>
+    <p>
+        <a class="mailto" href="mailto:info@vectorandveneer.com?subject=educk%3A%20Idee%20zur%20Verbesserung">Idee vorschlagen</a>
+    </p>
+
+    <h2>Was uns hilft</h2>
+    <p>Damit wir schneller helfen können, nennen Sie nach Möglichkeit:</p>
+    <ul>
+        <li>die Seite oder das Land/die Region, um die es geht (gern die URL),</li>
+        <li>wann Sie das Problem bemerkt haben (mit Zeitzone),</li>
+        <li>Browser bzw. Gerät — und, falls vorhanden, einen Screenshot.</li>
+    </ul>
+    <p class="hint">
+        Wir antworten in der Regel innerhalb weniger Werktage. Wie wir mit Ihren Daten
+        umgehen, steht in der <a href="{{ privacy_url }}">Datenschutzerklärung</a>;
+        Anbieterangaben finden Sie im <a href="{{ impressum_url }}">Impressum</a>.
+    </p>
+    {% else %}
+    <h1>Support &amp; feedback</h1>
+    <p class="updated">It all goes to one inbox: <a href="mailto:info@vectorandveneer.com">info@vectorandveneer.com</a>.</p>
+
+    <p>
+        educk is a small project by Vector &amp; Veneer UG (haftungsbeschränkt). We read
+        every message ourselves — and we're glad to get them.
+    </p>
+
+    <h2>Report a problem</h2>
+    <p>
+        Page not loading, chart stuck empty, numbers that look wrong, or the app hanging?
+        Tell us and we'll look into it.
+    </p>
+    <p>
+        <a class="mailto" href="mailto:info@vectorandveneer.com?subject=educk%3A%20Problem%20report">Report a problem</a>
+    </p>
+
+    <h2>Found an issue in the data?</h2>
+    <p>
+        Our forecasts come from the
+        <a href="https://transparency.entsoe.eu/" rel="nofollow noopener">ENTSO-E</a>
+        transparency platform, cross-checked for Germany against our own weather and
+        installed-capacity model. Things can be off. If you spot a wrong value, a missing
+        country, or a timezone that looks strange, let us know.
+    </p>
+    <p>
+        <a class="mailto" href="mailto:info@vectorandveneer.com?subject=educk%3A%20Data%20issue">Report a data issue</a>
+    </p>
+
+    <h2>Ideas for improvement</h2>
+    <p>
+        Missing a country, a cloud region, a metric? Want an alert for the greenest hour,
+        or an API for your own use case? Tell us about it — feature requests shape what we
+        build next.
+    </p>
+    <p>
+        <a class="mailto" href="mailto:info@vectorandveneer.com?subject=educk%3A%20Idea%20for%20improvement">Suggest an idea</a>
+    </p>
+
+    <h2>What helps us help you</h2>
+    <p>Where you can, please include:</p>
+    <ul>
+        <li>the page, country, or region involved (the URL is ideal),</li>
+        <li>when you saw it, including your timezone,</li>
+        <li>your browser or device — and a screenshot if you have one.</li>
+    </ul>
+    <p class="hint">
+        We usually reply within a few working days. How we handle your data is described in
+        our <a href="{{ privacy_url }}">privacy policy</a>; provider details are in the
+        <a href="{{ impressum_url }}">Impressum</a>.
+    </p>
+    {% endif %}
+
+    <footer>
+        <p>
+            <a href="{{ home_url }}">{{ t.back_to_educk }}</a> ·
+            <a href="{{ support_url }}">{{ t.nav_support }}</a> ·
+            <a href="{{ impressum_url }}">{{ t.nav_impressum }}</a> ·
+            <a href="{{ privacy_url }}">{{ t.nav_privacy }}</a>
+        </p>
+        <p>© Vector &amp; Veneer UG (haftungsbeschränkt)</p>
+    </footer>
+</main>
+
+{% include "_cookie_consent.html" %}
+</body>
+</html>

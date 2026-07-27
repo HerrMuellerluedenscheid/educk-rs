@@ -739,6 +739,7 @@ struct CountryPageTemplate {
     home_url: String,
     impressum_url: String,
     privacy_url: String,
+    support_url: String,
     h1: String,
     lead: String,
     hourly_h2: String,
@@ -820,6 +821,7 @@ async fn get_country_page(
         home_url: i18n::localize_url("/", lang),
         impressum_url: i18n::localize_url("/impressum", lang),
         privacy_url: i18n::localize_url("/privacy", lang),
+        support_url: i18n::localize_url("/support", lang),
         h1: i18n::country_h1(lang, &country_name),
         lead: i18n::country_lead(lang, &country_name),
         hourly_h2: i18n::country_hourly_h2(lang, &country_name),
@@ -1219,6 +1221,7 @@ struct LandingTemplate {
     home_url: String,
     impressum_url: String,
     privacy_url: String,
+    support_url: String,
     dashboard: Option<DashboardView>,
     countries: Vec<CountryLink>,
     cloud_providers: Vec<CloudProviderGroup>,
@@ -1332,6 +1335,7 @@ async fn get_landing(
         home_url: i18n::localize_url("/", lang),
         impressum_url: i18n::localize_url("/impressum", lang),
         privacy_url: i18n::localize_url("/privacy", lang),
+        support_url: i18n::localize_url("/support", lang),
         dashboard,
         countries,
         cloud_providers,
@@ -1358,6 +1362,7 @@ struct CloudPageTemplate {
     home_url: String,
     impressum_url: String,
     privacy_url: String,
+    support_url: String,
     h1: String,
     lead: String,
     hourly_h2: String,
@@ -1435,6 +1440,7 @@ async fn get_cloud_page(
         home_url: i18n::localize_url("/", lang),
         impressum_url: i18n::localize_url("/impressum", lang),
         privacy_url: i18n::localize_url("/privacy", lang),
+        support_url: i18n::localize_url("/support", lang),
         h1: i18n::cloud_h1(lang, label, cr.region),
         lead: i18n::cloud_lead(lang, label, cr.region, cr.location, &country_name),
         hourly_h2: i18n::cloud_hourly_h2(lang, label, cr.region),
@@ -1459,7 +1465,7 @@ async fn get_cloud_page(
     Ok(with_lang_cookie(Html(html).into_response(), lang, persist))
 }
 
-// ── Legal pages (Impressum / privacy policy) ─────────────────────────────────
+// ── Legal pages (Impressum / privacy policy) + support ───────────────────────
 
 #[derive(Template)]
 #[template(path = "impressum.html")]
@@ -1471,6 +1477,7 @@ struct ImpressumTemplate {
     home_url: String,
     impressum_url: String,
     privacy_url: String,
+    support_url: String,
 }
 
 /// GET /impressum
@@ -1494,6 +1501,7 @@ async fn get_impressum(
         home_url: i18n::localize_url("/", lang),
         impressum_url: i18n::localize_url("/impressum", lang),
         privacy_url: i18n::localize_url("/privacy", lang),
+        support_url: i18n::localize_url("/support", lang),
     };
     let html = template.render().map_err(|e| {
         tracing::error!("Template rendering error: {}", e);
@@ -1512,6 +1520,7 @@ struct PrivacyTemplate {
     home_url: String,
     impressum_url: String,
     privacy_url: String,
+    support_url: String,
 }
 
 /// GET /privacy
@@ -1535,6 +1544,52 @@ async fn get_privacy(
         home_url: i18n::localize_url("/", lang),
         impressum_url: i18n::localize_url("/impressum", lang),
         privacy_url: i18n::localize_url("/privacy", lang),
+        support_url: i18n::localize_url("/support", lang),
+    };
+    let html = template.render().map_err(|e| {
+        tracing::error!("Template rendering error: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+    Ok(with_lang_cookie(Html(html).into_response(), lang, persist))
+}
+
+#[derive(Template)]
+#[template(path = "support.html")]
+struct SupportTemplate {
+    t: &'static i18n::Strings,
+    canonical_url: String,
+    alt_en: String,
+    alt_de: String,
+    home_url: String,
+    impressum_url: String,
+    privacy_url: String,
+    support_url: String,
+}
+
+/// GET /support
+/// Contact page: how to report a problem, flag a data issue, or suggest an
+/// improvement. Everything routes to info@vectorandveneer.com — there is no form
+/// (and therefore no form data to process).
+async fn get_support(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    uri: OriginalUri,
+    Query(q): Query<LangQuery>,
+) -> Result<Response, StatusCode> {
+    let (lang, persist) = match resolve_lang(&headers, &uri, q.lang.as_deref()) {
+        Ok(v) => v,
+        Err(redirect) => return Ok(redirect),
+    };
+    let (canonical_url, alt_en, alt_de) = i18n::page_urls(&state.base_url, "/support", lang);
+    let template = SupportTemplate {
+        t: i18n::strings(lang),
+        canonical_url,
+        alt_en,
+        alt_de,
+        home_url: i18n::localize_url("/", lang),
+        impressum_url: i18n::localize_url("/impressum", lang),
+        privacy_url: i18n::localize_url("/privacy", lang),
+        support_url: i18n::localize_url("/support", lang),
     };
     let html = template.render().map_err(|e| {
         tracing::error!("Template rendering error: {}", e);
@@ -1784,6 +1839,7 @@ async fn sitemap_xml(State(state): State<AppState>) -> impl IntoResponse {
     };
 
     let mut urls = entry("/");
+    urls.push_str(&entry("/support"));
     for code in areas::list_countries() {
         urls.push_str(&entry(&format!("/electricity/{}", code.to_lowercase())));
     }
@@ -1853,6 +1909,7 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
         .route("/cloud/{provider}/{region}", get(get_cloud_page))
         .route("/impressum", get(get_impressum))
         .route("/privacy", get(get_privacy))
+        .route("/support", get(get_support))
         .route("/api/v1/countries", get(list_countries))
         .route("/api/v1/zones/{country}", get(get_country_zones))
         .route(
@@ -1989,7 +2046,41 @@ mod tests {
             home_url: i18n::localize_url("/", lang),
             impressum_url: i18n::localize_url("/impressum", lang),
             privacy_url: i18n::localize_url("/privacy", lang),
+            support_url: i18n::localize_url("/support", lang),
         }
+    }
+
+    /// Build a minimal Support template in the given language.
+    fn support(lang: Lang) -> SupportTemplate {
+        let (canonical_url, alt_en, alt_de) = i18n::page_urls("https://educk.io", "/support", lang);
+        SupportTemplate {
+            t: i18n::strings(lang),
+            canonical_url,
+            alt_en,
+            alt_de,
+            home_url: i18n::localize_url("/", lang),
+            impressum_url: i18n::localize_url("/impressum", lang),
+            privacy_url: i18n::localize_url("/privacy", lang),
+            support_url: i18n::localize_url("/support", lang),
+        }
+    }
+
+    #[test]
+    fn renders_support_page_in_both_languages() {
+        let en = support(Lang::En).render().unwrap();
+        assert!(en.contains("<html lang=\"en\">"));
+        assert!(en.contains("Report a problem"));
+        assert!(en.contains("Ideas for improvement"));
+        assert!(en.contains("mailto:info@vectorandveneer.com"));
+        assert!(en.contains("<link rel=\"canonical\" href=\"https://educk.io/support\">"));
+
+        let de = support(Lang::De).render().unwrap();
+        assert!(de.contains("<html lang=\"de\">"));
+        assert!(de.contains("Ein Problem melden"));
+        assert!(de.contains("mailto:info@vectorandveneer.com"));
+        assert!(de.contains("<link rel=\"canonical\" href=\"https://educk.io/support?lang=de\">"));
+        // Footer/nav links stay in-language on the German page.
+        assert!(de.contains("href=\"/impressum?lang=de\""));
     }
 
     #[test]
