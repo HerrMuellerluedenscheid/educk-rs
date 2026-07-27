@@ -24,7 +24,9 @@ flutter:
 # App launcher icons, generated from the source images (exported from icon.svg):
 #   icon.png            - full composited icon (iOS + legacy Android)
 #   icon_background.png  - gradient-only layer (Android adaptive background)
-#   icon_foreground.png  - duck-only, padded into the adaptive safe zone
+#   icon_foreground.png  - duck + drop shadow, padded into the adaptive safe zone
+#   icon_monochrome.png  - duck only, no shadow; themed icons tint by alpha alone,
+#                          so a shadow here would render as a blurred halo
 # Regenerate after changing the icon with: dart run flutter_launcher_icons
 # Web icons/favicon are maintained by hand in web/ and are intentionally excluded.
 flutter_launcher_icons:
@@ -35,4 +37,4 @@ flutter_launcher_icons:
   min_sdk_android: 21
   adaptive_icon_background: "icon_background.png"
   adaptive_icon_foreground: "icon_foreground.png"
-  adaptive_icon_monochrome: "icon_foreground.png"
+  adaptive_icon_monochrome: "icon_monochrome.png"

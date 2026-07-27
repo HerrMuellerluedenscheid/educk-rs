@@ -1,4 +1,4 @@
-package com.example.energy_dashboard
+package com.vectorandveneer.educk
 
 import io.flutter.embedding.android.FlutterActivity
 

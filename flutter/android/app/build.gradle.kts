@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.energy_dashboard"
+    namespace = "com.vectorandveneer.educk"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,8 +20,9 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.energy_dashboard"
+        // Matches the iOS bundle ID (see ios/SIGNING.md) so both stores list the
+        // same identity. Immutable once the app is published on Play.
+        applicationId = "com.vectorandveneer.educk"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
