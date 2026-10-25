@@ -3,8 +3,10 @@ pub mod config;
 pub mod entsoe;
 pub mod grid;
 pub mod i18n;
+pub mod instagram;
 pub mod proxy;
 pub mod server;
+pub mod story;
 pub mod weather;
 
 use crate::entsoe::EntsoeClient;

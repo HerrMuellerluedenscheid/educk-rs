@@ -1,11 +1,13 @@
 use axum::{
     Router,
+    body::Bytes,
     extract::{OriginalUri, Path, Query, State},
     http::{HeaderMap, HeaderValue, StatusCode, header},
     response::{Html, IntoResponse, Json, Response},
     routing::get,
 };
-use chrono::{DateTime, Duration, Timelike, Utc};
+use anyhow::Context;
+use chrono::{DateTime, Duration, DurationRound, NaiveDate, NaiveTime, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -16,6 +18,8 @@ use tower_http::trace::TraceLayer;
 
 use crate::cloud;
 use crate::config::Config;
+use crate::instagram;
+use crate::story;
 use crate::entsoe::analysis::{RenewableSurplus, summarize_forecast};
 use crate::i18n::{self, Lang};
 use crate::entsoe::areas::get_primary_zone;
@@ -47,6 +51,16 @@ type SeriesCache = Arc<Mutex<HashMap<String, CacheEntry>>>;
 /// the overlay is DE-only.
 type ModelledCache = Arc<Mutex<Option<(Instant, Vec<ModelledPoint>)>>>;
 
+/// A rendered daily Instagram Story. The image starts at the hour it was
+/// rendered in, so it is reused for that hour.
+#[derive(Clone)]
+struct StoryImage {
+    hour: DateTime<Utc>,
+    /// The German calendar day the story is about.
+    day: NaiveDate,
+    jpeg: Bytes,
+}
+
 #[derive(Clone)]
 struct AppState {
     entsoe_client: Arc<EntsoeClient>,
@@ -59,6 +73,8 @@ struct AppState {
     series_cache: SeriesCache,
     /// Cached modelled German wind+solar series (weather refreshes hourly).
     modelled_cache: ModelledCache,
+    /// Last rendered Instagram Story (Germany).
+    story_cache: Arc<Mutex<Option<StoryImage>>>,
 }
 
 impl AppState {
@@ -132,6 +148,27 @@ impl AppState {
             .get(zone_code)
             .filter(|e| !e.data.is_empty())
             .map(|e| e.data.clone())
+    }
+
+    /// The Instagram Story for Germany (rest of today), rendered at most once an
+    /// hour. `None` when there is no forecast for today to show.
+    async fn story(&self) -> Option<StoryImage> {
+        let hour = Utc::now().duration_trunc(Duration::hours(1)).ok()?;
+        if let Some(s) = self.story_cache.lock().unwrap().as_ref().filter(|s| s.hour == hour) {
+            return Some(s.clone());
+        }
+        let zone = get_primary_zone("DE")?;
+        let series = self.series_for_zone(zone.code).await.ok()?;
+        let outlook = story::outlook(&series, Utc::now())?;
+        let day = outlook.day;
+        let jpeg = tokio::task::spawn_blocking(move || story::jpeg(&outlook))
+            .await
+            .ok()?
+            .inspect_err(|e| tracing::error!("story rendering failed: {e:#}"))
+            .ok()?;
+        let img = StoryImage { hour, day, jpeg: Bytes::from(jpeg) };
+        *self.story_cache.lock().unwrap() = Some(img.clone());
+        Some(img)
     }
 
     /// The modelled (MaStR × weather) German wind+solar series, calibrated to the
@@ -1736,6 +1773,20 @@ async fn get_de_modelled(
     })))
 }
 
+/// GET /social/story/de.jpg
+/// The daily Instagram Story for Germany (1080×1920 JPEG). Instagram fetches it
+/// from here when the story is published; it doubles as a preview.
+async fn get_story_jpeg(State(state): State<AppState>) -> Result<impl IntoResponse, StatusCode> {
+    let story = state.story().await.ok_or(StatusCode::SERVICE_UNAVAILABLE)?;
+    Ok((
+        [
+            (header::CONTENT_TYPE, "image/jpeg"),
+            (header::CACHE_CONTROL, "public, max-age=600"),
+        ],
+        story.jpeg,
+    ))
+}
+
 /// GET /health
 async fn health() -> &'static str {
     "OK"
@@ -1872,6 +1923,7 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
         base_url: Arc::from(config.public_base_url.trim_end_matches('/')),
         series_cache: Arc::new(Mutex::new(HashMap::new())),
         modelled_cache: Arc::new(Mutex::new(None)),
+        story_cache: Arc::new(Mutex::new(None)),
     };
 
     // Proactively warm the caches so the landing page is always fast.
@@ -1890,6 +1942,29 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
             tokio::time::sleep(CACHE_TTL).await;
         }
     });
+
+    // Daily Instagram Story, when an access token is configured. Instagram pulls
+    // the image from our public story URL, so make sure it renders first. A
+    // setup problem only disables the story; it never keeps the site down.
+    if let Some(token) = config.instagram_access_token.filter(|t| !t.is_empty()) {
+        let publisher = NaiveTime::parse_from_str(&config.instagram_story_time, "%H:%M")
+            .context("INSTAGRAM_STORY_TIME must be HH:MM")
+            .and_then(|post_at| instagram::Publisher::new(token, &config.data_dir, post_at));
+        match publisher {
+            Ok(publisher) => {
+                let st = state.clone();
+                tokio::spawn(publisher.run(move |day| {
+                    let st = st.clone();
+                    async move {
+                        let story = st.story().await.context("no forecast to render the story from")?;
+                        anyhow::ensure!(story.day == day, "story renders {} instead of {day}", story.day);
+                        Ok(format!("{}/social/story/de.jpg?d={day}", st.base_url))
+                    }
+                }));
+            }
+            Err(e) => tracing::error!("Instagram stories disabled: {e:#}"),
+        }
+    }
 
     let app = Router::new()
         .route("/", get(get_landing))
@@ -1910,6 +1985,7 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
         .route("/impressum", get(get_impressum))
         .route("/privacy", get(get_privacy))
         .route("/support", get(get_support))
+        .route("/social/story/de.jpg", get(get_story_jpeg))
         .route("/api/v1/countries", get(list_countries))
         .route("/api/v1/zones/{country}", get(get_country_zones))
         .route(
