@@ -17,6 +17,14 @@ services:
       - RUST_LOG=info
       # Apex origin used for canonical URLs, Open Graph tags and the sitemap.
       - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-https://educk.io}
+      # Daily Instagram Story (Germany). Leave the token unset to disable.
+      - INSTAGRAM_ACCESS_TOKEN=${INSTAGRAM_ACCESS_TOKEN:-}
+      - INSTAGRAM_STORY_TIME=${INSTAGRAM_STORY_TIME:-07:00}
+      - DATA_DIR=/app/data
+    volumes:
+      # Keeps the auto-refreshed Instagram token and the last-posted date
+      # across deploys.
+      - educk-data:/app/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3044/health"]
@@ -24,3 +32,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+volumes:
+  educk-data:

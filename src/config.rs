@@ -11,10 +11,33 @@ pub struct Config {
     /// Open Graph tags and the sitemap. Override with `PUBLIC_BASE_URL`.
     #[serde(default = "default_public_base_url")]
     pub public_base_url: String,
+
+    /// Long-lived Instagram User access token (Instagram API with Instagram
+    /// Login, `instagram_business_content_publish`). When set, the daily Story
+    /// for Germany is published; unset or empty disables it.
+    #[serde(default)]
+    pub instagram_access_token: Option<String>,
+
+    /// German wall-clock time ("HH:MM") the daily Story goes out.
+    #[serde(default = "default_instagram_story_time")]
+    pub instagram_story_time: String,
+
+    /// Directory for small persistent state (the auto-refreshed Instagram token,
+    /// the date of the last story). Mount it as a volume in Docker.
+    #[serde(default = "default_data_dir")]
+    pub data_dir: String,
 }
 
 fn default_public_base_url() -> String {
     "https://educk.io".to_string()
+}
+
+fn default_instagram_story_time() -> String {
+    "07:00".to_string()
+}
+
+fn default_data_dir() -> String {
+    "data".to_string()
 }
 
 impl Config {

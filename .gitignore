@@ -1,5 +1,7 @@
 /target
 .env
+# Local runtime state (holds the Instagram access token).
+/data
 .idea
 
 # MaStR Gesamtdatenexport (multi-GB) — input to `mastr_ingest`, never committed.
