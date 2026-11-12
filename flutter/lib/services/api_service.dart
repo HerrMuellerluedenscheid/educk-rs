@@ -10,8 +10,10 @@ class ApiService {
   Future<EnergyData> fetchEnergyData(String country, {int hours = 24}) async {
     final uri = Uri.parse(
         '$baseUrl/api/v1/renewable-surplus/$country/plot-json?hours=$hours');
+    // Longer than the server's 30 s ENTSO-E timeout, so a slow upstream still
+    // returns the server's cached series instead of a client-side timeout.
     final response =
-        await http.get(uri).timeout(const Duration(seconds: 30));
+        await http.get(uri).timeout(const Duration(seconds: 45));
 
     if (response.statusCode != 200) {
       throw Exception('Server returned HTTP ${response.statusCode}');

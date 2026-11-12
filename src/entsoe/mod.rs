@@ -143,9 +143,11 @@ impl EntsoeClient {
     pub fn new(api_key: impl Into<String>) -> Self {
         // Bound every request: ENTSO-E can hang or be slow (especially during
         // maintenance), and an unbounded client would let a single request block
-        // the handler until the caller's own timeout fires.
+        // the handler until the caller's own timeout fires. ENTSO-E can take
+        // well over 10 s to answer (17 s observed), so allow 30 s. Clients calling the
+        // API must wait longer than this to receive the stale-cache fallback.
         let client = Client::builder()
-            .timeout(std::time::Duration::from_secs(10))
+            .timeout(std::time::Duration::from_secs(30))
             .build()
             .expect("failed to build HTTP client");
         Self {
