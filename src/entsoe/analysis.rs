@@ -1,4 +1,4 @@
-use crate::entsoe::{EntsoeClient, EntsoeError};
+use crate::entsoe::{EntsoeClient, EntsoeError, GlMarketDocument};
 use crate::i18n::Lang;
 use chrono::{DateTime, Utc};
 use std::collections::HashMap;
@@ -21,39 +21,8 @@ impl EntsoeClient {
         period_start: &str,
         period_end: &str,
     ) -> Result<RenewableSurplus, EntsoeError> {
-        // Fetch both forecasts in parallel
-        let (gen_forecast, load_forecast) = tokio::try_join!(
-            self.fetch_day_ahead_generation_forecast(bidding_zone, period_start, period_end),
-            self.fetch_day_ahead_total_load_forecast(bidding_zone, period_start, period_end)
-        )?;
-
-        // Get timestamped points for both
-        let gen_points = gen_forecast.all_timestamped_points()?;
-        let load_points = load_forecast.all_timestamped_points()?;
-
-        // Create a map of load by timestamp for quick lookup
-        let load_map: HashMap<DateTime<Utc>, f64> = load_points
-            .into_iter()
-            .map(|p| (p.timestamp, p.quantity))
-            .collect();
-
-        // Calculate surplus for each generation point that has matching load data
-        let surpluses: Vec<RenewableSurplus> = gen_points
-            .into_iter()
-            .filter_map(|gen_point| {
-                load_map
-                    .get(&gen_point.timestamp)
-                    .map(|&load| RenewableSurplus {
-                        timestamp: gen_point.timestamp,
-                        generation: gen_point.quantity,
-                        load,
-                        surplus: gen_point.quantity - load,
-                    })
-            })
-            .collect();
-
-        // Find the maximum surplus
-        surpluses
+        self.get_renewable_surplus_series(bidding_zone, period_start, period_end)
+            .await?
             .into_iter()
             .max_by(|a, b| {
                 a.surplus
@@ -78,36 +47,48 @@ impl EntsoeClient {
             self.fetch_day_ahead_total_load_forecast(bidding_zone, period_start, period_end)
         )?;
 
-        // Get timestamped points for both
-        let gen_points = gen_forecast.all_timestamped_points()?;
-        let load_points = load_forecast.all_timestamped_points()?;
-
-        // Create a map of load by timestamp
-        let load_map: HashMap<DateTime<Utc>, f64> = load_points
-            .into_iter()
-            .map(|p| (p.timestamp, p.quantity))
-            .collect();
-
-        // Calculate surplus for all points
-        let mut surpluses: Vec<RenewableSurplus> = gen_points
-            .into_iter()
-            .filter_map(|gen_point| {
-                load_map
-                    .get(&gen_point.timestamp)
-                    .map(|&load| RenewableSurplus {
-                        timestamp: gen_point.timestamp,
-                        generation: gen_point.quantity,
-                        load,
-                        surplus: gen_point.quantity - load,
-                    })
-            })
-            .collect();
-
-        // Sort by timestamp
-        surpluses.sort_by_key(|s| s.timestamp);
-
-        Ok(surpluses)
+        surplus_series(&gen_forecast, &load_forecast)
     }
+}
+
+/// Combine generation and load forecasts into a surplus series. Both are sampled
+/// on the finer of their two grids, so e.g. hourly load still lines up with
+/// quarter-hourly generation. Only timestamps present in both are kept.
+fn surplus_series(
+    gen_forecast: &GlMarketDocument,
+    load_forecast: &GlMarketDocument,
+) -> Result<Vec<RenewableSurplus>, EntsoeError> {
+    let step = match (
+        gen_forecast.finest_resolution()?,
+        load_forecast.finest_resolution()?,
+    ) {
+        (Some(g), Some(l)) => g.min(l),
+        _ => return Ok(Vec::new()),
+    };
+
+    let load_map: HashMap<DateTime<Utc>, f64> = load_forecast
+        .aggregated_points(step)?
+        .into_iter()
+        .map(|p| (p.timestamp, p.quantity))
+        .collect();
+
+    let mut surpluses: Vec<RenewableSurplus> = gen_forecast
+        .aggregated_points(step)?
+        .into_iter()
+        .filter_map(|gen_point| {
+            load_map
+                .get(&gen_point.timestamp)
+                .map(|&load| RenewableSurplus {
+                    timestamp: gen_point.timestamp,
+                    generation: gen_point.quantity,
+                    load,
+                    surplus: gen_point.quantity - load,
+                })
+        })
+        .collect();
+
+    surpluses.sort_by_key(|s| s.timestamp);
+    Ok(surpluses)
 }
 
 impl RenewableSurplus {
