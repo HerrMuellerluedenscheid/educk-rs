@@ -7,7 +7,7 @@ use axum::{
 };
 use chrono::{DateTime, Duration, Timelike, Utc};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 use tower_http::compression::CompressionLayer;
@@ -19,7 +19,7 @@ use crate::config::Config;
 use crate::entsoe::analysis::{RenewableSurplus, summarize_forecast};
 use crate::i18n::{self, Lang};
 use crate::entsoe::areas::get_primary_zone;
-use crate::entsoe::{EntsoeClient, areas};
+use crate::entsoe::{self, EntsoeClient, areas};
 use crate::proxy::{self, ModelledPoint};
 use crate::weather::WeatherClient;
 
@@ -30,6 +30,10 @@ const CACHE_TTL: std::time::Duration = std::time::Duration::from_secs(3600);
 /// before re-attempting a fetch. Stops every request from waiting on (and
 /// hammering) a downed ENTSO-E for the full `CACHE_TTL`.
 const STALE_RETRY_INTERVAL: std::time::Duration = std::time::Duration::from_secs(120);
+/// A complete series younger than this beats a fresh but degraded one (a
+/// generation forecast failed to load): forecasts change slowly, a missing
+/// production type does not.
+const KEEP_COMPLETE_FOR: std::time::Duration = std::time::Duration::from_secs(3 * 3600);
 
 /// A cached forecast series plus the bookkeeping needed to serve it stale during
 /// an upstream outage without re-fetching on every request.
@@ -39,7 +43,16 @@ struct CacheEntry {
     fetched_at: Instant,
     /// When a fetch was last attempted (drives `STALE_RETRY_INTERVAL` backoff).
     last_attempt: Instant,
+    /// A generation forecast failed during that fetch; retried like stale data.
+    degraded: bool,
     data: Vec<RenewableSurplus>,
+}
+
+/// Whether a refresh result should be dropped in favour of the cached `entry`:
+/// only when the refresh is degraded and the cached series is complete and not
+/// too old.
+fn keep_cached_over(entry: &CacheEntry, refresh_degraded: bool) -> bool {
+    refresh_degraded && !entry.degraded && entry.fetched_at.elapsed() < KEEP_COMPLETE_FOR
 }
 
 type SeriesCache = Arc<Mutex<HashMap<String, CacheEntry>>>;
@@ -68,12 +81,13 @@ impl AppState {
         {
             let cache = self.series_cache.lock().unwrap();
             if let Some(entry) = cache.get(zone_code) {
-                // Fresh data within the TTL.
-                if entry.fetched_at.elapsed() < CACHE_TTL {
+                // Fresh, complete data within the TTL.
+                if !entry.degraded && entry.fetched_at.elapsed() < CACHE_TTL {
                     return Ok(entry.data.clone());
                 }
-                // Stale data, but we tried to refresh very recently — upstream is
-                // likely still down, so serve stale instead of waiting on it again.
+                // Stale or degraded data, but we tried to refresh very recently —
+                // upstream is likely still struggling, so serve what we have
+                // instead of waiting on it again.
                 if entry.last_attempt.elapsed() < STALE_RETRY_INTERVAL {
                     return Ok(entry.data.clone());
                 }
@@ -89,17 +103,32 @@ impl AppState {
             .get_renewable_surplus_series(zone_code, &period_start, &period_end)
             .await
         {
-            Ok(series) => {
+            Ok(forecast) => {
                 let now = Instant::now();
-                self.series_cache.lock().unwrap().insert(
+                let mut cache = self.series_cache.lock().unwrap();
+                if let Some(entry) = cache.get_mut(zone_code) {
+                    // Don't let a partial refresh replace a complete series: keep
+                    // serving it and retry after `STALE_RETRY_INTERVAL`.
+                    if keep_cached_over(entry, forecast.degraded) {
+                        entry.last_attempt = now;
+                        tracing::warn!(
+                            "partial ENTSO-E refresh for {zone_code}; keeping the complete \
+                             series from {:.0?} ago",
+                            entry.fetched_at.elapsed()
+                        );
+                        return Ok(entry.data.clone());
+                    }
+                }
+                cache.insert(
                     zone_code.to_string(),
                     CacheEntry {
                         fetched_at: now,
                         last_attempt: now,
-                        data: series.clone(),
+                        degraded: forecast.degraded,
+                        data: forecast.series.clone(),
                     },
                 );
-                Ok(series)
+                Ok(forecast.series)
             }
             // Upstream failed (e.g. ENTSO-E maintenance). Serve the last-known-good
             // series if we have one — the dashboard and SSR pages then show
@@ -587,6 +616,7 @@ async fn get_plot_json(
         generation: series.iter().map(|s| s.generation).collect(),
         load: series.iter().map(|s| s.load).collect(),
         surplus: series.iter().map(|s| s.surplus).collect(),
+        sources: generation_by_source(&series),
     };
 
     Ok(Json(ApiResponse::success(plot_data)))
@@ -598,6 +628,27 @@ struct PlotData {
     generation: Vec<f64>,
     load: Vec<f64>,
     surplus: Vec<f64>,
+    /// Generation per source ("solar", "wind_onshore", "wind_offshore"), each
+    /// aligned with `timestamps`.
+    sources: BTreeMap<String, Vec<f64>>,
+}
+
+/// Generation per source, one value per series point (0 where a point lacks it).
+fn generation_by_source(series: &[RenewableSurplus]) -> BTreeMap<String, Vec<f64>> {
+    let codes: BTreeSet<&str> = series
+        .iter()
+        .flat_map(|s| s.by_source.keys().map(String::as_str))
+        .collect();
+    codes
+        .into_iter()
+        .map(|code| {
+            let values = series
+                .iter()
+                .map(|s| s.by_source.get(code).copied().unwrap_or(0.0))
+                .collect();
+            (entsoe::psr_key(code).to_string(), values)
+        })
+        .collect()
 }
 
 // ── Language negotiation (?lang=de + soft redirect) ──────────────────────────
@@ -1184,6 +1235,7 @@ fn build_dashboard(
         "generation": series.iter().map(|s| s.generation).collect::<Vec<_>>(),
         "load": series.iter().map(|s| s.load).collect::<Vec<_>>(),
         "surplus": series.iter().map(|s| s.surplus).collect::<Vec<_>>(),
+        "sources": generation_by_source(series),
     })
     .to_string();
 
@@ -1874,7 +1926,9 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
         modelled_cache: Arc::new(Mutex::new(None)),
     };
 
-    // Proactively warm the caches so the landing page is always fast.
+    // Proactively warm the caches so the landing page is always fast. The landing
+    // only reads the cache, so this loop is also what retries a stale or
+    // degraded entry; for a fresh one `series_for_zone` returns without fetching.
     let warmer = state.clone();
     tokio::spawn(async move {
         loop {
@@ -1887,7 +1941,7 @@ pub async fn start_server(config: Config) -> anyhow::Result<()> {
                     }
                 }
             }
-            tokio::time::sleep(CACHE_TTL).await;
+            tokio::time::sleep(STALE_RETRY_INTERVAL).await;
         }
     });
 
@@ -1965,6 +2019,23 @@ mod tests {
             h.insert(k.clone(), HeaderValue::from_str(v).unwrap());
         }
         h
+    }
+
+    #[test]
+    fn degraded_refresh_does_not_replace_recent_complete_series() {
+        let entry = |age_secs: u64, degraded: bool| CacheEntry {
+            fetched_at: Instant::now() - std::time::Duration::from_secs(age_secs),
+            last_attempt: Instant::now(),
+            degraded,
+            data: Vec::new(),
+        };
+        // Complete series from 2 h ago beats a degraded refresh…
+        assert!(keep_cached_over(&entry(2 * 3600, false), true));
+        // …but not a complete refresh, nor once it is older than KEEP_COMPLETE_FOR.
+        assert!(!keep_cached_over(&entry(2 * 3600, false), false));
+        assert!(!keep_cached_over(&entry(4 * 3600, false), true));
+        // A degraded cache entry is always replaced by the newer fetch.
+        assert!(!keep_cached_over(&entry(60, true), true));
     }
 
     #[test]

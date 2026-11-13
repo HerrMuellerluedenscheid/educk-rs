@@ -1,7 +1,10 @@
-use crate::entsoe::{EntsoeClient, EntsoeError, GlMarketDocument};
+use crate::entsoe::{
+    EntsoeClient, EntsoeError, GlMarketDocument, complete_points, finest_resolution,
+    merge_forecasts,
+};
 use crate::i18n::Lang;
 use chrono::{DateTime, Utc};
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 /// Represents the renewable energy surplus at a point in time
 #[derive(Debug, Clone)]
@@ -10,6 +13,20 @@ pub struct RenewableSurplus {
     pub generation: f64,
     pub load: f64,
     pub surplus: f64, // generation - load
+    /// Generation per ENTSO-E production type (e.g. "B16" solar), summing to
+    /// `generation`.
+    pub by_source: BTreeMap<String, f64>,
+}
+
+/// A surplus series and whether it may be incomplete.
+#[derive(Debug, Clone)]
+pub struct SurplusForecast {
+    pub series: Vec<RenewableSurplus>,
+    /// A generation forecast failed to load (timeout, HTTP error), as opposed
+    /// to ENTSO-E having no data for it. The series may then lack production
+    /// types it would normally have, e.g. DE onshore wind and solar on a day
+    /// where only the intraday forecast has them.
+    pub degraded: bool,
 }
 
 impl EntsoeClient {
@@ -23,6 +40,7 @@ impl EntsoeClient {
     ) -> Result<RenewableSurplus, EntsoeError> {
         self.get_renewable_surplus_series(bidding_zone, period_start, period_end)
             .await?
+            .series
             .into_iter()
             .max_by(|a, b| {
                 a.surplus
@@ -40,26 +58,56 @@ impl EntsoeClient {
         bidding_zone: &str,
         period_start: &str,
         period_end: &str,
-    ) -> Result<Vec<RenewableSurplus>, EntsoeError> {
-        // Fetch both forecasts in parallel
-        let (gen_forecast, load_forecast) = tokio::try_join!(
+    ) -> Result<SurplusForecast, EntsoeError> {
+        let (day_ahead, intraday, load_forecast) = tokio::join!(
             self.fetch_day_ahead_generation_forecast(bidding_zone, period_start, period_end),
+            self.fetch_intraday_generation_forecast(bidding_zone, period_start, period_end),
             self.fetch_day_ahead_total_load_forecast(bidding_zone, period_start, period_end)
-        )?;
+        );
+        let load_forecast = load_forecast?;
 
-        surplus_series(&gen_forecast, &load_forecast)
+        // Day-ahead first, intraday last so it wins where both have a value.
+        // Either one alone is usable; many zones publish no intraday forecast.
+        let mut generation = Vec::new();
+        let mut degraded = false;
+        let mut last_error = None;
+        for (process, result) in [("day-ahead", day_ahead), ("intraday", intraday)] {
+            match result {
+                Ok(doc) => generation.push(doc),
+                Err(e) => {
+                    if e.is_no_data() {
+                        tracing::debug!("no {process} generation forecast for {bidding_zone}");
+                    } else {
+                        tracing::warn!(
+                            "{process} generation forecast for {bidding_zone} failed: {e}"
+                        );
+                        degraded = true;
+                    }
+                    last_error = Some(e);
+                }
+            }
+        }
+        if generation.is_empty() {
+            return Err(last_error.expect("both forecasts failed"));
+        }
+
+        Ok(SurplusForecast {
+            series: surplus_series(&generation, &load_forecast)?,
+            degraded,
+        })
     }
 }
 
-/// Combine generation and load forecasts into a surplus series. Both are sampled
-/// on the finer of their two grids, so e.g. hourly load still lines up with
+/// Combine generation forecasts (in increasing order of preference, see
+/// [`merge_forecasts`]) and the load forecast into a surplus series. Everything
+/// is sampled on the finest grid, so e.g. hourly load still lines up with
 /// quarter-hourly generation. Only timestamps present in both are kept.
 fn surplus_series(
-    gen_forecast: &GlMarketDocument,
+    gen_forecasts: &[GlMarketDocument],
     load_forecast: &GlMarketDocument,
 ) -> Result<Vec<RenewableSurplus>, EntsoeError> {
     let step = match (
-        gen_forecast.finest_resolution()?,
+        finest_resolution(gen_forecasts)?,
         load_forecast.finest_resolution()?,
     ) {
         (Some(g), Some(l)) => g.min(l),
@@ -72,20 +120,21 @@ fn surplus_series(
         .map(|p| (p.timestamp, p.quantity))
         .collect();
 
-    let mut surpluses: Vec<RenewableSurplus> = gen_forecast
-        .aggregated_points(step)?
-        .into_iter()
-        .filter_map(|gen_point| {
-            load_map
-                .get(&gen_point.timestamp)
-                .map(|&load| RenewableSurplus {
-                    timestamp: gen_point.timestamp,
-                    generation: gen_point.quantity,
-                    load,
-                    surplus: gen_point.quantity - load,
-                })
-        })
-        .collect();
+    let mut surpluses: Vec<RenewableSurplus> =
+        complete_points(merge_forecasts(gen_forecasts, step)?)
+            .into_iter()
+            .filter_map(|gen_point| {
+                load_map
+                    .get(&gen_point.timestamp)
+                    .map(|&load| RenewableSurplus {
+                        timestamp: gen_point.timestamp,
+                        generation: gen_point.total,
+                        load,
+                        surplus: gen_point.total - load,
+                        by_source: gen_point.by_type,
+                    })
+            })
+            .collect();
 
     surpluses.sort_by_key(|s| s.timestamp);
     Ok(surpluses)
