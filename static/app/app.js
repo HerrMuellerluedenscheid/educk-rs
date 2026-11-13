@@ -22,14 +22,22 @@ const COUNTRY_NAMES = {
 };
 const countryName = (code) => COUNTRY_NAMES[code] || code;
 
-// Line colours (match the previous Flutter chart)
-const C_GEN = "#2E7D32";
-const C_LOAD = "#1565C0";
-const C_SURPLUS = "#F57C00";
-const FILL_POS = "rgba(129,199,132,0.30)";
-const FILL_NEG = "rgba(239,154,154,0.28)";
 // Overview "educk curve" (renewable coverage %)
 const C_CURVE = "#059669"; // emerald-600
+
+// Details view: generation sources, bottom → top of each stacked column. The
+// three hues pass the dataviz palette check as adjacent pairs on white (CVD
+// ΔE ≥ 9.6); aqua and yellow are below 3:1 contrast, so the view also offers
+// a data table.
+const SOURCES = [
+  { key: "wind_offshore", color: "#1baf7a", labelKey: "srcWindOffshore" },
+  { key: "wind_onshore", color: "#2a78d6", labelKey: "srcWindOnshore" },
+  { key: "solar", color: "#eda100", labelKey: "srcSolar" },
+];
+// Fallback single column when the API sends no per-source split.
+const TOTAL_SOURCE = { key: null, color: "#2E7D32", labelKey: "legGen" };
+const C_LOAD_LINE = "#334155"; // slate-700: load is a reference line, not a source
+const BAR_GAP = 2; // px of surface between stacked segments and columns
 
 // ── State ───────────────────────────────────────────────────────────────────
 let country = DEFAULT_COUNTRY;
@@ -70,9 +78,10 @@ const I18N = {
     renewableNow: "renewable now",
     rising: "Rising", falling: "Falling", steady: "Steady",
     dataPoints: "data points", now: "Now",
-    gen: "Gen", load: "Load", surplus: "Surplus", deficit: "Deficit",
-    legGen: "Wind + Solar", legLoad: "Total load", legSurplus: "Surplus",
-    legPos: "Positive surplus", legDeficit: "Deficit",
+    surplus: "Surplus", deficit: "Deficit",
+    legGen: "Wind + Solar", legLoad: "Total load",
+    srcSolar: "Solar", srcWindOnshore: "Wind onshore", srcWindOffshore: "Wind offshore",
+    legHourly: "Hourly averages", tblShow: "Show data table", tblTime: "Time",
     tabOverview: "Overview", tabDetails: "Details",
     legCurve: "Renewable share = (wind + solar) ÷ load. Above 100 % means surplus.",
     renShare: "Renewable",
@@ -91,9 +100,10 @@ const I18N = {
     renewableNow: "erneuerbar jetzt",
     rising: "Steigend", falling: "Fallend", steady: "Stabil",
     dataPoints: "Datenpunkte", now: "Jetzt",
-    gen: "Erz.", load: "Last", surplus: "Überschuss", deficit: "Defizit",
-    legGen: "Wind + Solar", legLoad: "Gesamtlast", legSurplus: "Überschuss",
-    legPos: "Positiver Überschuss", legDeficit: "Defizit",
+    surplus: "Überschuss", deficit: "Defizit",
+    legGen: "Wind + Solar", legLoad: "Gesamtlast",
+    srcSolar: "Solar", srcWindOnshore: "Wind an Land", srcWindOffshore: "Wind auf See",
+    legHourly: "Stundenmittel", tblShow: "Datentabelle anzeigen", tblTime: "Zeit",
     tabOverview: "Übersicht", tabDetails: "Details",
     legCurve: "Erneuerbaren-Anteil = (Wind + Solar) ÷ Last. Über 100 % bedeutet Überschuss.",
     renShare: "Erneuerbar",
@@ -199,6 +209,16 @@ function renewableTrend() {
 }
 
 // ── Data fetching ─────────────────────────────────────────────────────────────
+// API / SSR payload → [{t, gen, load, surplus, src: {solar, wind_onshore, …}}]
+function parseSeries(d) {
+  const sources = d.sources || {};
+  return d.timestamps.map((ts, i) => {
+    const src = {};
+    for (const k of Object.keys(sources)) src[k] = +sources[k][i];
+    return { t: new Date(ts), gen: +d.generation[i], load: +d.load[i], surplus: +d.surplus[i], src };
+  });
+}
+
 async function loadCountries() {
   try {
     const r = await fetch(`${API_BASE}/api/v1/countries`);
@@ -222,12 +242,11 @@ async function loadData() {
     if (!r.ok) throw new Error(`Server returned HTTP ${r.status}`);
     const j = await r.json();
     if (j.success !== true || !j.data) throw new Error(j.error || "No data returned by server");
-    const d = j.data;
-    series = d.timestamps.map((ts, i) => ({
-      t: new Date(ts), gen: +d.generation[i], load: +d.load[i], surplus: +d.surplus[i],
-    }));
-    render();
+    series = parseSeries(j.data);
+    // Show first: the chart sizes itself to the container, which measures 0
+    // wide while hidden (and would fall back to a fixed 600px).
     showDashboard();
+    render();
   } catch (e) {
     showError(e.message || String(e));
   } finally {
@@ -369,6 +388,8 @@ let chartGeom = null; // saved for hover hit-testing
 
 function renderChart() {
   if (!series.length) return;
+  const table = $("detail-table");
+  if (table) table.remove();
   if (chartMode === "details") renderDetailChart();
   else renderOverviewChart();
   attachHover();
@@ -454,62 +475,215 @@ function renderOverviewChart() {
       ${xTickLabels(xAt, n)}
     </svg>`;
 
-  chartGeom = { W, padL, padR, plotW, n, xAt, yAt };
+  const hline = () => $("hover-line");
+  chartGeom = {
+    W, padL, plotW,
+    indexAt: (frac) => Math.round(frac * (n - 1)),
+    xAt,
+    highlight: (i) => {
+      const l = hline();
+      if (i == null) { l.setAttribute("visibility", "hidden"); return; }
+      l.setAttribute("x1", xAt(i)); l.setAttribute("x2", xAt(i));
+      l.setAttribute("visibility", "visible");
+    },
+    tooltip: (i) =>
+      `${fmtTime(series[i].t)}\n` +
+      `<span style="color:#34d399">● ${T.renShare}: ${coverageRaw(series[i]).toFixed(0)}%</span>`,
+  };
 }
 
-// Details view: generation, load and surplus in MW — for the interested viewer.
+// Details view: hourly stacked columns of generation per source, with the load
+// as a step line on the same MW axis. Surplus/deficit is the gap between them
+// (and in the tooltip).
+const HOUR_MS = 3600 * 1000;
+let tableOpen = false; // keep the data table open across re-renders
+
+// Sources present in the current series, in stack order (bottom → top).
+function presentSources() {
+  const present = SOURCES.filter((s) => series.some((p) => s.key in p.src));
+  return present.length ? present : [TOTAL_SOURCE];
+}
+function sourceValue(s, b) { return s.key ? b.src[s.key] || 0 : b.gen; }
+
+// Average the (quarter-hourly) series into clock hours.
+function hourlyBuckets() {
+  const buckets = [];
+  let cur = null;
+  for (const p of series) {
+    const hour = new Date(p.t);
+    hour.setMinutes(0, 0, 0);
+    if (!cur || cur.t.getTime() !== hour.getTime()) {
+      cur = { t: hour, n: 0, gen: 0, load: 0, src: {} };
+      buckets.push(cur);
+    }
+    cur.n++; cur.gen += p.gen; cur.load += p.load;
+    for (const [k, v] of Object.entries(p.src)) cur.src[k] = (cur.src[k] || 0) + v;
+  }
+  for (const b of buckets) {
+    b.gen /= b.n; b.load /= b.n;
+    for (const k of Object.keys(b.src)) b.src[k] /= b.n;
+    b.surplus = b.gen - b.load;
+  }
+  return buckets;
+}
+
+// Round axis steps to 1/2/5 × 10^k.
+function niceStep(max, target = 4) {
+  const raw = max / target;
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const f = raw / mag;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * mag;
+}
+function fmtTick(v) {
+  return v >= 1000 ? `${+(v / 1000).toFixed(1)} GW` : `${Math.round(v)} MW`;
+}
+
+// Column segment: square at the bottom, top corners rounded by r.
+function columnPath(x, y, w, h, r) {
+  r = Math.max(0, Math.min(r, w / 2, h));
+  const f = (v) => v.toFixed(1);
+  if (r === 0) return `M${f(x)},${f(y)}h${f(w)}v${f(h)}h${f(-w)}Z`;
+  return `M${f(x)},${f(y + h)}V${f(y + r)}A${f(r)},${f(r)} 0 0 1 ${f(x + r)},${f(y)}` +
+    `H${f(x + w - r)}A${f(r)},${f(r)} 0 0 1 ${f(x + w)},${f(y + r)}V${f(y + h)}Z`;
+}
+
 function renderDetailChart() {
   const W = els.chart.clientWidth || 600;
   const { h, padT, padR, padB, padL } = CH;
   const plotW = W - padL - padR;
   const plotH = h - padT - padB;
-  const n = series.length;
+  const buckets = hourlyBuckets();
+  const n = buckets.length;
+  const stack = presentSources();
 
-  let maxV = 0, minS = 0;
-  for (const p of series) { maxV = Math.max(maxV, p.gen, p.load); minS = Math.min(minS, p.surplus); }
-  const maxY = maxV * 1.15;
-  const minY = minS < 0 ? minS * 1.2 : -(maxY * 0.08);
+  const t0 = buckets[0].t.getTime();
+  const t1 = buckets[n - 1].t.getTime() + HOUR_MS;
+  const slotW = plotW / n;
+  const barW = clamp(slotW - BAR_GAP, 1, 24);
+  const xCenter = (i) => padL + (i + 0.5) * slotW;
 
-  const xAt = (i) => padL + (n === 1 ? plotW / 2 : (i / (n - 1)) * plotW);
-  const yAt = (v) => padT + (1 - (v - minY) / (maxY - minY)) * plotH;
-  const zeroY = yAt(0);
+  let maxV = 0;
+  for (const b of buckets) maxV = Math.max(maxV, b.gen, b.load);
+  const step = niceStep(maxV || 1);
+  const maxY = Math.ceil((maxV * 1.05) / step) * step || step;
+  const yAt = (v) => padT + (1 - v / maxY) * plotH;
 
-  const line = (key) => series.map((p, i) => `${xAt(i).toFixed(1)},${yAt(p[key]).toFixed(1)}`).join(" ");
-  // Surplus area down to the zero baseline (clipped above/below for green/red).
-  const areaPts = `${xAt(0).toFixed(1)},${zeroY.toFixed(1)} ` +
-    series.map((p, i) => `${xAt(i).toFixed(1)},${yAt(p.surplus).toFixed(1)}`).join(" ") +
-    ` ${xAt(n - 1).toFixed(1)},${zeroY.toFixed(1)}`;
-
-  // Y axis labels (skip the very top/bottom to avoid clipping)
-  let yTicks = "";
-  const steps = 5;
-  for (let i = 1; i < steps; i++) {
-    const v = minY + ((maxY - minY) * i) / steps;
+  let grid = "";
+  for (let v = 0; v <= maxY + step / 2; v += step) {
     const y = yAt(v);
-    yTicks += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="#e2e8f0" stroke-width="1"/>
-      <text x="${padL - 6}" y="${(y + 3).toFixed(1)}" text-anchor="end" font-size="10" fill="#94a3b8">${fmtMW(v)}</text>`;
+    grid += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="#e2e8f0" stroke-width="1"/>
+      <text x="${padL - 6}" y="${(y + 3).toFixed(1)}" text-anchor="end" font-size="10" fill="#94a3b8">${fmtTick(v)}</text>`;
+  }
+
+  let bars = "";
+  buckets.forEach((b, i) => {
+    const x = xCenter(i) - barW / 2;
+    const segs = stack.map((s) => ({ s, v: sourceValue(s, b) })).filter((g) => g.v > 0);
+    let cum = 0;
+    segs.forEach((g, j) => {
+      const yBottom = yAt(cum) - (j > 0 ? BAR_GAP : 0);
+      cum += g.v;
+      const yTop = yAt(cum);
+      if (yBottom - yTop < 0.5) return;
+      const r = j === segs.length - 1 ? 4 : 0;
+      bars += `<path d="${columnPath(x, yTop, barW, yBottom - yTop, r)}" fill="${g.s.color}"/>`;
+    });
+  });
+
+  // Load as a step line, one level per hour, over a surface-colored halo so it
+  // stays legible where it crosses the columns.
+  const loadD = buckets.map((b, i) => {
+    const xl = padL + i * slotW, y = yAt(b.load).toFixed(1);
+    return `${i ? "L" : "M"}${xl.toFixed(1)},${y}H${(xl + slotW).toFixed(1)}`;
+  }).join("");
+
+  const now = Date.now();
+  const nowX = now >= t0 && now <= t1 ? padL + ((now - t0) / (t1 - t0)) * plotW : null;
+
+  let xLabels = "";
+  const every = Math.max(1, Math.ceil(n / 8));
+  for (let i = 0; i < n; i += every) {
+    xLabels += `<text x="${xCenter(i).toFixed(1)}" y="${h - padB + 16}" text-anchor="middle" font-size="10" fill="#94a3b8">${fmtTime(buckets[i].t)}</text>`;
   }
 
   els.chart.innerHTML = `
-    <svg viewBox="0 0 ${W} ${h}" width="${W}" height="${h}" id="chart-svg" style="touch-action:none">
-      <defs>
-        <clipPath id="clip-pos"><rect x="0" y="0" width="${W}" height="${zeroY.toFixed(1)}"/></clipPath>
-        <clipPath id="clip-neg"><rect x="0" y="${zeroY.toFixed(1)}" width="${W}" height="${(h - zeroY).toFixed(1)}"/></clipPath>
-      </defs>
-      ${yTicks}
-      <line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="6 4"/>
-      <polygon points="${areaPts}" fill="${FILL_POS}" clip-path="url(#clip-pos)"/>
-      <polygon points="${areaPts}" fill="${FILL_NEG}" clip-path="url(#clip-neg)"/>
-      <polyline points="${line("gen")}" fill="none" stroke="${C_GEN}" stroke-width="2.5" stroke-linejoin="round"/>
-      <polyline points="${line("load")}" fill="none" stroke="${C_LOAD}" stroke-width="2.5" stroke-linejoin="round"/>
-      <polyline points="${line("surplus")}" fill="none" stroke="${C_SURPLUS}" stroke-width="2" stroke-linejoin="round"/>
-      ${nowMarkerSvg(nowXAt(xAt))}
-      <line id="hover-line" x1="0" y1="${padT}" x2="0" y2="${h - padB}" stroke="#64748b" stroke-width="1" stroke-dasharray="3 3" visibility="hidden"/>
+    <svg viewBox="0 0 ${W} ${h}" width="${W}" height="${h}" id="chart-svg" style="touch-action:none" role="img"
+         aria-label="${stack.map((s) => T[s.labelKey]).join(", ")}, ${T.legLoad} (MW)">
+      ${grid}
+      <rect id="hover-band" x="${padL}" y="${padT}" width="${slotW.toFixed(1)}" height="${plotH}" fill="#f1f5f9" visibility="hidden"/>
+      ${bars}
+      <path d="${loadD}" fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+      <path d="${loadD}" fill="none" stroke="${C_LOAD_LINE}" stroke-width="2" stroke-linejoin="round"/>
+      ${nowMarkerSvg(nowX)}
       <rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" fill="transparent" id="hover-zone"/>
-      ${xTickLabels(xAt, n)}
+      ${xLabels}
     </svg>`;
 
-  chartGeom = { W, padL, padR, plotW, n, xAt, yAt };
+  renderDetailLegend(stack);
+  // The table goes below the legend (or the chart, if a page has no legend).
+  const anchor = $("legend-details") || els.chart;
+  anchor.insertAdjacentHTML("afterend", detailTableHtml(buckets, stack));
+  const table = $("detail-table");
+  table.addEventListener("toggle", () => { tableOpen = table.open; });
+
+  const band = $("hover-band");
+  const lineKey = (color) =>
+    `<span style="display:inline-block;width:10px;height:2px;background:${color};vertical-align:middle;margin-right:6px"></span>`;
+  const blank = '<span style="display:inline-block;width:16px"></span>';
+  chartGeom = {
+    W, padL, plotW,
+    indexAt: (frac) => Math.min(n - 1, Math.floor(frac * n)),
+    xAt: xCenter,
+    highlight: (i) => {
+      if (i == null) { band.setAttribute("visibility", "hidden"); return; }
+      band.setAttribute("x", (padL + i * slotW).toFixed(1));
+      band.setAttribute("visibility", "visible");
+    },
+    tooltip: (i) => {
+      const b = buckets[i];
+      const row = (key, v, label) => `${key}${fmtMW(v).padStart(8)}  ${label}`;
+      const rows = [`${fmtTime(b.t)}–${fmtTime(new Date(b.t.getTime() + HOUR_MS))}`];
+      for (const s of [...stack].reverse()) rows.push(row(lineKey(s.color), sourceValue(s, b), T[s.labelKey]));
+      if (stack.length > 1) rows.push(row(blank, b.gen, T.legGen));
+      rows.push(row(lineKey("#e2e8f0"), b.load, T.legLoad));
+      rows.push(row(blank, Math.abs(b.surplus), b.surplus >= 0 ? T.surplus : T.deficit));
+      return rows.join("\n");
+    },
+  };
+}
+
+// Legend for the details view, built from the sources actually present.
+function renderDetailLegend(stack) {
+  const ld = $("legend-details");
+  if (!ld) return;
+  const item = (mark, label) => `<span class="flex items-center gap-1.5">${mark}<span>${label}</span></span>`;
+  ld.innerHTML =
+    [...stack].reverse().map((s) =>
+      item(`<span class="inline-block h-3 w-3 rounded-sm" style="background:${s.color}"></span>`, T[s.labelKey])).join("") +
+    item(`<span class="inline-block h-0.5 w-5 rounded" style="background:${C_LOAD_LINE}"></span>`, T.legLoad) +
+    `<span class="text-slate-500">${T.legHourly}, MW</span>`;
+}
+
+// The same hourly numbers as a table — the chart's accessible twin.
+function detailTableHtml(buckets, stack) {
+  const cell = "padding:2px 8px;text-align:right;white-space:nowrap";
+  const head = [T.tblTime, ...[...stack].reverse().map((s) => T[s.labelKey]),
+    ...(stack.length > 1 ? [T.legGen] : []), T.legLoad];
+  const rows = buckets.map((b) => {
+    const vals = [...[...stack].reverse().map((s) => sourceValue(s, b)),
+      ...(stack.length > 1 ? [b.gen] : []), b.load];
+    return `<tr style="border-top:1px solid #f1f5f9"><td style="${cell};text-align:left">${fmtTime(b.t)}</td>` +
+      vals.map((v) => `<td style="${cell}">${Math.round(v).toLocaleString(LANG)}</td>`).join("") + "</tr>";
+  }).join("");
+  return `<details id="detail-table" style="margin-top:10px;padding:0 4px;font-size:11px;color:#475569"${tableOpen ? " open" : ""}>
+      <summary style="cursor:pointer;color:#64748b">${T.tblShow} (MW)</summary>
+      <div style="margin-top:6px;overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums">
+          <thead><tr>${head.map((t, i) => `<th style="${cell};font-weight:600${i ? "" : ";text-align:left"}">${t}</th>`).join("")}</tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </details>`;
 }
 
 // Toggle button styling + legend visibility for the current chart mode.
@@ -539,42 +713,27 @@ function setChartMode(mode) {
 
 function attachHover() {
   const zone = $("hover-zone");
-  const hline = $("hover-line");
   if (!zone) return;
-  const { padL, plotW, n } = chartGeom;
+  const g = chartGeom;
   const move = (clientX) => {
     const rect = $("chart-svg").getBoundingClientRect();
-    const scale = chartGeom.W / rect.width;
-    const sx = (clientX - rect.left) * scale;
-    const frac = clamp((sx - padL) / plotW, 0, 1);
-    const i = Math.round(frac * (n - 1));
-    const p = series[i];
-    const x = chartGeom.xAt(i);
-    hline.setAttribute("x1", x); hline.setAttribute("x2", x);
-    hline.setAttribute("visibility", "visible");
-    if (chartMode === "details") {
-      const surplus = p.surplus >= 0;
-      els.tooltip.innerHTML =
-        `${fmtTime(p.t)}\n` +
-        `<span style="color:#81C784">● ${T.gen}:  ${fmtMW(p.gen)}</span>\n` +
-        `<span style="color:#64B5F6">● ${T.load}: ${fmtMW(p.load)}</span>\n` +
-        `<span style="color:${surplus ? "#81C784" : "#EF9A9A"}">● ${surplus ? T.surplus : T.deficit}: ${fmtMW(Math.abs(p.surplus))}</span>`;
-    } else {
-      els.tooltip.innerHTML =
-        `${fmtTime(p.t)}\n` +
-        `<span style="color:#34d399">● ${T.renShare}: ${coverageRaw(p).toFixed(0)}%</span>`;
-    }
+    const sx = (clientX - rect.left) * (g.W / rect.width);
+    const i = g.indexAt(clamp((sx - g.padL) / g.plotW, 0, 1));
+    g.highlight(i);
+    els.tooltip.innerHTML = g.tooltip(i);
     els.tooltip.style.whiteSpace = "pre";
     els.tooltip.classList.remove("hidden");
     // Position within the chart section (tooltip is absolutely placed)
-    const left = clamp((x / chartGeom.W) * rect.width + 12, 0, rect.width - 120);
-    els.tooltip.style.left = `${left}px`;
+    const tipW = els.tooltip.offsetWidth || 120;
+    const x = (g.xAt(i) / g.W) * rect.width;
+    const left = x + 12 + tipW > rect.width ? x - 12 - tipW : x + 12;
+    els.tooltip.style.left = `${clamp(left, 0, Math.max(0, rect.width - tipW))}px`;
     els.tooltip.style.top = `8px`;
   };
   zone.addEventListener("mousemove", (e) => move(e.clientX));
   zone.addEventListener("touchstart", (e) => move(e.touches[0].clientX), { passive: true });
   zone.addEventListener("touchmove", (e) => move(e.touches[0].clientX), { passive: true });
-  const hide = () => { hline.setAttribute("visibility", "hidden"); els.tooltip.classList.add("hidden"); };
+  const hide = () => { g.highlight(null); els.tooltip.classList.add("hidden"); };
   zone.addEventListener("mouseleave", hide);
   zone.addEventListener("touchend", hide);
 }
@@ -618,9 +777,7 @@ window.addEventListener("resize", () => {
     try {
       const d = JSON.parse(ssrEl.textContent);
       if (d.country) country = d.country;
-      series = d.timestamps.map((ts, i) => ({
-        t: new Date(ts), gen: +d.generation[i], load: +d.load[i], surplus: +d.surplus[i],
-      }));
+      series = parseSeries(d);
       if (series.length) {
         render();
         showDashboard();

@@ -5,15 +5,19 @@ use anyhow::Result;
 use chrono::{DateTime, Duration, Utc};
 use reqwest::Client;
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use thiserror::Error;
 
 const BASE_URL: &str = "https://web-api.tp.entsoe.eu/api";
 
 #[derive(Error, Debug)]
 pub enum EntsoeError {
+    /// Built via [`EntsoeError::request`], which strips the URL: it carries the
+    /// API key (`securityToken`), and this error ends up in logs.
     #[error("HTTP request failed: {0}")]
-    Request(#[from] reqwest::Error),
+    Request(reqwest::Error),
+    #[error("ENTSO-E request timed out")]
+    Timeout,
     #[error("ENTSO-E upstream returned HTTP {0}")]
     Upstream(reqwest::StatusCode),
     #[error("XML parsing failed: {0}")]
@@ -24,6 +28,22 @@ pub enum EntsoeError {
     InvalidResolution(String),
     #[error("Invalid timestamp: {0}")]
     InvalidTimestamp(String),
+}
+
+impl EntsoeError {
+    fn request(e: reqwest::Error) -> Self {
+        if e.is_timeout() {
+            EntsoeError::Timeout
+        } else {
+            EntsoeError::Request(e.without_url())
+        }
+    }
+
+    /// ENTSO-E answered, but has no data for the request (e.g. a zone without
+    /// an intraday forecast). Not an outage.
+    pub fn is_no_data(&self) -> bool {
+        matches!(self, EntsoeError::InvalidResponse(body) if body.contains("No matching data found"))
+    }
 }
 
 // Main response structure
@@ -180,18 +200,46 @@ impl EntsoeClient {
         period_start: &str,
         period_end: &str,
     ) -> Result<GlMarketDocument, EntsoeError> {
+        self.fetch_generation_forecast("A01", in_domain, period_start, period_end)
+            .await
+    }
+
+    /// Fetch intraday generation solar/wind forecast (A69, process A40). Fresher
+    /// than the day-ahead forecast, but usually only covers the current day.
+    pub async fn fetch_intraday_generation_forecast(
+        &self,
+        in_domain: &str,
+        period_start: &str,
+        period_end: &str,
+    ) -> Result<GlMarketDocument, EntsoeError> {
+        self.fetch_generation_forecast("A40", in_domain, period_start, period_end)
+            .await
+    }
+
+    async fn fetch_generation_forecast(
+        &self,
+        process_type: &str,
+        in_domain: &str,
+        period_start: &str,
+        period_end: &str,
+    ) -> Result<GlMarketDocument, EntsoeError> {
         let url = format!(
-            "{}?securityToken={}&documentType=A69&processType=A01&in_Domain={}&periodStart={}&periodEnd={}",
-            BASE_URL, self.api_key, in_domain, period_start, period_end
+            "{}?securityToken={}&documentType=A69&processType={}&in_Domain={}&periodStart={}&periodEnd={}",
+            BASE_URL, self.api_key, process_type, in_domain, period_start, period_end
         );
 
         self.fetch_and_parse(&url).await
     }
 
     async fn fetch_and_parse(&self, url: &str) -> Result<GlMarketDocument, EntsoeError> {
-        let response = self.client.get(url).send().await?;
+        let response = self
+            .client
+            .get(url)
+            .send()
+            .await
+            .map_err(EntsoeError::request)?;
         let status = response.status();
-        let xml = response.text().await?;
+        let xml = response.text().await.map_err(EntsoeError::request)?;
 
         // ENTSO-E serves an HTML page (not XML) for outages/maintenance and other
         // non-2xx responses. Bail out before the XML parser chokes on it.
@@ -315,6 +363,83 @@ impl Period {
     }
 }
 
+/// Per production type (psrType, e.g. "B16"), the sampled total at each timestamp.
+pub type SampledByType = HashMap<String, HashMap<DateTime<Utc>, f64>>;
+
+/// A timestamp that every production type covers, with the per-type split.
+#[derive(Debug, Clone)]
+pub struct TypedPoint {
+    pub timestamp: DateTime<Utc>,
+    pub total: f64,
+    pub by_type: BTreeMap<String, f64>,
+}
+
+/// Keep only timestamps covered by every production type, sorted by time.
+///
+/// ENTSO-E often has the next day for some types (e.g. wind offshore) before
+/// others (wind onshore, solar); summing whatever is there would show a fake
+/// collapse in generation at the day boundary.
+pub fn complete_points(by_type: SampledByType) -> Vec<TypedPoint> {
+    let Some(shortest) = by_type.values().min_by_key(|v| v.len()) else {
+        return Vec::new();
+    };
+    let mut points: Vec<TypedPoint> = shortest
+        .keys()
+        .filter_map(|timestamp| {
+            let split: Option<BTreeMap<String, f64>> = by_type
+                .iter()
+                .map(|(psr, values)| values.get(timestamp).map(|q| (psr.clone(), *q)))
+                .collect();
+            split.map(|by_type| TypedPoint {
+                timestamp: *timestamp,
+                total: by_type.values().sum(),
+                by_type,
+            })
+        })
+        .collect();
+    points.sort_by_key(|p| p.timestamp);
+    points
+}
+
+/// Overlay several forecasts of the same production types, sampled every
+/// `step`. Later documents win wherever they have a value, earlier ones fill
+/// the rest; pass them in increasing order of preference.
+pub fn merge_forecasts(
+    docs: &[GlMarketDocument],
+    step: Duration,
+) -> Result<SampledByType, EntsoeError> {
+    let mut merged = SampledByType::new();
+    for doc in docs {
+        for (psr, values) in doc.sampled_by_type(step)? {
+            merged.entry(psr).or_default().extend(values);
+        }
+    }
+    Ok(merged)
+}
+
+/// The finest resolution across several documents, if any has a period.
+pub fn finest_resolution<'a>(
+    docs: impl IntoIterator<Item = &'a GlMarketDocument>,
+) -> Result<Option<Duration>, EntsoeError> {
+    docs.into_iter()
+        .try_fold(None, |finest: Option<Duration>, doc| {
+            Ok(match (finest, doc.finest_resolution()?) {
+                (Some(a), Some(b)) => Some(a.min(b)),
+                (a, b) => a.or(b),
+            })
+        })
+}
+
+/// Stable, readable key for an ENTSO-E production type in API responses.
+pub fn psr_key(psr_type: &str) -> &str {
+    match psr_type {
+        "B16" => "solar",
+        "B18" => "wind_offshore",
+        "B19" => "wind_onshore",
+        other => other,
+    }
+}
+
 // Helper functions to work with the data
 impl GlMarketDocument {
     /// The finest resolution of any period in the document, if it has any.
@@ -345,9 +470,26 @@ impl GlMarketDocument {
     /// onshore, solar); summing whatever is there would show a fake collapse in
     /// generation at the day boundary.
     pub fn aggregated_points(&self, step: Duration) -> Result<Vec<TimestampedPoint>, EntsoeError> {
-        let mut by_type: HashMap<Option<&str>, HashMap<DateTime<Utc>, f64>> = HashMap::new();
+        Ok(complete_points(self.sampled_by_type(step)?)
+            .into_iter()
+            .enumerate()
+            .map(|(i, p)| TimestampedPoint {
+                timestamp: p.timestamp,
+                position: (i + 1) as u32,
+                quantity: p.total,
+            })
+            .collect())
+    }
+
+    /// Each production type's total, sampled every `step`. Series without a
+    /// production type (load documents) are keyed by the empty string.
+    pub fn sampled_by_type(&self, step: Duration) -> Result<SampledByType, EntsoeError> {
+        let mut by_type = SampledByType::new();
         for series in &self.time_series {
-            let key = series.psr_type.as_ref().map(|p| p.psr_type.as_str());
+            let key = series
+                .psr_type
+                .as_ref()
+                .map_or(String::new(), |p| p.psr_type.clone());
             let totals = by_type.entry(key).or_default();
             for period in &series.periods {
                 for (timestamp, quantity) in period.step_points(&series.curve_type, step)? {
@@ -355,35 +497,7 @@ impl GlMarketDocument {
                 }
             }
         }
-
-        let mut types = by_type.into_values();
-        let Some(first) = types.next() else {
-            return Ok(Vec::new());
-        };
-        let others: Vec<_> = types.collect();
-
-        let mut result: Vec<TimestampedPoint> = first
-            .into_iter()
-            .filter_map(|(timestamp, quantity)| {
-                others
-                    .iter()
-                    .try_fold(quantity, |sum, t| t.get(&timestamp).map(|q| sum + q))
-                    .map(|quantity| TimestampedPoint {
-                        timestamp,
-                        position: 0, // Position doesn't make sense for aggregated data
-                        quantity,
-                    })
-            })
-            .collect();
-
-        result.sort_by_key(|p| p.timestamp);
-
-        // Reassign positions based on sorted order
-        for (i, point) in result.iter_mut().enumerate() {
-            point.position = (i + 1) as u32;
-        }
-
-        Ok(result)
+        Ok(by_type)
     }
 
     /// Get all points with their timestamps as ISO strings
@@ -723,5 +837,64 @@ mod tests {
                 ("22:45".to_string(), 104.0),
             ]
         );
+    }
+
+    #[test]
+    fn intraday_wins_and_fills_types_missing_from_day_ahead() {
+        // Day-ahead has only offshore (for two hours); intraday has offshore and
+        // onshore for the first hour, like DE on 2026-11-13.
+        let day_ahead = generation_doc(&[Series {
+            psr: "B18",
+            curve: "A01",
+            periods: &[(
+                "2026-11-12T22:00Z",
+                "2026-11-13T00:00Z",
+                "PT60M",
+                &[(1, 5.0), (2, 6.0)],
+            )],
+        }]);
+        let intraday = generation_doc(&[
+            Series {
+                psr: "B18",
+                curve: "A01",
+                periods: &[(
+                    "2026-11-12T22:00Z",
+                    "2026-11-12T23:00Z",
+                    "PT60M",
+                    &[(1, 7.0)],
+                )],
+            },
+            Series {
+                psr: "B19",
+                curve: "A01",
+                periods: &[(
+                    "2026-11-12T22:00Z",
+                    "2026-11-12T23:00Z",
+                    "PT60M",
+                    &[(1, 30.0)],
+                )],
+            },
+        ]);
+
+        let points = complete_points(
+            merge_forecasts(&[day_ahead, intraday], Duration::minutes(60)).unwrap(),
+        );
+
+        // 23:00 is dropped: onshore is only known for 22:00.
+        assert_eq!(points.len(), 1);
+        assert_eq!(points[0].timestamp.format("%H:%M").to_string(), "22:00");
+        assert_eq!(points[0].total, 37.0);
+        assert_eq!(points[0].by_type["B18"], 7.0); // intraday, not day-ahead's 5.0
+        assert_eq!(points[0].by_type["B19"], 30.0);
+    }
+
+    #[test]
+    fn no_matching_data_acknowledgement_is_not_an_outage() {
+        let ack = EntsoeError::InvalidResponse(
+            "<Reason><code>999</code><text>No matching data found for Data item GEN</text></Reason>"
+                .to_string(),
+        );
+        assert!(ack.is_no_data());
+        assert!(!EntsoeError::Upstream(reqwest::StatusCode::SERVICE_UNAVAILABLE).is_no_data());
     }
 }

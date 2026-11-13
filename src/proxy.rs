@@ -205,8 +205,8 @@ mod tests {
         assert_eq!(modelled.len(), 2);
 
         let entsoe = vec![
-            RenewableSurplus { timestamp: ts(10), generation: 100.0, load: 0.0, surplus: 0.0 },
-            RenewableSurplus { timestamp: ts(11), generation: 50.0, load: 0.0, surplus: 0.0 },
+            RenewableSurplus { timestamp: ts(10), generation: 100.0, load: 0.0, surplus: 0.0, by_source: Default::default() },
+            RenewableSurplus { timestamp: ts(11), generation: 50.0, load: 0.0, surplus: 0.0, by_source: Default::default() },
         ];
         let calibrated = calibrate(modelled, &entsoe);
         let total: f64 = calibrated.iter().map(|m| m.total_mw).sum();
